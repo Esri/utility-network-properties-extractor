@@ -1,43 +1,143 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll"
-        defaultNamespace="UtilityNetworkPropertiesExtractor"
-        xmlns="http://schemas.esri.com/DADF/Registry"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-
+﻿<ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll" defaultNamespace="UtilityNetworkPropertiesExtractor" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="1.0" desktopVersion="2.7.26828">
-    <Name>UtilityNetworkPropertiesExtractor</Name>   
-    <Description>UtilityNetworkPropertiesExtractor description</Description>
+    <Name>UtilityNetworkPropertiesExtractor</Name>
+    <Description>Add-in for extracting Utility Network properties to CSV files</Description>
     <Image>Images\AddinDesktop32.png</Image>
-    <Author>mic10234</Author>
-    <Company>Acme</Company>
+    <Author></Author>
+    <Company>>esri, http://www.esri.com</Company>
     <Date>4/29/2021 6:46:08 PM</Date>
-    <Subject>Framework</Subject>
-    <!-- Note subject can be one or more of these topics:
-                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+    <Subject>UtilityNetwork</Subject>
   </AddInInfo>
-
   <modules>
     <insertModule id="UtilityNetworkPropertiesExtractor_Module" className="Module1" autoLoad="false" caption="Module1">
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
-        <!--<tab id="UtilityNetworkPropertiesExtractor_Tab1" caption="New Tab">
-          <group refID="UtilityNetworkPropertiesExtractor_Group1"/>
-        </tab>-->
+        <tab id="UtilityNetworkPropertiesExtractor_Tab1" caption="Utility Network Add-In" keytip="ZZ">
+          <group refID="UtilityNetworkPropertiesExtractor_Group1" />
+          <group refID="UtilityNetworkPropertiesExtractor_Group2" />
+        </tab>
       </tabs>
-              
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="UtilityNetworkPropertiesExtractor_Group1" caption="Group 1" appearsOnAddInTab="true">
+        <group id="UtilityNetworkPropertiesExtractor_Group1" caption="Extract to CSV" appearsOnAddInTab="false" keytip="AF">
           <!-- host controls within groups -->
+          <button refID="UtilityNetworkPropertiesExtractor_ExtractAllButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_AssetGroupsButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DomainNetworksButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_NetworkRulesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_NetworkAttributesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_NetworkCategoriesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_NetworkDiagramsButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_TerminalConfigurationButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_TraceConfigurationButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_NoNetworkRulesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DomainValuesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DomainAssignmentsButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DomainOrphansButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_FieldsExtractButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_RelationshipClassButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_VersionInfoButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_LayerInfoButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_AttributeRulesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_ContingentValuesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />                  
+          <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />     
+          <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
+        </group>
+        <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
+          <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" />
         </group>
       </groups>
-      
       <controls>
         <!-- add your controls here -->
-      </controls> 
-      
+        <button id="UtilityNetworkPropertiesExtractor_AssetGroupsButton" caption="Asset Groups" className="AssetGroupsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericNewSparkleLarge16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericNewSparkleLarge16.png" keytip="ZZ" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Asset Groups<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" caption="Create AssetType Edit Templates" className="AssetTypeEditTemplatesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingNewTemplatesForLayer16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingNewTemplatesForLayer16.png" keytip="ZH" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Creates edit templates for Utility Network's Asset Types.  Supports subtype group layers and standard layers<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_AttributeRulesButton" caption="Attribute Rules" className="AttributeRulesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingExplode32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingExplode32.png" keytip="ZL">
+          <tooltip heading="Tooltip Heading">Extract Attribute Rules<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_ContingentValuesButton" caption="Contingent Values" className="ContingentValuesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/TableFilter16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/TableFilter16.png" keytip="ZK">
+          <tooltip heading="Tooltip Heading">Extract Contingent Values<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" caption="Set Display Field Expressions" className="DisplayFieldExpressionButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/TableFieldsTurnAllOn16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/TableFieldsTurnAllOn16.png" keytip="ZF" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">
+            For Utility Network Layers, sets the Display Field to an Arcade expression.  
+            Domain/Structure Layers:  Asset Type and Objectid
+            Subnetline:  Subnetwork Name
+            Dirty Area:  Objectid 
+          <disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DisplayFilterButton" caption="Set Containment Display Filters" className="DisplayFilterButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" keytip="ZD" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Creates Containment Display Filters on all Utility Network Layers with an 'Associationstatus' field<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DomainAssignmentsButton" caption="Domain Assignments" className="DomainAssignmentsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SortCustom16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SortCustom16.png" keytip="ZW">
+          <tooltip heading="Tooltip Heading">Extract Domain Assignment<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DomainValuesButton" caption="Domain Values" className="DomainValuesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ExportFeatures32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ExportFeatures32.png" keytip="ZX">
+          <tooltip heading="Tooltip Heading">Extract Domain Values<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DomainNetworksButton" caption="Domain Networks" className="DomainNetworksButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ModelBuilderAddMergeBranch32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ModelBuilderAddMergeBranch32.png" keytip="ZQ" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Domain Networks<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_DomainOrphansButton" caption="Orphan Domains" className="DomainOrphansButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SyncCenter16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SyncCenter16.png" keytip="ZM">
+          <tooltip heading="Tooltip Heading">Identifies domains not assigned to any field<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_ExtractAllButton" caption="Extract All" className="ExtractAllButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" keytip="ZS">
+          <tooltip heading="Tooltip Heading">Execute all buttons in the 'Extract to CSV' group<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" caption="Map Field Settings" className="FieldSettingsInMapButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingCreateFeaturesWindowShow32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingCreateFeaturesWindowShow32.png" keytip="ZJ">
+          <tooltip heading="Tooltip Heading">Extracts Visibility, Read Only, Highlighted and Field Alias settings for each data field to a CSV file<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" caption="Import Map Field Settings" className="FieldSettingsInMapImportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingAlignEdge32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingAlignEdge32.png" keytip="ZI">
+          <tooltip heading="Tooltip Heading">Imports Visibility, Read Only, Highlighted and Field Alias settings from a CSV file<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_FieldsExtractButton" caption="Fields" className="FieldsExtractButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/FavoriteStar16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/FavoriteStar16.png" keytip="ZU">
+          <tooltip heading="Tooltip Heading">Extract Fields<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" caption="GDB Object Names" className="GdbObjectNamesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseNew32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseNew32.png" keytip="ZR">
+          <tooltip heading="Tooltip Heading">Extract GDB Object Names<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_LayerInfoButton" caption="Layer Info" className="LayerInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerGroup16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerGroup16.png" keytip="ZG">
+          <tooltip heading="Tooltip Heading">Extract Layer Information from the active map<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_NetworkAttributesButton" caption="Network Attributes" className="NetworkAttributesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericApply16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericApply16.png" keytip="ZT" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Network Attributes<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_NetworkCategoriesButton" caption="Network Categories" className="NetworkCategoriesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericPencil32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericPencil32.png" keytip="ZV" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Network Categories<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_NetworkDiagramsButton" caption="Network Diagram Info" className="NetworkDiagramsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DiagramMap32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DiagramMap32.png" keytip="ZN" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Network Diagram Info<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_NetworkRulesButton" caption="Network Rules" className="NetworkRulesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericProperties_B_32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericProperties_B_32.png" keytip="ZY" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Network Rules<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_NoNetworkRulesButton" caption="No Network Rules" className="NoNetworkRulesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericImport32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericImport32.png" keytip="ZO" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Identifies Utility Network assets where network rules aren't defined<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_ProjectItemsButton" caption="Project Items" className="ProjectItemsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ArcGISProject32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ArcGISProject32.png" keytip="ZC">
+          <tooltip heading="Tooltip Heading">Extracts Project Items to a CSV file<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_RelationshipClassButton" caption="Relationship Classes" className="RelationshipClassButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseRelationship16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseRelationship16.png" keytip="ZA">
+          <tooltip heading="Tooltip Heading"> Extracts Relationship Class info to a CSV file </tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_TerminalConfigurationButton" caption="Terminal Configuration" className="TerminalConfigurationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DataReviewerReviewerRule32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DataReviewerReviewerRule32.png" keytip="ZP" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Terminal Configuration<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_TraceConfigurationButton" caption="Trace Configuration" className="TraceConfigurationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingTraceTool32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingTraceTool32.png" keytip="ZB" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extracts Trace Configuration header info to a CSV file<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_VersionInfoButton" caption="Versioning Info" className="VersionInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" keytip="ZE">
+          <tooltip heading="Tooltip Heading">Extract Versioning Info <disabledText /></tooltip>
+        </button>
+      </controls>
     </insertModule>
   </modules>
 </ArcGIS>

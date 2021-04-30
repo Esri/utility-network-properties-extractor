@@ -44,6 +44,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -123,8 +124,35 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetGroupsButton.cs" />
+    <Compile Include="AssetTypeEditTemplatesButton.cs" />
+    <Compile Include="AttributeRulesButton.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="ContingentValuesButton.cs" />
+    <Compile Include="DisplayFieldExpressionButton.cs" />
+    <Compile Include="DisplayFilterButton.cs" />
+    <Compile Include="DomainAssignmentsButton.cs" />
+    <Compile Include="DomainNetworksButton.cs" />
+    <Compile Include="DomainOrphansButton.cs" />
+    <Compile Include="DomainValuesButton.cs" />
+    <Compile Include="ExtractAllButton.cs" />
+    <Compile Include="FieldSettingsInMapButton.cs" />
+    <Compile Include="FieldSettingsInMapImportButton.cs" />
+    <Compile Include="FieldsExtractButton.cs" />
+    <Compile Include="GdbObjectNamesButton.cs" />
+    <Compile Include="LayerInfoButton.cs" />
     <Compile Include="Module1.cs" />
+    <Compile Include="NetworkAttributesButton.cs" />
+    <Compile Include="NetworkCategoriesButton.cs" />
+    <Compile Include="NetworkDiagramsButton.cs" />
+    <Compile Include="NetworkRulesButton.cs" />
+    <Compile Include="NoNetworkRulesButton.cs" />
+    <Compile Include="ProjectItemsButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelationshipClassButton.cs" />
+    <Compile Include="TerminalConfigurationButton.cs" />
+    <Compile Include="TraceConfigurationButton.cs" />
+    <Compile Include="VersionInfoButton.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
