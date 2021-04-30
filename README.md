@@ -30,12 +30,6 @@ Visual Studio:         2019
 
 **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 
-
-## Instructions
-
-1. Fork and then clone the repo. 
-2. Run and try the samples.
-
 ## ArcGIS Pro SDK Resources
 
 [Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
