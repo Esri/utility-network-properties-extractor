@@ -1,5 +1,5 @@
 # utility-network-properties-extractor
-Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in which creates 1) individual CSV files for Utility Network, Geodatabase and Map properties and 2) provides some efficiency Tools for setting up Map configuration.
+Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in which creates 1) individual CSV files for Utility Network, Geodatabase and Map properties and 2) provides some efficiency tools for setting up map configuration.
 
 <!-- TODO: Fill this section below with metadata about this sample-->
 ```
@@ -17,7 +17,7 @@ Visual Studio:         2019
 ## ArcGIS Pro Add-In
  ![Screenshot](Screenshots/Toolbar.PNG) 
       
-### 1.  Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
+### 1.  Buttons that extract Utility Network, Geodatabase and Map properties to individual CSV files
 * **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
 * **Map**:  Layer Info, Map Field Settings
