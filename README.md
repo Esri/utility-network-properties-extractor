@@ -37,10 +37,10 @@ Visual Studio:         2019
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
-## Install Directions
+## Compilation Directions
 
 1.  Download the source code
-2.  In Visual studio compile the solution
+2.  In Visual studio .NET compile the solution
 3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
