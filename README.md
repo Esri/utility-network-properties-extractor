@@ -21,7 +21,7 @@ Visual Studio:         2019
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
 * **Map**:  Layer Info, Map Field Settings
                         
-### Efficiency buttons to help with map configuration.
+### Efficiency tools to help with map configuration.
 
 #### 1. Import Map Field Settings
 * Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
