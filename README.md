@@ -1,10 +1,22 @@
 # utility-network-properties-extractor
+Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in which creates individual CSV files for Utility Network, Geodatabase and Map properties.
 
-## ArcGIS Pro 2.7 SDK for Microsoft .NET Framework
+<!-- TODO: Fill this section below with metadata about this sample-->
+```
+Language:              C#
+Subject:               Utility Network
+Organization:          Esri, http://www.esri.com
+Date:                  5/01/2021
+ArcGIS Pro:            2.7
+Visual Studio:         2019
+.NET Target Framework: .NET Framework 4.8
+```
 
+
+## Overview
 - ArcGIS Pro Add-in that contains:
       
-      1. Buttons that extract Utility Network, Geodatabase and Map information to inidividual CSV files
+      1. Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
             - Utility Network:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
             - Geodatabase:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
             - Map:  Layer Info, Map Field Settings
@@ -13,6 +25,8 @@
             - Import Map Field Settings:  Applies these 4 settings, Visibility, Read-only, Highlighted, Field Alias from a CSV file
             - Set Display Field Settings:  Sets the Display Field for all Utility Network Layers to a hard-coded Arcade Expressions (based on layer)
             - Set Containment Display Filters:  Sets the Display Filters for Utility Network Containment
+
+**The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 
 
 ## Instructions
