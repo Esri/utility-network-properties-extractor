@@ -5,6 +5,7 @@ Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro
 ```
 Language:              C#
 Subject:               Utility Network
+Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
 Date:                  5/01/2021
 ArcGIS Pro:            2.7
