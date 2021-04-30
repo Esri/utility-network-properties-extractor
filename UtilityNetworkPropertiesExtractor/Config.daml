@@ -83,6 +83,7 @@ limitations under the License.
             For Utility Network Layers, sets the Display Field to an Arcade expression.  
             Domain/Structure Layers:  Asset Type and Objectid
             Subnetline:  Subnetwork Name
+            Dirty Areas:  Objectid
           <disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_DisplayFilterButton" caption="Set Containment Display Filters" className="DisplayFilterButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" keytip="ZD" condition="esri_mapping_utilityNetworkCondition">
