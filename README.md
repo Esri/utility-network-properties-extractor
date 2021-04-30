@@ -13,10 +13,8 @@ Visual Studio:         2019
 ```
 
 
-## Sceenshot
+## ArcGIS Pro Add-in contains
  ![Screenshot](Screenshots/Toolbar.PNG) 
-
-- ArcGIS Pro Add-in contains:
       
 ### Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
 * **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
@@ -36,18 +34,18 @@ Visual Studio:         2019
 
 #### 3. Set Containment Display Filters
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
-* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
-
-              
-**The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
 ## Directions
 
 1.  Download the source code
 2.  In Visual studio compile the solution
-3.  Start up ArcGIS Pro
-4.  Open a map that contains the Utility Network
-5.  Generate a report by clicking on the appropriate button  
+3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+4.  Start up ArcGIS Pro
+5.  Open a map that contains the Utility Network
+6.  Generate a report by clicking on the appropriate button  
+
+
 
 
 ## ArcGIS Pro SDK Resources
