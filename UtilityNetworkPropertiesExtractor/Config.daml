@@ -1,9 +1,21 @@
-﻿<ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll" defaultNamespace="UtilityNetworkPropertiesExtractor" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+﻿<!--
+Copyright 2021 Esri
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll" defaultNamespace="UtilityNetworkPropertiesExtractor" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="1.0" desktopVersion="2.7.26828">
     <Name>UtilityNetworkPropertiesExtractor</Name>
-    <Description>Add-in for extracting Utility Network properties to CSV files</Description>
+    <Description>Add-in for extracting Utility Network, GDB and Map properties to CSV files</Description>
     <Image>Images\AddinDesktop32.png</Image>
-    <Author></Author>
+    <Author>Mike Hirschheimer, mhirschheimer@esri.com</Author>
     <Company>>esri, http://www.esri.com</Company>
     <Date>4/29/2021 6:46:08 PM</Date>
     <Subject>UtilityNetwork</Subject>
@@ -49,7 +61,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
-          <button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" />
+          <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
       </groups>
       <controls>
@@ -71,7 +83,6 @@
             For Utility Network Layers, sets the Display Field to an Arcade expression.  
             Domain/Structure Layers:  Asset Type and Objectid
             Subnetline:  Subnetwork Name
-            Dirty Area:  Objectid 
           <disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_DisplayFilterButton" caption="Set Containment Display Filters" className="DisplayFilterButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Filter32.png" keytip="ZD" condition="esri_mapping_utilityNetworkCondition">
