@@ -14,7 +14,9 @@ Visual Studio:         2019
 
 
 ## Overview
-- ArcGIS Pro Add-in that contains:
+ ![Screenshot](Screenshots/Toolbar.PNG) 
+
+- ArcGIS Pro Add-in contains:
       
       1. Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
             - Utility Network:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
@@ -22,7 +24,7 @@ Visual Studio:         2019
             - Map:  Layer Info, Map Field Settings
                         
       2. Efficiency buttons to help with map configuration.
-            - Import Map Field Settings:  Applies these 4 settings, Visibility, Read-only, Highlighted, Field Alias from a CSV file
+            - Import Map Field Settings:  Applies map settings (visibility, read-only, highlighted, field alias) from a CSV file
             - Set Display Field Settings:  Sets the Display Field for all Utility Network Layers to a hard-coded Arcade Expressions (based on layer)
             - Set Containment Display Filters:  Sets the Display Filters for Utility Network Containment
 
@@ -34,12 +36,10 @@ Visual Studio:         2019
 1. Fork and then clone the repo. 
 2. Run and try the samples.
 
-## Requirements
+## ArcGIS Pro SDK Resources
 
-* 
-* 
+[Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
-## Resources
 
 ## Issues
 
@@ -50,7 +50,7 @@ Find a bug or want to request a new feature?  Please let us know by submitting a
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
-Copyright 2016 Esri
+Copyright 2021 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
