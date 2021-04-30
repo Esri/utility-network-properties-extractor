@@ -24,16 +24,16 @@ Visual Studio:         2019
 * Map:  Layer Info, Map Field Settings
                         
 ### Efficiency buttons to help with map configuration.
-Import Map Field Settings
+1. Import Map Field Settings
   * Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
   * Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
-Set Display Field Expressions
+2. Set Display Field Expressions
   * For Utility Network Layers, set the primary display field to an Arcade Expression
   * Domain/Structure Layers:  Asset Group, Asset Type and Objectid
   * Subnetline Layer:  Subnetwork Name
 
-Set Containment Display Filters
+3. Set Containment Display Filters
   * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
   * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
 
