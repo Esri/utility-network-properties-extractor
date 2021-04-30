@@ -14,7 +14,7 @@ Visual Studio:         2019
 ```
 
 
-## ArcGIS Pro Add-in contains
+## ArcGIS Pro Add-In
  ![Screenshot](Screenshots/Toolbar.PNG) 
       
 ### 1.  Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
