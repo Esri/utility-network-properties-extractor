@@ -13,29 +13,29 @@ Visual Studio:         2019
 ```
 
 
-## Overview
+## Sceenshot
  ![Screenshot](Screenshots/Toolbar.PNG) 
 
 - ArcGIS Pro Add-in contains:
       
-      1. Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
-            - Utility Network:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
-            - Geodatabase:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
-            - Map:  Layer Info, Map Field Settings
+### Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
+* Utility Network:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
+* Geodatabase:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
+* Map:  Layer Info, Map Field Settings
                         
-      Efficiency buttons to help with map configuration.
-      1.	Import Map Field Settings
-        Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
-        Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
+### Efficiency buttons to help with map configuration.
+Import Map Field Settings
+  * Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
+  * Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
-      2.	Set Display Field Expressions
-        For Utility Network Layers, set the primary display field to an Arcade Expression
-        Domain/Structure Layers:  Asset Group, Asset Type and Objectid
-        Subnetline Layer:  Subnetwork Name
-        
-      3.  Set Containment Display Filters
-        For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
-        Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
+Set Display Field Expressions
+  * For Utility Network Layers, set the primary display field to an Arcade Expression
+  * Domain/Structure Layers:  Asset Group, Asset Type and Objectid
+  * Subnetline Layer:  Subnetwork Name
+
+Set Containment Display Filters
+  * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
+  * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
 
               
 **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
