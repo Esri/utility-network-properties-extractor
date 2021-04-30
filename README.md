@@ -30,7 +30,20 @@ Visual Studio:         2019
 
 **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 
+## Directions
+
+1.  Download the source code
+2.  In Visual studio compile the solution
+3.  Start up ArcGIS Pro
+4.  Open a map that contains the Utility Network
+5.  Generate a report by clicking on the appropriate button  
+
+
 ## ArcGIS Pro SDK Resources
+
+[ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
+
+[ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
 
 [Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
