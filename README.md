@@ -37,16 +37,28 @@ Visual Studio:         2019
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
-## Directions
+## Install Directions
 
 1.  Download the source code
 2.  In Visual studio compile the solution
 3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 4.  Start up ArcGIS Pro
-5.  Open a map that contains the Utility Network
-6.  Generate a report by clicking on the appropriate button  
+5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
+## Extract to CSV buttons
+1.  Open a map that contains the Utility Network
+2.  Generate a report by clicking on the appropriate button
+3.  CSV file(s) will be generated in folder c:\temp\ProSDK_CSV\**Pro Project Name**\ 
 
+## Efficiency Tool - Import Map Field Settings
+1.  Open any map
+2.  Generate a CSV by clicking the Map Field Settings button
+3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
+4.  Once done, make sure to save the file in CSV format and then close the file
+5.  In Pro, click on the 'Import Map Field Settings' button
+6.  Choose the CSV file to import
+7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane 
+8.  You MUST save the Pro project for settings to persist
 
 
 ## ArcGIS Pro SDK Resources
