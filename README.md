@@ -26,17 +26,17 @@ Visual Studio:         2019
                         
 ### 2.  Efficiency tools to help with map configuration.
 
-#### A. Import Map Field Settings
+####   Import Map Field Settings
 * Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
 * Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
-#### B. Set Display Field Expressions
+####   Set Display Field Expressions
 * For Utility Network Layers, sets the primary display field to an Arcade Expression
 * Domain/Structure Layers:  Asset Type and Objectid
 * Subnetline Layer:  Subnetwork Name
 * Dirty Areas Layer:  Objectid
 
-#### C. Set Containment Display Filters
+####   Set Containment Display Filters
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
@@ -50,7 +50,7 @@ Visual Studio:         2019
 ## Extract to CSV buttons
 1.  Open a map that contains the Utility Network
 2.  Generate a report by clicking on the appropriate button
-3.  CSV file(s) will be generated in folder c:\temp\ProSDK_CSV\**Pro Project Name**\ 
+3.  CSV file(s) will be generated in folder c:\temp\ProSDK_CSV\ **Pro Project Name**\ 
 
 ## Efficiency Tool - Import Map Field Settings
 1.  Open any map
