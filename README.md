@@ -24,7 +24,7 @@ Visual Studio:         2019
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
 * **Map**:  Layer Info, Map Field Settings
 
-* CSV file(s) are generated in folder c:\temp\ProSDK_CSV\ Pro Project Name\
+* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\ Pro Project Name\
                         
 ### 2.  Efficiency tools to help with map configuration.
 
