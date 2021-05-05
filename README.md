@@ -23,12 +23,10 @@ Visual Studio:         2019
 * **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
 * **Map**:  Layer Info, Map Field Settings
+
+* CSV file(s) are generated in folder c:\temp\ProSDK_CSV\ Pro Project Name\
                         
 ### 2.  Efficiency tools to help with map configuration.
-
-####   Import Map Field Settings
-* Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
-* Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
 ####   Set Display Field Expressions
 * For Utility Network Layers, sets the primary display field to an Arcade Expression
@@ -40,19 +38,11 @@ Visual Studio:         2019
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
-## Compilation Directions
-1.  Download the source code
-2.  In Visual studio .NET compile the solution
-3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
-4.  Start up ArcGIS Pro
-5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
+####   Import Map Field Settings
+* Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
+* Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
-## Extract to CSV buttons
-1.  Open a map that contains the Utility Network
-2.  Generate a report by clicking on the appropriate button
-3.  CSV file(s) will be generated in folder c:\temp\ProSDK_CSV\ **Pro Project Name**\ 
-
-## Efficiency Tool - Import Map Field Settings
+_Directions_
 1.  Open any map
 2.  Generate a CSV by clicking the Map Field Settings button
 3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
@@ -61,6 +51,14 @@ Visual Studio:         2019
 6.  Choose the CSV file to import
 7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
 8.  You MUST save the Pro project for settings to persist
+
+## Compilation Directions
+1.  Download the source code
+2.  In Visual studio .NET compile the solution
+3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+4.  Start up ArcGIS Pro
+5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
+
 
 
 ## ArcGIS Pro SDK Resources
