@@ -35,8 +35,9 @@ Visual Studio:         2019
   - Dirty Areas Layer:  Objectid
 
 ####   Set Containment Display Filters
-* For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
-* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
+* Creates a new Display Filter used by containment for Utility Network Layers with an assocationstatus field
+* Name: DisplayContent          
+* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
 
 ####   Import Map Field Settings
 * Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
