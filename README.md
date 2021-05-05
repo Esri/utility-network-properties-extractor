@@ -29,10 +29,10 @@ Visual Studio:         2019
 ### 2.  Efficiency tools to help with map configuration.
 
 ####   Set Display Field Expressions
-* For Utility Network Layers, sets the primary display field to an Arcade Expression
-* Domain/Structure Layers:  Asset Type and Objectid
-* Subnetline Layer:  Subnetwork Name
-* Dirty Areas Layer:  Objectid
+- For Utility Network Layers, sets the primary display field to an Arcade Expression
+  - Domain/Structure Layers:  Asset Type and Objectid
+  - Subnetline Layer:  Subnetwork Name
+  - Dirty Areas Layer:  Objectid
 
 ####   Set Containment Display Filters
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
@@ -43,14 +43,14 @@ Visual Studio:         2019
 * Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
 _Directions_
-1.  Open any map
-2.  Generate a CSV by clicking the Map Field Settings button
-3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
-4.  Once done, make sure to save the file in CSV format and then close the file
-5.  In Pro, click on the 'Import Map Field Settings' button
-6.  Choose the CSV file to import
-7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
-8.  You MUST save the Pro project for settings to persist
+ 1.  Open any map
+ 2.  Generate a CSV by clicking the Map Field Settings button
+ 3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
+ 4.  Once done, make sure to save the file in CSV format and then close the file
+ 5.  In Pro, click on the 'Import Map Field Settings' button
+ 6.  Choose the CSV file to import
+ 7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
+ 8.  You MUST save the Pro project for settings to persist
 
 ## Compilation Directions
 1.  Download the source code
