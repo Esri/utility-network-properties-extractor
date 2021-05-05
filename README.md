@@ -1,5 +1,5 @@
 # utility-network-properties-extractor
-This repo contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
+This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
 
 The Add-in works against layers from featureservices, database connections and file geodatabases.  Buttons are enabled/disabled based on the layers in the map.
 
@@ -60,8 +60,6 @@ _Directions_
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
-
-
 ## ArcGIS Pro SDK Resources
 * [ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
 
@@ -72,11 +70,9 @@ _Directions_
 * [Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
 ## Issues
-
 Find a bug or want to request a new feature?  Please let us know by submitting an issue.
 
 ## Contributing
-
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
