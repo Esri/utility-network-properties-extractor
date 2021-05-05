@@ -41,7 +41,6 @@ Visual Studio:         2019
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
 
 ## Compilation Directions
-
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
 3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
@@ -60,19 +59,18 @@ Visual Studio:         2019
 4.  Once done, make sure to save the file in CSV format and then close the file
 5.  In Pro, click on the 'Import Map Field Settings' button
 6.  Choose the CSV file to import
-7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane 
+7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
 8.  You MUST save the Pro project for settings to persist
 
 
 ## ArcGIS Pro SDK Resources
+* [ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
 
-[ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
+* [ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
 
-[ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
+* [ProConcepts Utility Network](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Utility-Network)
 
-[ProConcepts Utility Network](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Utility-Network)
-
-[Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
+* [Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
 ## Issues
 
