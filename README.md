@@ -29,7 +29,7 @@ Visual Studio:         2019
 ### 2.  Efficiency tools to help with map configuration.
 
 ####   Set Display Field Expressions
-- For Utility Network Layers, sets the primary display field to an Arcade Expression
+- For Utility Network Layers, sets the primary display field to the following:
   - Domain/Structure Layers:  Asset Type and Objectid
   - Subnetline Layer:  Subnetwork Name
   - Dirty Areas Layer:  Objectid
