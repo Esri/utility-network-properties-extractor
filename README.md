@@ -1,5 +1,7 @@
 # utility-network-properties-extractor
-Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in which creates 1) individual CSV files for Utility Network, Geodatabase and Map properties and 2) provides some efficiency tools for setting up map configuration.
+This repo contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
+
+The Add-in works against layers from Feature Services, database connections and file geodatabases.  Buttons are enabled/disabled based on the layers in the map.
 
 <!-- TODO: Fill this section below with metadata about this sample-->
 ```
@@ -17,7 +19,7 @@ Visual Studio:         2019
 ## ArcGIS Pro Add-In
  ![Screenshot](Screenshots/Toolbar.PNG) 
       
-### 1.  Buttons that extract Utility Network, Geodatabase and Map properties to individual CSV files
+### 1.  Single click buttons that extract Utility Network, Geodatabase and Map properties to CSV files
 * **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
 * **Map**:  Layer Info, Map Field Settings
@@ -29,9 +31,10 @@ Visual Studio:         2019
 * Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
 
 #### B. Set Display Field Expressions
-* For Utility Network Layers, set the primary display field to an Arcade Expression
-* Domain/Structure Layers:  Asset Group, Asset Type and Objectid
+* For Utility Network Layers, sets the primary display field to an Arcade Expression
+* Domain/Structure Layers:  Asset Type and Objectid
 * Subnetline Layer:  Subnetwork Name
+* Dirty Areas Layer:  Objectid
 
 #### C. Set Containment Display Filters
 * For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
@@ -67,8 +70,9 @@ Visual Studio:         2019
 
 [ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
 
-[Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
+[ProConcepts Utility Network](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Utility-Network)
 
+[Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
 ## Issues
 
