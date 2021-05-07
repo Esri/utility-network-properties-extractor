@@ -1,0 +1,1210 @@
+5/7/2021 9:09:06 AM,Domain Networks
+
+Enterprise Geodatabase,file:///C:/Users/mike/AppData/Local/Temp/ArcGISProTemp56640/cb2ab6ec990ede1a3d3c83d65b4c1634.sde
+Utility Network Name,meh.unadmin.ElectricUN
+Utility Network Release,3
+ArcGIS Pro Version,2.7.0.0
+
+DomainNetworkID,DomainName,TierRank,Tier,TierGroup,TopologyType,SupportDisjointSubnetworks,UpdateSubnetworkContainers,UpdateSubnetworkStructures
+1,Structure,,,,,,,
+2,Electric,,,,,,,
+,,1,Electric Generation Station,,Mesh,True,,
+,,2,Electric Transmission,,Mesh,True,,
+,,3,Electric Sub Transmission,,Mesh,True,,
+,,4,Electric Distribution Substation,,Radial,True,,
+,,5,Electric Distribution,,Radial,False,,
+,,5,Electric Distribution Mesh,,Mesh,True,,
+,,6,Electric Secondary Mesh,,Mesh,True,,
+,,6,Electric Secondary Radial,,Radial,False,,
+,,,,,,,,
+,,,,,,,,
+TierRank,TierName,Property,Descriptor,Value
+1,Electric Generation Station,,,
+,Electric Generation Station,Trace Configuration,Property,Value
+,Electric Generation Station,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Generation Station,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Generation Station,,Propagators,
+,Electric Generation Station,,Summaries,
+,Electric Generation Station,,,Add('Power Rating') 'Category' = E:Generation totalgenerationkw
+,Electric Generation Station,,,
+,Electric Generation Station,Valid Subnetwork Controllers - 11,Asset Group,Asset Type
+,Electric Generation Station,,High Voltage Generation,Biomass
+,Electric Generation Station,,High Voltage Generation,Coal
+,Electric Generation Station,,High Voltage Generation,Gas Turbine
+,Electric Generation Station,,High Voltage Generation,Geothermal
+,Electric Generation Station,,High Voltage Generation,Hydro
+,Electric Generation Station,,High Voltage Generation,Nuclear
+,Electric Generation Station,,High Voltage Generation,Photovoltaic Solar
+,Electric Generation Station,,High Voltage Generation,Thermal Solar
+,Electric Generation Station,,High Voltage Generation,Wind
+,Electric Generation Station,,High Voltage Transformer,AC Three Phase Power
+,Electric Generation Station,,High Voltage Transformer,DC Power
+,Electric Generation Station,,,
+,Electric Generation Station,Valid Devices - 50,Asset Group,Asset Type
+,Electric Generation Station,,Medium Voltage Arrester,MV Station Arrester
+,Electric Generation Station,,Ground,Bound
+,Electric Generation Station,,Ground,Rod
+,Electric Generation Station,,Ground,Voltage Grid
+,Electric Generation Station,,High Voltage Generation,Battery
+,Electric Generation Station,,High Voltage Generation,Biomass
+,Electric Generation Station,,High Voltage Generation,Coal
+,Electric Generation Station,,High Voltage Generation,Gas Turbine
+,Electric Generation Station,,High Voltage Generation,Geothermal
+,Electric Generation Station,,High Voltage Generation,Hydro
+,Electric Generation Station,,High Voltage Generation,Nuclear
+,Electric Generation Station,,High Voltage Generation,Photovoltaic Solar
+,Electric Generation Station,,High Voltage Generation,Thermal Solar
+,Electric Generation Station,,High Voltage Generation,Wind
+,Electric Generation Station,,High Voltage Power Conversion,Inverter
+,Electric Generation Station,,High Voltage Power Conversion,Rectifier
+,Electric Generation Station,,Medium Voltage Circuit Breaker,Isolator Switch
+,Electric Generation Station,,High Voltage Switch,AC Circuit Breaker
+,Electric Generation Station,,High Voltage Switch,DC Circuit Breaker
+,Electric Generation Station,,High Voltage Switch,AC Bus Tie Breaker
+,Electric Generation Station,,High Voltage Switch,DC Bus Tie Breaker
+,Electric Generation Station,,Medium Voltage Control Unit,MV Circuit Breaker
+,Electric Generation Station,,High Voltage Transformer,AC Single Phase Power
+,Electric Generation Station,,High Voltage Transformer,AC Three Phase Power
+,Electric Generation Station,,High Voltage Transformer,DC Power
+,Electric Generation Station,,Medium Voltage Elbow,Three Phase Dead Break
+,Electric Generation Station,,Medium Voltage Elbow,Three Phase Load Break
+,Electric Generation Station,,Medium Voltage Fuse,Indoor Fuse
+,Electric Generation Station,,Medium Voltage Fuse,Overhead Cutout Fused Disconnect
+,Electric Generation Station,,Medium Voltage Fuse,Overhead Cutout Fused Load Break
+,Electric Generation Station,,Medium Voltage Generation,Battery
+,Electric Generation Station,,Medium Voltage Generation,Biomass
+,Electric Generation Station,,Medium Voltage Generation,Gas Turbine
+,Electric Generation Station,,Medium Voltage Generation,Geothermal
+,Electric Generation Station,,Medium Voltage Generation,Hydro
+,Electric Generation Station,,Medium Voltage Generation,Photovoltaic Solar
+,Electric Generation Station,,Medium Voltage Generation,Thermal Solar
+,Electric Generation Station,,Medium Voltage Generation,Wind
+,Electric Generation Station,,Medium Voltage Generation,Generator
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,MV Instrument Transformer
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,Programmable Logic Unit
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,Remote Terminal Unit
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,SCADA Load Monitor
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,SCADA Weather Station
+,Electric Generation Station,,Medium Voltage Line Monitor and Relay,MV Relay
+,Electric Generation Station,,Medium Voltage Switch,Pad Mounted Single Phase Sectionalizer
+,Electric Generation Station,,Medium Voltage Switch,Pad Mounted Three Phase Sectionalizer
+,Electric Generation Station,,Medium Voltage Switch,Station Single Phase
+,Electric Generation Station,,Medium Voltage Switch,Station Three Phase
+,Electric Generation Station,,Medium Voltage Switch,Bus Tie Breaker
+,Electric Generation Station,,,
+,Electric Generation Station,Valid Lines - 13,Asset Group,Asset Type
+,Electric Generation Station,,High Voltage Busbar,AC Station Single Phase
+,Electric Generation Station,,High Voltage Busbar,AC Station Three Phase
+,Electric Generation Station,,High Voltage Busbar,DC Station
+,Electric Generation Station,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Generation Station,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Generation Station,,Medium Voltage Conductor,Underground Three Phase
+,Electric Generation Station,,High Voltage Connector,AC Connector
+,Electric Generation Station,,High Voltage Connector,DC Connector
+,Electric Generation Station,,Medium Voltage Busbar,Station Single Phase
+,Electric Generation Station,,Medium Voltage Busbar,Station Three Phase
+,Electric Generation Station,,Medium Voltage Connector,Single Phase
+,Electric Generation Station,,Medium Voltage Connector,Three Phase
+,Electric Generation Station,,Medium Voltage Connector,Two Phase
+,Electric Generation Station,,,
+,Electric Generation Station,Aggregrated Lines for SubnetLine Feature - 5,Asset Group,Asset Type
+,Electric Generation Station,,Medium Voltage Busbar,Station Single Phase
+,Electric Generation Station,,Medium Voltage Busbar,Station Three Phase
+,Electric Generation Station,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Generation Station,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Generation Station,,Medium Voltage Conductor,Underground Three Phase
+,Electric Generation Station,,,
+,Electric Generation Station,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Generation Station,,,
+,Electric Generation Station,Subnetwork Diagram Templates - 0,,
+,Electric Generation Station,,,
+2,Electric Transmission,,,
+,Electric Transmission,Trace Configuration,Property,Value
+,Electric Transmission,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Transmission,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Transmission,,Propagators,
+,Electric Transmission,,Summaries,
+,Electric Transmission,,,Add('E:Power') 'Category' = E:Power Transformer totalkva
+,Electric Transmission,,,Add('E:Power') 'Category' = E:Reactive Power totalkvar
+,Electric Transmission,,,Add('Shape length') 'Category' = E:High Voltage Cable circuitlength
+,Electric Transmission,,,Count('Device Asset Group') 'Category' = E:Power Transformer totaltransformercount
+,Electric Transmission,,,Count('Device Asset Group') 'Category' = E:Switching totalswitchcount
+,Electric Transmission,,,
+,Electric Transmission,Valid Subnetwork Controllers - 2,Asset Group,Asset Type
+,Electric Transmission,,High Voltage Transformer,AC Three Phase Power
+,Electric Transmission,,High Voltage Transformer,DC Power
+,Electric Transmission,,,
+,Electric Transmission,Valid Devices - 36,Asset Group,Asset Type
+,Electric Transmission,,High Voltage Service,AC Metering
+,Electric Transmission,,High Voltage Service,DC Metering
+,Electric Transmission,,Ground,Bound
+,Electric Transmission,,Ground,Rod
+,Electric Transmission,,Ground,Voltage Grid
+,Electric Transmission,,High Voltage Arrester,HV Indoor Arrester
+,Electric Transmission,,High Voltage Arrester,HV Line Arrester
+,Electric Transmission,,High Voltage Arrester,HV Station Arrester
+,Electric Transmission,,High Voltage Control Unit,HV Capacitor
+,Electric Transmission,,High Voltage Control Unit,Switch and Breaker
+,Electric Transmission,,High Voltage Control Unit,Voltage Regulator
+,Electric Transmission,,High Voltage Line Monitor and Relay,HV Fault Indicator
+,Electric Transmission,,High Voltage Line Monitor and Relay,HV Instrument Transformer
+,Electric Transmission,,High Voltage Line Monitor and Relay,HV Load Monitor
+,Electric Transmission,,High Voltage Line Monitor and Relay,HV Relay
+,Electric Transmission,,High Voltage Power Conversion,Inverter
+,Electric Transmission,,High Voltage Power Conversion,Rectifier
+,Electric Transmission,,High Voltage Power Factor Correcting,AC Capacitor
+,Electric Transmission,,High Voltage Power Factor Correcting,AC Wave Trap
+,Electric Transmission,,High Voltage Power Factor Correcting,AC Reactor
+,Electric Transmission,,High Voltage Power Factor Correcting,DC Capacitor
+,Electric Transmission,,High Voltage Power Factor Correcting,DC Reactor
+,Electric Transmission,,High Voltage Regulator,AC Single Phase
+,Electric Transmission,,High Voltage Regulator,AC Three Phase
+,Electric Transmission,,High Voltage Regulator,DC Regulator
+,Electric Transmission,,High Voltage Switch,AC Circuit Breaker
+,Electric Transmission,,High Voltage Switch,AC Disconnect
+,Electric Transmission,,High Voltage Switch,AC Switchgear
+,Electric Transmission,,High Voltage Switch,DC Circuit Breaker
+,Electric Transmission,,High Voltage Switch,DC Disconnect
+,Electric Transmission,,High Voltage Switch,DC Switchgear
+,Electric Transmission,,High Voltage Switch,AC Bus Tie Breaker
+,Electric Transmission,,High Voltage Switch,DC Bus Tie Breaker
+,Electric Transmission,,High Voltage Transformer,AC Three Phase Power
+,Electric Transmission,,High Voltage Transformer,DC Power
+,Electric Transmission,,High Voltage Transformer,HV Grounding Transformer
+,Electric Transmission,,,
+,Electric Transmission,Valid Lines - 13,Asset Group,Asset Type
+,Electric Transmission,,High Voltage Busbar,AC Station Single Phase
+,Electric Transmission,,High Voltage Busbar,AC Station Three Phase
+,Electric Transmission,,High Voltage Busbar,DC Station
+,Electric Transmission,,High Voltage Conductor,AC Overhead
+,Electric Transmission,,High Voltage Conductor,AC Submersible
+,Electric Transmission,,High Voltage Conductor,AC Underground
+,Electric Transmission,,High Voltage Conductor,DC Overhead
+,Electric Transmission,,High Voltage Conductor,DC Submersible
+,Electric Transmission,,High Voltage Conductor,DC Underground
+,Electric Transmission,,High Voltage Connector,AC Connector
+,Electric Transmission,,High Voltage Connector,DC Connector
+,Electric Transmission,,High Voltage Static Wire,Double
+,Electric Transmission,,High Voltage Static Wire,Single
+,Electric Transmission,,,
+,Electric Transmission,Aggregrated Lines for SubnetLine Feature - 6,Asset Group,Asset Type
+,Electric Transmission,,High Voltage Conductor,AC Overhead
+,Electric Transmission,,High Voltage Conductor,AC Submersible
+,Electric Transmission,,High Voltage Conductor,AC Underground
+,Electric Transmission,,High Voltage Conductor,DC Overhead
+,Electric Transmission,,High Voltage Conductor,DC Submersible
+,Electric Transmission,,High Voltage Conductor,DC Underground
+,Electric Transmission,,,
+,Electric Transmission,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Transmission,,,
+,Electric Transmission,Subnetwork Diagram Templates - 0,,
+,Electric Transmission,,,
+3,Electric Sub Transmission,,,
+,Electric Sub Transmission,Trace Configuration,Property,Value
+,Electric Sub Transmission,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Sub Transmission,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Sub Transmission,,Propagators,
+,Electric Sub Transmission,,Summaries,
+,Electric Sub Transmission,,,Add('E:Power') 'Category' = E:Power Transformer totalkva
+,Electric Sub Transmission,,,Add('E:Power') 'Category' = E:Reactive Power totalkvar
+,Electric Sub Transmission,,,Add('Shape length') 'Category' = E:High to Medium Voltage Cable circuitlength
+,Electric Sub Transmission,,,Count('Device Asset Group') 'Category' = E:Switching totalswitchcount
+,Electric Sub Transmission,,,Count('E:Device Status') 'Category' = E:Power Transformer totaltransformercount
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Valid Subnetwork Controllers - 3,Asset Group,Asset Type
+,Electric Sub Transmission,,High Voltage Transformer,AC Three Phase Power
+,Electric Sub Transmission,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Sub Transmission,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Valid Devices - 151,Asset Group,Asset Type
+,Electric Sub Transmission,,High Voltage Service,AC Metering
+,Electric Sub Transmission,,High Voltage Service,DC Metering
+,Electric Sub Transmission,,Ground,Bound
+,Electric Sub Transmission,,Ground,Rod
+,Electric Sub Transmission,,Ground,Voltage Grid
+,Electric Sub Transmission,,High Voltage Arrester,HV Indoor Arrester
+,Electric Sub Transmission,,High Voltage Arrester,HV Line Arrester
+,Electric Sub Transmission,,High Voltage Arrester,HV Station Arrester
+,Electric Sub Transmission,,High Voltage Control Unit,HV Capacitor
+,Electric Sub Transmission,,High Voltage Control Unit,Switch and Breaker
+,Electric Sub Transmission,,High Voltage Control Unit,Voltage Regulator
+,Electric Sub Transmission,,High Voltage Line Monitor and Relay,HV Fault Indicator
+,Electric Sub Transmission,,High Voltage Line Monitor and Relay,HV Instrument Transformer
+,Electric Sub Transmission,,High Voltage Line Monitor and Relay,HV Load Monitor
+,Electric Sub Transmission,,High Voltage Line Monitor and Relay,HV Relay
+,Electric Sub Transmission,,High Voltage Power Conversion,Inverter
+,Electric Sub Transmission,,High Voltage Power Conversion,Rectifier
+,Electric Sub Transmission,,High Voltage Power Factor Correcting,AC Capacitor
+,Electric Sub Transmission,,High Voltage Power Factor Correcting,AC Wave Trap
+,Electric Sub Transmission,,High Voltage Power Factor Correcting,AC Reactor
+,Electric Sub Transmission,,High Voltage Power Factor Correcting,DC Capacitor
+,Electric Sub Transmission,,High Voltage Power Factor Correcting,DC Reactor
+,Electric Sub Transmission,,High Voltage Regulator,AC Single Phase
+,Electric Sub Transmission,,High Voltage Regulator,AC Three Phase
+,Electric Sub Transmission,,High Voltage Regulator,DC Regulator
+,Electric Sub Transmission,,High Voltage Switch,AC Circuit Breaker
+,Electric Sub Transmission,,High Voltage Switch,AC Disconnect
+,Electric Sub Transmission,,High Voltage Switch,AC Switchgear
+,Electric Sub Transmission,,High Voltage Switch,DC Circuit Breaker
+,Electric Sub Transmission,,High Voltage Switch,DC Disconnect
+,Electric Sub Transmission,,High Voltage Switch,DC Switchgear
+,Electric Sub Transmission,,High Voltage Switch,AC Bus Tie Breaker
+,Electric Sub Transmission,,High Voltage Switch,DC Bus Tie Breaker
+,Electric Sub Transmission,,High Voltage Transformer,AC Single Phase Power
+,Electric Sub Transmission,,High Voltage Transformer,AC Three Phase Power
+,Electric Sub Transmission,,High Voltage Transformer,DC Power
+,Electric Sub Transmission,,High Voltage Transformer,HV Grounding Transformer
+,Electric Sub Transmission,,Medium Voltage Arrester,MV Elbow Arrester
+,Electric Sub Transmission,,Medium Voltage Arrester,MV Line Arrester
+,Electric Sub Transmission,,Medium Voltage Arrester,MV Station Arrester
+,Electric Sub Transmission,,Medium Voltage Circuit Breaker,Isolator Switch
+,Electric Sub Transmission,,Medium Voltage Circuit Breaker,Single Phase Circuit Breaker
+,Electric Sub Transmission,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Sub Transmission,,Medium Voltage Circuit Breaker,Two Phase Circuit Breaker
+,Electric Sub Transmission,,Medium Voltage Control Unit,MV Capacitor
+,Electric Sub Transmission,,Medium Voltage Control Unit,MV Circuit Breaker
+,Electric Sub Transmission,,Medium Voltage Control Unit,MV Recloser
+,Electric Sub Transmission,,Medium Voltage Control Unit,MV Transfer Switch Controller
+,Electric Sub Transmission,,Medium Voltage Control Unit,MV Regulator
+,Electric Sub Transmission,,Medium Voltage Elbow,Load Break Feedthru
+,Electric Sub Transmission,,Medium Voltage Elbow,Load Break Junction
+,Electric Sub Transmission,,Medium Voltage Elbow,Single Phase Dead Break
+,Electric Sub Transmission,,Medium Voltage Elbow,Single Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Elbow,Three Phase Dead Break
+,Electric Sub Transmission,,Medium Voltage Elbow,Three Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Fuse,Bayonet
+,Electric Sub Transmission,,Medium Voltage Fuse,Fault Limiter
+,Electric Sub Transmission,,Medium Voltage Fuse,Indoor Fuse
+,Electric Sub Transmission,,Medium Voltage Fuse,Overhead Cutout Fused Disconnect
+,Electric Sub Transmission,,Medium Voltage Fuse,Overhead Cutout Fused Load Break
+,Electric Sub Transmission,,Medium Voltage Fuse,Overhead Cutout Sectionalizer
+,Electric Sub Transmission,,Medium Voltage Fuse,Overhead Cutout Solid Blade
+,Electric Sub Transmission,,Medium Voltage Fuse,Cabinet Fuse
+,Electric Sub Transmission,,Medium Voltage Fuse,Underground Fuse
+,Electric Sub Transmission,,Medium Voltage Fuse,Underground Fuse Disconnect
+,Electric Sub Transmission,,Medium Voltage Fuse,Underground Fuse Load Break
+,Electric Sub Transmission,,Medium Voltage Generation,Battery
+,Electric Sub Transmission,,Medium Voltage Generation,Biomass
+,Electric Sub Transmission,,Medium Voltage Generation,Gas Turbine
+,Electric Sub Transmission,,Medium Voltage Generation,Geothermal
+,Electric Sub Transmission,,Medium Voltage Generation,Hydro
+,Electric Sub Transmission,,Medium Voltage Generation,Photovoltaic Solar
+,Electric Sub Transmission,,Medium Voltage Generation,Thermal Solar
+,Electric Sub Transmission,,Medium Voltage Generation,Wind
+,Electric Sub Transmission,,Medium Voltage Generation,Generator
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,MV Instrument Transformer
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,Programmable Logic Unit
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,Remote Terminal Unit
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,SCADA Load Monitor
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,SCADA Weather Station
+,Electric Sub Transmission,,Medium Voltage Line Monitor and Relay,MV Relay
+,Electric Sub Transmission,,Medium Voltage Motor and Pump,Single Phase Motor
+,Electric Sub Transmission,,Medium Voltage Motor and Pump,Single Phase Pump
+,Electric Sub Transmission,,Medium Voltage Motor and Pump,Three Phase Motor
+,Electric Sub Transmission,,Medium Voltage Motor and Pump,Three Phase Pump
+,Electric Sub Transmission,,Medium Voltage Power Conversion,Single Phase Inverter
+,Electric Sub Transmission,,Medium Voltage Power Conversion,Single Phase Rectifier
+,Electric Sub Transmission,,Medium Voltage Power Conversion,Three Phase Inverter
+,Electric Sub Transmission,,Medium Voltage Power Conversion,Three Phase Rectifier
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Mobile Harmonic Filter
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Mobile Reactor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Station Capacitor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Station Harmonic Filter
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Station Reactor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Mobile Capacitor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Overhead Single Phase Capacitor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Overhead Three Phase Capacitor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Overhead Harmonic Filter
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Overhead Reactor
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Single Phase
+,Electric Sub Transmission,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Three Phase
+,Electric Sub Transmission,,Medium Voltage Regulator,Overhead Single Phase VR
+,Electric Sub Transmission,,Medium Voltage Regulator,Overhead Three Phase VR
+,Electric Sub Transmission,,Medium Voltage Regulator,Pad Mounted Single Phase VR
+,Electric Sub Transmission,,Medium Voltage Regulator,Pad Mounted Three Phase VR
+,Electric Sub Transmission,,Medium Voltage Service,Primary Meter - Industrial Customer
+,Electric Sub Transmission,,Medium Voltage Service,Primary Meter - Utility Customer
+,Electric Sub Transmission,,Medium Voltage Service,Primary Meter Circuit Source
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Bypass
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Grounding Switch
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Single Phase Disconnect
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Single Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Single Phase Recloser
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Single Phase Sectionalizer
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Three Phase Disconnect
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Three Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Three Phase Recloser
+,Electric Sub Transmission,,Medium Voltage Switch,Overhead Three Phase Sectionalizer
+,Electric Sub Transmission,,Medium Voltage Switch,Pad Mounted Fault Interrupter
+,Electric Sub Transmission,,Medium Voltage Switch,Pad Mounted Single Phase Recloser
+,Electric Sub Transmission,,Medium Voltage Switch,Pad Mounted Three Phase Recloser
+,Electric Sub Transmission,,Medium Voltage Switch,Pad Mounted Single Phase Sectionalizer
+,Electric Sub Transmission,,Medium Voltage Switch,Pad Mounted Three Phase Sectionalizer
+,Electric Sub Transmission,,Medium Voltage Switch,Station Single Phase
+,Electric Sub Transmission,,Medium Voltage Switch,Station Three Phase
+,Electric Sub Transmission,,Medium Voltage Switch,T Blade
+,Electric Sub Transmission,,Medium Voltage Switch,V Blade
+,Electric Sub Transmission,,Medium Voltage Switch,Underground Single Phase Disconnect
+,Electric Sub Transmission,,Medium Voltage Switch,Underground Single Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Switch,Underground Three Phase Disconnect
+,Electric Sub Transmission,,Medium Voltage Switch,Underground Three Phase Load Break
+,Electric Sub Transmission,,Medium Voltage Switch,Underground Transfer Switch
+,Electric Sub Transmission,,Medium Voltage Transformer,Grounding Transformer
+,Electric Sub Transmission,,Medium Voltage Transformer,Mobile Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Mobile Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Step Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Step Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Subsurface Single Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Three Phase Open Delta
+,Electric Sub Transmission,,Medium Voltage Transformer,Overhead Three Phase Open Wye
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Three Phase Open Delta
+,Electric Sub Transmission,,Medium Voltage Transformer,Pad Mounted Three Phase Open Wye
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Valid Lines - 29,Asset Group,Asset Type
+,Electric Sub Transmission,,High Voltage Busbar,AC Station Single Phase
+,Electric Sub Transmission,,High Voltage Busbar,AC Station Three Phase
+,Electric Sub Transmission,,High Voltage Busbar,DC Station
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Two Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Submersible Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Two Phase
+,Electric Sub Transmission,,High Voltage Conductor,AC Overhead
+,Electric Sub Transmission,,High Voltage Conductor,AC Submersible
+,Electric Sub Transmission,,High Voltage Conductor,AC Underground
+,Electric Sub Transmission,,High Voltage Conductor,DC Overhead
+,Electric Sub Transmission,,High Voltage Conductor,DC Submersible
+,Electric Sub Transmission,,High Voltage Conductor,DC Underground
+,Electric Sub Transmission,,Medium Voltage Connector,Single Phase
+,Electric Sub Transmission,,Medium Voltage Connector,Three Phase
+,Electric Sub Transmission,,Medium Voltage Connector,Two Phase
+,Electric Sub Transmission,,High Voltage Connector,AC Connector
+,Electric Sub Transmission,,High Voltage Connector,DC Connector
+,Electric Sub Transmission,,Neutral,Overhead Bare
+,Electric Sub Transmission,,Neutral,Overhead Shielded
+,Electric Sub Transmission,,Neutral,Underground Shielded
+,Electric Sub Transmission,,High Voltage Static Wire,Double
+,Electric Sub Transmission,,High Voltage Static Wire,Single
+,Electric Sub Transmission,,Medium Voltage Busbar,Station Single Phase
+,Electric Sub Transmission,,Medium Voltage Busbar,Station Three Phase
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Aggregrated Lines for SubnetLine Feature - 18,Asset Group,Asset Type
+,Electric Sub Transmission,,High Voltage Conductor,AC Overhead
+,Electric Sub Transmission,,High Voltage Conductor,AC Submersible
+,Electric Sub Transmission,,High Voltage Conductor,AC Underground
+,Electric Sub Transmission,,High Voltage Conductor,DC Overhead
+,Electric Sub Transmission,,High Voltage Conductor,DC Submersible
+,Electric Sub Transmission,,High Voltage Conductor,DC Underground
+,Electric Sub Transmission,,Medium Voltage Connector,Single Phase
+,Electric Sub Transmission,,Medium Voltage Connector,Three Phase
+,Electric Sub Transmission,,Medium Voltage Busbar,Station Single Phase
+,Electric Sub Transmission,,Medium Voltage Busbar,Station Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Overhead Two Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Submersible Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Single Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Three Phase
+,Electric Sub Transmission,,Medium Voltage Conductor,Underground Two Phase
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Sub Transmission,,,
+,Electric Sub Transmission,Subnetwork Diagram Templates - 0,,
+,Electric Sub Transmission,,,
+4,Electric Distribution Substation,,,
+,Electric Distribution Substation,Trace Configuration,Property,Value
+,Electric Distribution Substation,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Device Asset Group' = 1
+,Electric Distribution Substation,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Distribution Substation,,Propagators,
+,Electric Distribution Substation,,Summaries,
+,Electric Distribution Substation,,,Add('E:Power') 'Device Asset Group' IncludesTheValues 11 totalkva
+,Electric Distribution Substation,,,Add('Power Rating') 'Device Asset Group' = 30 totalgenerationkw
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Valid Subnetwork Controllers - 10,Asset Group,Asset Type
+,Electric Distribution Substation,,High Voltage Transformer,AC Three Phase Power
+,Electric Distribution Substation,,High Voltage Transformer,DC Power
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Single Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Two Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Switch,Station Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Network
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Valid Devices - 120,Asset Group,Asset Type
+,Electric Distribution Substation,,Medium Voltage Arrester,MV Elbow Arrester
+,Electric Distribution Substation,,Medium Voltage Arrester,MV Line Arrester
+,Electric Distribution Substation,,Medium Voltage Arrester,MV Station Arrester
+,Electric Distribution Substation,,Ground,Bound
+,Electric Distribution Substation,,Ground,Rod
+,Electric Distribution Substation,,Ground,Voltage Grid
+,Electric Distribution Substation,,Medium Voltage Control Unit,MV Capacitor
+,Electric Distribution Substation,,Medium Voltage Control Unit,MV Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Control Unit,MV Recloser
+,Electric Distribution Substation,,Medium Voltage Control Unit,MV Transfer Switch Controller
+,Electric Distribution Substation,,Medium Voltage Control Unit,MV Regulator
+,Electric Distribution Substation,,High Voltage Transformer,AC Three Phase Power
+,Electric Distribution Substation,,High Voltage Transformer,DC Power
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Isolator Switch
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Single Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Circuit Breaker,Two Phase Circuit Breaker
+,Electric Distribution Substation,,Medium Voltage Elbow,Load Break Feedthru
+,Electric Distribution Substation,,Medium Voltage Elbow,Load Break Junction
+,Electric Distribution Substation,,Medium Voltage Elbow,Single Phase Dead Break
+,Electric Distribution Substation,,Medium Voltage Elbow,Single Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Elbow,Three Phase Dead Break
+,Electric Distribution Substation,,Medium Voltage Elbow,Three Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Fuse,Bayonet
+,Electric Distribution Substation,,Medium Voltage Fuse,Fault Limiter
+,Electric Distribution Substation,,Medium Voltage Fuse,Indoor Fuse
+,Electric Distribution Substation,,Medium Voltage Fuse,Overhead Cutout Fused Disconnect
+,Electric Distribution Substation,,Medium Voltage Fuse,Overhead Cutout Fused Load Break
+,Electric Distribution Substation,,Medium Voltage Fuse,Overhead Cutout Solid Blade
+,Electric Distribution Substation,,Medium Voltage Fuse,Cabinet Fuse
+,Electric Distribution Substation,,Medium Voltage Fuse,Underground Fuse
+,Electric Distribution Substation,,Medium Voltage Fuse,Underground Fuse Disconnect
+,Electric Distribution Substation,,Medium Voltage Fuse,Underground Fuse Load Break
+,Electric Distribution Substation,,Medium Voltage Generation,Battery
+,Electric Distribution Substation,,Medium Voltage Generation,Biomass
+,Electric Distribution Substation,,Medium Voltage Generation,Gas Turbine
+,Electric Distribution Substation,,Medium Voltage Generation,Geothermal
+,Electric Distribution Substation,,Medium Voltage Generation,Hydro
+,Electric Distribution Substation,,Medium Voltage Generation,Photovoltaic Solar
+,Electric Distribution Substation,,Medium Voltage Generation,Thermal Solar
+,Electric Distribution Substation,,Medium Voltage Generation,Wind
+,Electric Distribution Substation,,Medium Voltage Generation,Generator
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,MV Fault Indicator
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,MV Instrument Transformer
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,Programmable Logic Unit
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,Remote Terminal Unit
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,SCADA Load Monitor
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,SCADA Weather Station
+,Electric Distribution Substation,,Medium Voltage Line Monitor and Relay,MV Relay
+,Electric Distribution Substation,,Medium Voltage Motor and Pump,Single Phase Motor
+,Electric Distribution Substation,,Medium Voltage Motor and Pump,Single Phase Pump
+,Electric Distribution Substation,,Medium Voltage Motor and Pump,Three Phase Motor
+,Electric Distribution Substation,,Medium Voltage Motor and Pump,Three Phase Pump
+,Electric Distribution Substation,,Medium Voltage Power Conversion,Single Phase Inverter
+,Electric Distribution Substation,,Medium Voltage Power Conversion,Single Phase Rectifier
+,Electric Distribution Substation,,Medium Voltage Power Conversion,Three Phase Inverter
+,Electric Distribution Substation,,Medium Voltage Power Conversion,Three Phase Rectifier
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Mobile Harmonic Filter
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Mobile Reactor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Station Capacitor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Station Harmonic Filter
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Station Reactor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Mobile Capacitor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Overhead Single Phase Capacitor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Overhead Three Phase Capacitor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Overhead Harmonic Filter
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Overhead Reactor
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Single Phase
+,Electric Distribution Substation,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Three Phase
+,Electric Distribution Substation,,Medium Voltage Regulator,Overhead Single Phase VR
+,Electric Distribution Substation,,Medium Voltage Regulator,Overhead Three Phase VR
+,Electric Distribution Substation,,Medium Voltage Regulator,Pad Mounted Single Phase VR
+,Electric Distribution Substation,,Medium Voltage Regulator,Pad Mounted Three Phase VR
+,Electric Distribution Substation,,Medium Voltage Service,Primary Meter - Industrial Customer
+,Electric Distribution Substation,,Medium Voltage Service,Primary Meter - Utility Customer
+,Electric Distribution Substation,,Medium Voltage Switch,Cabinet Bypass
+,Electric Distribution Substation,,Medium Voltage Switch,Cabinet Switch
+,Electric Distribution Substation,,Medium Voltage Switch,Cabinet Switch - Grounded
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Bypass
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Grounding Switch
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Jumper
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Single Phase Disconnect
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Single Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Single Phase Recloser
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Three Phase Disconnect
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Three Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Switch,Overhead Three Phase Recloser
+,Electric Distribution Substation,,Medium Voltage Switch,Pad Mounted Fault Interrupter
+,Electric Distribution Substation,,Medium Voltage Switch,Pad Mounted Single Phase Recloser
+,Electric Distribution Substation,,Medium Voltage Switch,Pad Mounted Three Phase Recloser
+,Electric Distribution Substation,,Medium Voltage Switch,Station Single Phase
+,Electric Distribution Substation,,Medium Voltage Switch,Station Three Phase
+,Electric Distribution Substation,,Medium Voltage Switch,T Blade
+,Electric Distribution Substation,,Medium Voltage Switch,V Blade
+,Electric Distribution Substation,,Medium Voltage Switch,Underground Single Phase Disconnect
+,Electric Distribution Substation,,Medium Voltage Switch,Underground Single Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Switch,Underground Three Phase Disconnect
+,Electric Distribution Substation,,Medium Voltage Switch,Underground Three Phase Load Break
+,Electric Distribution Substation,,Medium Voltage Switch,Underground Transfer Switch
+,Electric Distribution Substation,,Medium Voltage Switch,Bus Tie Breaker
+,Electric Distribution Substation,,Medium Voltage Transformer,Grounding Transformer
+,Electric Distribution Substation,,Medium Voltage Transformer,Mobile Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Mobile Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Network
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Step Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Step Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Subsurface Single Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Three Phase Open Delta
+,Electric Distribution Substation,,Medium Voltage Transformer,Overhead Three Phase Open Wye
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Three Phase Open Delta
+,Electric Distribution Substation,,Medium Voltage Transformer,Pad Mounted Three Phase Open Wye
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Valid Lines - 9,Asset Group,Asset Type
+,Electric Distribution Substation,,Medium Voltage Busbar,Station Single Phase
+,Electric Distribution Substation,,Medium Voltage Busbar,Station Three Phase
+,Electric Distribution Substation,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution Substation,,Medium Voltage Connector,Single Phase
+,Electric Distribution Substation,,Medium Voltage Connector,Three Phase
+,Electric Distribution Substation,,Medium Voltage Connector,Two Phase
+,Electric Distribution Substation,,Neutral,Overhead Bare
+,Electric Distribution Substation,,Neutral,Overhead Shielded
+,Electric Distribution Substation,,Neutral,Underground Shielded
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Aggregrated Lines for SubnetLine Feature - 3,Asset Group,Asset Type
+,Electric Distribution Substation,,Medium Voltage Busbar,Station Single Phase
+,Electric Distribution Substation,,Medium Voltage Busbar,Station Three Phase
+,Electric Distribution Substation,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Distribution Substation,,,
+,Electric Distribution Substation,Subnetwork Diagram Templates - 0,,
+,Electric Distribution Substation,,,
+5,Electric Distribution,,,
+,Electric Distribution,Trace Configuration,Property,Value
+,Electric Distribution,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Distribution,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Distribution,,Propagators,
+,Electric Distribution,,Summaries,
+,Electric Distribution,,,Add('E:Power') 'Category' = E:Distribution Transformer totalkva
+,Electric Distribution,,,Add('E:Power') 'Category' = E:Reactive Power totalkvar
+,Electric Distribution,,,Add('Power Rating') 'Category' = E:Generation totalgenerationkw
+,Electric Distribution,,,Add('Shape length') 'Category' = E:Medium to Low Voltage Cable circuitlength
+,Electric Distribution,,,Count('Device Asset Group') 'Category' = E:Customer Load totalservicepoint
+,Electric Distribution,,,Count('Device Asset Group') 'Category' = E:Distribution Transformer totaltransformercount
+,Electric Distribution,,,Count('Device Asset Group') 'Category' = E:Switching totalswitchcount
+,Electric Distribution,,,
+,Electric Distribution,Valid Subnetwork Controllers - 8,Asset Group,Asset Type
+,Electric Distribution,,Low Voltage Network Protection,Network Protector
+,Electric Distribution,,Medium Voltage Circuit Breaker,Single Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Circuit Breaker,Two Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Transformer,Network
+,Electric Distribution,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution,,,
+,Electric Distribution,Valid Devices - 179,Asset Group,Asset Type
+,Electric Distribution,,Low Voltage Line Monitor and Relay,LV Fault Indicator
+,Electric Distribution,,Low Voltage Line Monitor and Relay,LV Load Monitor
+,Electric Distribution,,Low Voltage Line Monitor and Relay,LV Relay
+,Electric Distribution,,Ground,Bound
+,Electric Distribution,,Ground,Rod
+,Electric Distribution,,Ground,Voltage Grid
+,Electric Distribution,,Ground,Stray Voltage Isolator
+,Electric Distribution,,Low Voltage Arrester,LV Overhead Arrester
+,Electric Distribution,,Low Voltage Arrester,LV Underground Arrester
+,Electric Distribution,,Low Voltage Arrester,LV Station Arrester
+,Electric Distribution,,Low Voltage Arrester,LV Indoor Arrester
+,Electric Distribution,,Low Voltage Control Unit,Control Unit
+,Electric Distribution,,Low Voltage Fuse,AC Overhead
+,Electric Distribution,,Low Voltage Fuse,AC Underground
+,Electric Distribution,,Low Voltage Fuse,DC Overhead
+,Electric Distribution,,Low Voltage Fuse,DC Underground
+,Electric Distribution,,Low Voltage Generation,Battery
+,Electric Distribution,,Low Voltage Generation,Car Charger
+,Electric Distribution,,Low Voltage Generation,Generator
+,Electric Distribution,,Low Voltage Generation,Residential Photovoltaic Solar
+,Electric Distribution,,Low Voltage Generation,Wind Turbine
+,Electric Distribution,,Low Voltage Lighting,Flood light
+,Electric Distribution,,Low Voltage Lighting,Streetlight
+,Electric Distribution,,Low Voltage Motor,LV Single Phase Motor
+,Electric Distribution,,Low Voltage Motor,LV Three Phase Motor
+,Electric Distribution,,Low Voltage Network Protection,Network Protector
+,Electric Distribution,,Low Voltage Power Conversion,LV Single Phase Inverter
+,Electric Distribution,,Low Voltage Power Conversion,LV Single Phase Rectifier
+,Electric Distribution,,Low Voltage Power Conversion,LV Three Phase Inverter
+,Electric Distribution,,Low Voltage Power Conversion,LV Three Phase Rectifier
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Mobile Harmonic Filter
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Mobile Reactor
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Overhead Capacitor
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Overhead Harmonic Filter
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Overhead Reactor
+,Electric Distribution,,Low Voltage Power Factor Correcting,Pad Mounted Capacitor
+,Electric Distribution,,Low Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Distribution,,Low Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Station Capacitor
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Station Harmonic Filter
+,Electric Distribution,,Low Voltage Power Factor Correcting,LV Station Reactor
+,Electric Distribution,,Low Voltage Service,Single Phase Commercial
+,Electric Distribution,,Low Voltage Service,Single Phase Residential
+,Electric Distribution,,Low Voltage Service,Three Phase Commercial
+,Electric Distribution,,Low Voltage Service,Three Phase Residential
+,Electric Distribution,,Low Voltage Service,Unmetered Load
+,Electric Distribution,,Low Voltage Switch,Overhead AC Load Break
+,Electric Distribution,,Low Voltage Switch,Overhead AC Disconnect
+,Electric Distribution,,Low Voltage Switch,Overhead DC Load Break
+,Electric Distribution,,Low Voltage Switch,Overhead DC Disconnect
+,Electric Distribution,,Low Voltage Switch,Underground AC Load Break
+,Electric Distribution,,Low Voltage Switch,Underground AC Disconnect
+,Electric Distribution,,Low Voltage Switch,Underground DC Load Break
+,Electric Distribution,,Low Voltage Switch,Underground DC Disconnect
+,Electric Distribution,,Low Voltage Switch,Indoor AC Load Break
+,Electric Distribution,,Low Voltage Switch,Indoor AC Disconnect
+,Electric Distribution,,Low Voltage Switch,Indoor DC Load Break
+,Electric Distribution,,Low Voltage Switch,Indoor DC Disconnect
+,Electric Distribution,,Low Voltage Switch,Source Selectable Switch
+,Electric Distribution,,Low Voltage Switch,LV Overhead Jumper
+,Electric Distribution,,Low Voltage Transformer,Single Phase
+,Electric Distribution,,Low Voltage Transformer,Three Phase
+,Electric Distribution,,Medium Voltage Arrester,MV Elbow Arrester
+,Electric Distribution,,Medium Voltage Arrester,MV Line Arrester
+,Electric Distribution,,Medium Voltage Circuit Breaker,Isolator Switch
+,Electric Distribution,,Medium Voltage Circuit Breaker,Single Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Circuit Breaker,Two Phase Circuit Breaker
+,Electric Distribution,,Medium Voltage Control Unit,MV Capacitor
+,Electric Distribution,,Medium Voltage Control Unit,MV Circuit Breaker
+,Electric Distribution,,Medium Voltage Control Unit,MV Recloser
+,Electric Distribution,,Medium Voltage Control Unit,MV Transfer Switch Controller
+,Electric Distribution,,Medium Voltage Control Unit,MV Regulator
+,Electric Distribution,,Medium Voltage Elbow,Load Break Feedthru
+,Electric Distribution,,Medium Voltage Elbow,Load Break Junction
+,Electric Distribution,,Medium Voltage Elbow,Single Phase Dead Break
+,Electric Distribution,,Medium Voltage Elbow,Single Phase Load Break
+,Electric Distribution,,Medium Voltage Elbow,Three Phase Dead Break
+,Electric Distribution,,Medium Voltage Elbow,Three Phase Load Break
+,Electric Distribution,,Medium Voltage Elbow,Two Phase Load Break
+,Electric Distribution,,Medium Voltage Fuse,Bayonet
+,Electric Distribution,,Medium Voltage Fuse,Fault Limiter
+,Electric Distribution,,Medium Voltage Fuse,Indoor Fuse
+,Electric Distribution,,Medium Voltage Fuse,Overhead Cutout Fused Disconnect
+,Electric Distribution,,Medium Voltage Fuse,Overhead Cutout Fused Load Break
+,Electric Distribution,,Medium Voltage Fuse,Overhead Cutout Sectionalizer
+,Electric Distribution,,Medium Voltage Fuse,Overhead Cutout Solid Blade
+,Electric Distribution,,Medium Voltage Fuse,Cabinet Fuse
+,Electric Distribution,,Medium Voltage Fuse,Underground Fuse
+,Electric Distribution,,Medium Voltage Fuse,Underground Fuse Disconnect
+,Electric Distribution,,Medium Voltage Fuse,Underground Fuse Load Break
+,Electric Distribution,,Medium Voltage Generation,Battery
+,Electric Distribution,,Medium Voltage Generation,Biomass
+,Electric Distribution,,Medium Voltage Generation,Gas Turbine
+,Electric Distribution,,Medium Voltage Generation,Geothermal
+,Electric Distribution,,Medium Voltage Generation,Hydro
+,Electric Distribution,,Medium Voltage Generation,Photovoltaic Solar
+,Electric Distribution,,Medium Voltage Generation,Thermal Solar
+,Electric Distribution,,Medium Voltage Generation,Wind
+,Electric Distribution,,Medium Voltage Generation,Generator
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,MV Fault Indicator
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,MV Instrument Transformer
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,Programmable Logic Unit
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,Remote Terminal Unit
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,SCADA Load Monitor
+,Electric Distribution,,Medium Voltage Line Monitor and Relay,SCADA Weather Station
+,Electric Distribution,,Medium Voltage Motor and Pump,Single Phase Motor
+,Electric Distribution,,Medium Voltage Motor and Pump,Single Phase Pump
+,Electric Distribution,,Medium Voltage Motor and Pump,Three Phase Motor
+,Electric Distribution,,Medium Voltage Motor and Pump,Three Phase Pump
+,Electric Distribution,,Medium Voltage Power Conversion,Wave Trap
+,Electric Distribution,,Medium Voltage Power Conversion,Single Phase Inverter
+,Electric Distribution,,Medium Voltage Power Conversion,Single Phase Rectifier
+,Electric Distribution,,Medium Voltage Power Conversion,Three Phase Inverter
+,Electric Distribution,,Medium Voltage Power Conversion,Three Phase Rectifier
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Mobile Harmonic Filter
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Mobile Reactor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Mobile Capacitor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Overhead Single Phase Capacitor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Overhead Three Phase Capacitor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Overhead Harmonic Filter
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Overhead Reactor
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Single Phase
+,Electric Distribution,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Three Phase
+,Electric Distribution,,Medium Voltage Regulator,Overhead Single Phase VR
+,Electric Distribution,,Medium Voltage Regulator,Overhead Three Phase VR
+,Electric Distribution,,Medium Voltage Regulator,Pad Mounted Single Phase VR
+,Electric Distribution,,Medium Voltage Regulator,Pad Mounted Three Phase VR
+,Electric Distribution,,Medium Voltage Service,Primary Meter - Industrial Customer
+,Electric Distribution,,Medium Voltage Service,Primary Meter - Utility Customer
+,Electric Distribution,,Medium Voltage Service,Primary Meter Circuit Source
+,Electric Distribution,,Medium Voltage Switch,Cabinet Bypass
+,Electric Distribution,,Medium Voltage Switch,Cabinet Switch
+,Electric Distribution,,Medium Voltage Switch,Cabinet Switch - Grounded
+,Electric Distribution,,Medium Voltage Switch,Overhead Bypass
+,Electric Distribution,,Medium Voltage Switch,Overhead Grounding Switch
+,Electric Distribution,,Medium Voltage Switch,Overhead Jumper
+,Electric Distribution,,Medium Voltage Switch,Overhead Single Phase Disconnect
+,Electric Distribution,,Medium Voltage Switch,Overhead Single Phase Load Break
+,Electric Distribution,,Medium Voltage Switch,Overhead Single Phase Recloser
+,Electric Distribution,,Medium Voltage Switch,Overhead Single Phase Sectionalizer
+,Electric Distribution,,Medium Voltage Switch,Overhead Three Phase Disconnect
+,Electric Distribution,,Medium Voltage Switch,Overhead Three Phase Load Break
+,Electric Distribution,,Medium Voltage Switch,Overhead Three Phase Recloser
+,Electric Distribution,,Medium Voltage Switch,Overhead Three Phase Sectionalizer
+,Electric Distribution,,Medium Voltage Switch,Pad Mounted Fault Interrupter
+,Electric Distribution,,Medium Voltage Switch,Pad Mounted Single Phase Recloser
+,Electric Distribution,,Medium Voltage Switch,Pad Mounted Three Phase Recloser
+,Electric Distribution,,Medium Voltage Switch,Pad Mounted Single Phase Sectionalizer
+,Electric Distribution,,Medium Voltage Switch,Pad Mounted Three Phase Sectionalizer
+,Electric Distribution,,Medium Voltage Switch,Station Single Phase
+,Electric Distribution,,Medium Voltage Switch,Station Three Phase
+,Electric Distribution,,Medium Voltage Switch,T Blade
+,Electric Distribution,,Medium Voltage Switch,V Blade
+,Electric Distribution,,Medium Voltage Switch,Underground Single Phase Disconnect
+,Electric Distribution,,Medium Voltage Switch,Underground Single Phase Load Break
+,Electric Distribution,,Medium Voltage Switch,Underground Three Phase Disconnect
+,Electric Distribution,,Medium Voltage Switch,Underground Three Phase Load Break
+,Electric Distribution,,Medium Voltage Switch,Underground Transfer Switch
+,Electric Distribution,,Medium Voltage Switch,Two Phase Switch
+,Electric Distribution,,Medium Voltage Transformer,Grounding Transformer
+,Electric Distribution,,Medium Voltage Transformer,Network
+,Electric Distribution,,Medium Voltage Transformer,Overhead Single Phase
+,Electric Distribution,,Medium Voltage Transformer,Overhead Step Single Phase
+,Electric Distribution,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Single Phase
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Step Single Phase
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Subsurface Single Phase
+,Electric Distribution,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution,,Medium Voltage Transformer,Overhead Three Phase Open Delta
+,Electric Distribution,,Medium Voltage Transformer,Overhead Three Phase Open Wye
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Three Phase Open Delta
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Three Phase Open Wye
+,Electric Distribution,,Medium Voltage Transformer,Pad Mounted Step Two Phase
+,Electric Distribution,,,
+,Electric Distribution,Valid Lines - 22,Asset Group,Asset Type
+,Electric Distribution,,Low Voltage Busbar,Cabinet
+,Electric Distribution,,Low Voltage Busbar,Station
+,Electric Distribution,,Low Voltage Conductor,Overhead
+,Electric Distribution,,Low Voltage Conductor,Submersible
+,Electric Distribution,,Low Voltage Conductor,Underground
+,Electric Distribution,,Low Voltage Connector,Connector
+,Electric Distribution,,Medium Voltage Busbar,Cabinet Single Phase
+,Electric Distribution,,Medium Voltage Busbar,Cabinet Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Overhead Single Phase
+,Electric Distribution,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Overhead Two Phase
+,Electric Distribution,,Medium Voltage Conductor,Submersible Single Phase
+,Electric Distribution,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Underground Single Phase
+,Electric Distribution,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Underground Two Phase
+,Electric Distribution,,Medium Voltage Connector,Single Phase
+,Electric Distribution,,Medium Voltage Connector,Three Phase
+,Electric Distribution,,Medium Voltage Connector,Two Phase
+,Electric Distribution,,Neutral,Overhead Bare
+,Electric Distribution,,Neutral,Overhead Shielded
+,Electric Distribution,,Neutral,Underground Shielded
+,Electric Distribution,,,
+,Electric Distribution,Aggregrated Lines for SubnetLine Feature - 3,Asset Group,Asset Type
+,Electric Distribution,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Distribution,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution,,,
+,Electric Distribution,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Distribution,,,
+,Electric Distribution,Subnetwork Diagram Templates - 0,,
+,Electric Distribution,,,
+5,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Trace Configuration,Property,Value
+,Electric Distribution Mesh,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Distribution Mesh,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Distribution Mesh,,Propagators,
+,Electric Distribution Mesh,,Summaries,
+,Electric Distribution Mesh,,,Add('E:Power') 'Category' = E:Distribution Transformer totalkva
+,Electric Distribution Mesh,,,Add('E:Power') 'Category' = E:Reactive Power totalkvar
+,Electric Distribution Mesh,,,Count('Device Asset Group') 'Category' = E:Customer Load totalservicepoint
+,Electric Distribution Mesh,,,Count('Device Asset Group') 'Category' = E:Distribution Transformer totaltransformercount
+,Electric Distribution Mesh,,,Count('Device Asset Group') 'Category' = E:Switching totalswitchcount
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Valid Subnetwork Controllers - 6,Asset Group,Asset Type
+,Electric Distribution Mesh,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Valid Devices - 127,Asset Group,Asset Type
+,Electric Distribution Mesh,,Low Voltage Line Monitor and Relay,LV Fault Indicator
+,Electric Distribution Mesh,,Low Voltage Line Monitor and Relay,LV Load Monitor
+,Electric Distribution Mesh,,Low Voltage Line Monitor and Relay,LV Relay
+,Electric Distribution Mesh,,Ground,Bound
+,Electric Distribution Mesh,,Ground,Rod
+,Electric Distribution Mesh,,Ground,Voltage Grid
+,Electric Distribution Mesh,,Ground,Stray Voltage Isolator
+,Electric Distribution Mesh,,Low Voltage Arrester,LV Overhead Arrester
+,Electric Distribution Mesh,,Low Voltage Arrester,LV Underground Arrester
+,Electric Distribution Mesh,,Low Voltage Arrester,LV Station Arrester
+,Electric Distribution Mesh,,Low Voltage Arrester,LV Indoor Arrester
+,Electric Distribution Mesh,,Low Voltage Control Unit,Control Unit
+,Electric Distribution Mesh,,Low Voltage Fuse,AC Overhead
+,Electric Distribution Mesh,,Low Voltage Fuse,AC Underground
+,Electric Distribution Mesh,,Low Voltage Fuse,DC Overhead
+,Electric Distribution Mesh,,Low Voltage Fuse,DC Underground
+,Electric Distribution Mesh,,Low Voltage Generation,Battery
+,Electric Distribution Mesh,,Low Voltage Generation,Car Charger
+,Electric Distribution Mesh,,Low Voltage Generation,Generator
+,Electric Distribution Mesh,,Low Voltage Generation,Residential Photovoltaic Solar
+,Electric Distribution Mesh,,Low Voltage Generation,Wind Turbine
+,Electric Distribution Mesh,,Low Voltage Lighting,Flood light
+,Electric Distribution Mesh,,Low Voltage Lighting,Streetlight
+,Electric Distribution Mesh,,Low Voltage Motor,LV Single Phase Motor
+,Electric Distribution Mesh,,Low Voltage Motor,LV Three Phase Motor
+,Electric Distribution Mesh,,Low Voltage Network Protection,Network Protector
+,Electric Distribution Mesh,,Low Voltage Power Conversion,LV Single Phase Inverter
+,Electric Distribution Mesh,,Low Voltage Power Conversion,LV Single Phase Rectifier
+,Electric Distribution Mesh,,Low Voltage Power Conversion,LV Three Phase Inverter
+,Electric Distribution Mesh,,Low Voltage Power Conversion,LV Three Phase Rectifier
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Mobile Harmonic Filter
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Mobile Reactor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Overhead Capacitor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Overhead Harmonic Filter
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Overhead Reactor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Capacitor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Station Capacitor
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Station Harmonic Filter
+,Electric Distribution Mesh,,Low Voltage Power Factor Correcting,LV Station Reactor
+,Electric Distribution Mesh,,Low Voltage Service,Single Phase Commercial
+,Electric Distribution Mesh,,Low Voltage Service,Single Phase Residential
+,Electric Distribution Mesh,,Low Voltage Service,Three Phase Commercial
+,Electric Distribution Mesh,,Low Voltage Service,Three Phase Residential
+,Electric Distribution Mesh,,Low Voltage Service,Unmetered Load
+,Electric Distribution Mesh,,Low Voltage Switch,LV Overhead Jumper
+,Electric Distribution Mesh,,Medium Voltage Circuit Breaker,Network Protector
+,Electric Distribution Mesh,,Medium Voltage Circuit Breaker,Three Phase Circuit Breaker
+,Electric Distribution Mesh,,Medium Voltage Elbow,Single Phase Dead Break
+,Electric Distribution Mesh,,Medium Voltage Elbow,Single Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Elbow,Three Phase Dead Break
+,Electric Distribution Mesh,,Medium Voltage Elbow,Three Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Elbow,Two Phase Dead Break
+,Electric Distribution Mesh,,Medium Voltage Elbow,Two Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Fuse,Bayonet
+,Electric Distribution Mesh,,Medium Voltage Fuse,Cabinet Fuse
+,Electric Distribution Mesh,,Medium Voltage Line Monitor and Relay,Programmable Logic Unit
+,Electric Distribution Mesh,,Medium Voltage Line Monitor and Relay,Remote Terminal Unit
+,Electric Distribution Mesh,,Medium Voltage Line Monitor and Relay,SCADA Load Monitor
+,Electric Distribution Mesh,,Medium Voltage Line Monitor and Relay,SCADA Weather Station
+,Electric Distribution Mesh,,Medium Voltage Motor and Pump,Single Phase Motor
+,Electric Distribution Mesh,,Medium Voltage Motor and Pump,Single Phase Pump
+,Electric Distribution Mesh,,Medium Voltage Motor and Pump,Three Phase Motor
+,Electric Distribution Mesh,,Medium Voltage Motor and Pump,Three Phase Pump
+,Electric Distribution Mesh,,Medium Voltage Power Conversion,Wave Trap
+,Electric Distribution Mesh,,Medium Voltage Power Conversion,Single Phase Inverter
+,Electric Distribution Mesh,,Medium Voltage Power Conversion,Single Phase Rectifier
+,Electric Distribution Mesh,,Medium Voltage Power Conversion,Three Phase Inverter
+,Electric Distribution Mesh,,Medium Voltage Power Conversion,Three Phase Rectifier
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Mobile Harmonic Filter
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Mobile Reactor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Mobile Capacitor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Overhead Single Phase Capacitor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Overhead Three Phase Capacitor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Overhead Harmonic Filter
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Overhead Reactor
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Single Phase
+,Electric Distribution Mesh,,Medium Voltage Power Factor Correcting,Pad Mounted Capacitor Three Phase
+,Electric Distribution Mesh,,Medium Voltage Regulator,Overhead Single Phase VR
+,Electric Distribution Mesh,,Medium Voltage Regulator,Overhead Three Phase VR
+,Electric Distribution Mesh,,Medium Voltage Regulator,Pad Mounted Single Phase VR
+,Electric Distribution Mesh,,Medium Voltage Regulator,Pad Mounted Three Phase VR
+,Electric Distribution Mesh,,Medium Voltage Service,Primary Meter - Industrial Customer
+,Electric Distribution Mesh,,Medium Voltage Service,Primary Meter - Utility Customer
+,Electric Distribution Mesh,,Medium Voltage Service,Primary Meter Circuit Source
+,Electric Distribution Mesh,,Medium Voltage Switch,Cabinet Switch
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Single Phase Disconnect
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Single Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Single Phase Recloser
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Single Phase Sectionalizer
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Three Phase Disconnect
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Three Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Three Phase Recloser
+,Electric Distribution Mesh,,Medium Voltage Switch,Overhead Three Phase Sectionalizer
+,Electric Distribution Mesh,,Medium Voltage Switch,Pad Mounted Fault Interrupter
+,Electric Distribution Mesh,,Medium Voltage Switch,Pad Mounted Single Phase Recloser
+,Electric Distribution Mesh,,Medium Voltage Switch,Pad Mounted Three Phase Recloser
+,Electric Distribution Mesh,,Medium Voltage Switch,Pad Mounted Single Phase Sectionalizer
+,Electric Distribution Mesh,,Medium Voltage Switch,Pad Mounted Three Phase Sectionalizer
+,Electric Distribution Mesh,,Medium Voltage Switch,Station Single Phase
+,Electric Distribution Mesh,,Medium Voltage Switch,Station Three Phase
+,Electric Distribution Mesh,,Medium Voltage Switch,V Blade
+,Electric Distribution Mesh,,Medium Voltage Switch,Underground Single Phase Disconnect
+,Electric Distribution Mesh,,Medium Voltage Switch,Underground Single Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Switch,Underground Three Phase Disconnect
+,Electric Distribution Mesh,,Medium Voltage Switch,Underground Three Phase Load Break
+,Electric Distribution Mesh,,Medium Voltage Switch,Underground Transfer Switch
+,Electric Distribution Mesh,,Medium Voltage Switch,Two Phase Recloser
+,Electric Distribution Mesh,,Medium Voltage Switch,Two Phase Sectionalizer
+,Electric Distribution Mesh,,Medium Voltage Transformer,Grounding Transformer
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Single Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Step Single Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Step Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Single Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Step Single Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Step Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Subsurface Single Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Subsurface Three Phase
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Three Phase Open Delta
+,Electric Distribution Mesh,,Medium Voltage Transformer,Overhead Three Phase Open Wye
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase Open Delta
+,Electric Distribution Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase Open Wye
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Valid Lines - 24,Asset Group,Asset Type
+,Electric Distribution Mesh,,Low Voltage Busbar,Cabinet
+,Electric Distribution Mesh,,Low Voltage Busbar,Station
+,Electric Distribution Mesh,,Low Voltage Conductor,Overhead
+,Electric Distribution Mesh,,Low Voltage Conductor,Submersible
+,Electric Distribution Mesh,,Low Voltage Conductor,Underground
+,Electric Distribution Mesh,,Low Voltage Connector,Connector
+,Electric Distribution Mesh,,Medium Voltage Busbar,Cabinet Single Phase
+,Electric Distribution Mesh,,Medium Voltage Busbar,Cabinet Three Phase
+,Electric Distribution Mesh,,Medium Voltage Busbar,Station Single Phase
+,Electric Distribution Mesh,,Medium Voltage Busbar,Station Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Overhead Single Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Overhead Two Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Submersible Single Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Underground Single Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Underground Two Phase
+,Electric Distribution Mesh,,Medium Voltage Connector,Single Phase
+,Electric Distribution Mesh,,Medium Voltage Connector,Three Phase
+,Electric Distribution Mesh,,Medium Voltage Connector,Two Phase
+,Electric Distribution Mesh,,Neutral,Overhead Bare
+,Electric Distribution Mesh,,Neutral,Overhead Shielded
+,Electric Distribution Mesh,,Neutral,Underground Shielded
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Aggregrated Lines for SubnetLine Feature - 3,Asset Group,Asset Type
+,Electric Distribution Mesh,,Medium Voltage Conductor,Overhead Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Submersible Three Phase
+,Electric Distribution Mesh,,Medium Voltage Conductor,Underground Three Phase
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Distribution Mesh,,,
+,Electric Distribution Mesh,Subnetwork Diagram Templates - 0,,
+,Electric Distribution Mesh,,,
+6,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Trace Configuration,Property,Value
+,Electric Secondary Mesh,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Secondary Mesh,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Secondary Mesh,,Propagators,
+,Electric Secondary Mesh,,Summaries,
+,Electric Secondary Mesh,,,Count('Device Asset Group') 'Category' = E:Customer Load totalservicepoint
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Valid Subnetwork Controllers - 3,Asset Group,Asset Type
+,Electric Secondary Mesh,,Low Voltage Network Protection,Network Protector
+,Electric Secondary Mesh,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Secondary Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Valid Devices - 65,Asset Group,Asset Type
+,Electric Secondary Mesh,,Low Voltage Line Monitor and Relay,LV Fault Indicator
+,Electric Secondary Mesh,,Low Voltage Line Monitor and Relay,LV Load Monitor
+,Electric Secondary Mesh,,Low Voltage Line Monitor and Relay,LV Relay
+,Electric Secondary Mesh,,Ground,Bound
+,Electric Secondary Mesh,,Ground,Rod
+,Electric Secondary Mesh,,Ground,Voltage Grid
+,Electric Secondary Mesh,,Ground,Stray Voltage Isolator
+,Electric Secondary Mesh,,Low Voltage Arrester,LV Overhead Arrester
+,Electric Secondary Mesh,,Low Voltage Arrester,LV Underground Arrester
+,Electric Secondary Mesh,,Low Voltage Arrester,LV Station Arrester
+,Electric Secondary Mesh,,Low Voltage Arrester,LV Indoor Arrester
+,Electric Secondary Mesh,,Low Voltage Control Unit,Control Unit
+,Electric Secondary Mesh,,Low Voltage Fuse,AC Overhead
+,Electric Secondary Mesh,,Low Voltage Fuse,AC Underground
+,Electric Secondary Mesh,,Low Voltage Fuse,DC Overhead
+,Electric Secondary Mesh,,Low Voltage Fuse,DC Underground
+,Electric Secondary Mesh,,Low Voltage Generation,Battery
+,Electric Secondary Mesh,,Low Voltage Generation,Car Charger
+,Electric Secondary Mesh,,Low Voltage Generation,Generator
+,Electric Secondary Mesh,,Low Voltage Generation,Residential Photovoltaic Solar
+,Electric Secondary Mesh,,Low Voltage Generation,Wind Turbine
+,Electric Secondary Mesh,,Low Voltage Lighting,Flood light
+,Electric Secondary Mesh,,Low Voltage Lighting,Streetlight
+,Electric Secondary Mesh,,Low Voltage Motor,LV Single Phase Motor
+,Electric Secondary Mesh,,Low Voltage Motor,LV Three Phase Motor
+,Electric Secondary Mesh,,Low Voltage Network Protection,Network Protector
+,Electric Secondary Mesh,,Low Voltage Power Conversion,LV Single Phase Inverter
+,Electric Secondary Mesh,,Low Voltage Power Conversion,LV Single Phase Rectifier
+,Electric Secondary Mesh,,Low Voltage Power Conversion,LV Three Phase Inverter
+,Electric Secondary Mesh,,Low Voltage Power Conversion,LV Three Phase Rectifier
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Mobile Harmonic Filter
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Mobile Reactor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Overhead Capacitor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Overhead Harmonic Filter
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Overhead Reactor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Capacitor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Station Capacitor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Station Harmonic Filter
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,LV Station Reactor
+,Electric Secondary Mesh,,Low Voltage Power Factor Correcting,Wave Trap
+,Electric Secondary Mesh,,Low Voltage Service,Single Phase Commercial
+,Electric Secondary Mesh,,Low Voltage Service,Single Phase Residential
+,Electric Secondary Mesh,,Low Voltage Service,Three Phase Commercial
+,Electric Secondary Mesh,,Low Voltage Service,Three Phase Residential
+,Electric Secondary Mesh,,Low Voltage Service,Unmetered Load
+,Electric Secondary Mesh,,Low Voltage Switch,Overhead AC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Overhead AC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Overhead DC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Overhead DC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Underground AC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Underground AC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Underground DC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Underground DC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Indoor AC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Indoor AC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Indoor DC Load Break
+,Electric Secondary Mesh,,Low Voltage Switch,Indoor DC Disconnect
+,Electric Secondary Mesh,,Low Voltage Switch,Source Selectable Switch
+,Electric Secondary Mesh,,Low Voltage Switch,LV Overhead Jumper
+,Electric Secondary Mesh,,Low Voltage Transformer,Single Phase
+,Electric Secondary Mesh,,Low Voltage Transformer,Three Phase
+,Electric Secondary Mesh,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Secondary Mesh,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Valid Lines - 9,Asset Group,Asset Type
+,Electric Secondary Mesh,,Low Voltage Busbar,Cabinet
+,Electric Secondary Mesh,,Low Voltage Busbar,Station
+,Electric Secondary Mesh,,Low Voltage Conductor,Overhead
+,Electric Secondary Mesh,,Low Voltage Conductor,Submersible
+,Electric Secondary Mesh,,Low Voltage Conductor,Underground
+,Electric Secondary Mesh,,Low Voltage Connector,Connector
+,Electric Secondary Mesh,,Neutral,Overhead Bare
+,Electric Secondary Mesh,,Neutral,Overhead Shielded
+,Electric Secondary Mesh,,Neutral,Underground Shielded
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Aggregrated Lines for SubnetLine Feature - 3,Asset Group,Asset Type
+,Electric Secondary Mesh,,Low Voltage Conductor,Overhead
+,Electric Secondary Mesh,,Low Voltage Conductor,Submersible
+,Electric Secondary Mesh,,Low Voltage Conductor,Underground
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Secondary Mesh,,,
+,Electric Secondary Mesh,Subnetwork Diagram Templates - 0,,
+,Electric Secondary Mesh,,,
+6,Electric Secondary Radial,,,
+,Electric Secondary Radial,Trace Configuration,Property,Value
+,Electric Secondary Radial,,Condition Barriers,'E:Device Status' = 1 OR 'Lifecycle Status' DoesNotIncludeAny 24 OR 'Category' = E:Ground
+,Electric Secondary Radial,,Apply Traversibiilty To,JunctionsAndEdges
+,Electric Secondary Radial,,Propagators,
+,Electric Secondary Radial,,Summaries,
+,Electric Secondary Radial,,,Count('Device Asset Group') 'Category' = E:Customer Load totalservicepoint
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Valid Subnetwork Controllers - 3,Asset Group,Asset Type
+,Electric Secondary Radial,,Low Voltage Network Protection,Network Protector
+,Electric Secondary Radial,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Secondary Radial,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Valid Devices - 64,Asset Group,Asset Type
+,Electric Secondary Radial,,Low Voltage Line Monitor and Relay,LV Fault Indicator
+,Electric Secondary Radial,,Low Voltage Line Monitor and Relay,LV Load Monitor
+,Electric Secondary Radial,,Low Voltage Line Monitor and Relay,LV Relay
+,Electric Secondary Radial,,Ground,Bound
+,Electric Secondary Radial,,Ground,Rod
+,Electric Secondary Radial,,Ground,Voltage Grid
+,Electric Secondary Radial,,Ground,Stray Voltage Isolator
+,Electric Secondary Radial,,Low Voltage Arrester,LV Overhead Arrester
+,Electric Secondary Radial,,Low Voltage Arrester,LV Underground Arrester
+,Electric Secondary Radial,,Low Voltage Arrester,LV Station Arrester
+,Electric Secondary Radial,,Low Voltage Arrester,LV Indoor Arrester
+,Electric Secondary Radial,,Low Voltage Control Unit,Control Unit
+,Electric Secondary Radial,,Low Voltage Fuse,AC Overhead
+,Electric Secondary Radial,,Low Voltage Fuse,AC Underground
+,Electric Secondary Radial,,Low Voltage Fuse,DC Overhead
+,Electric Secondary Radial,,Low Voltage Fuse,DC Underground
+,Electric Secondary Radial,,Low Voltage Generation,Battery
+,Electric Secondary Radial,,Low Voltage Generation,Car Charger
+,Electric Secondary Radial,,Low Voltage Generation,Generator
+,Electric Secondary Radial,,Low Voltage Generation,Residential Photovoltaic Solar
+,Electric Secondary Radial,,Low Voltage Generation,Wind Turbine
+,Electric Secondary Radial,,Low Voltage Lighting,Flood light
+,Electric Secondary Radial,,Low Voltage Lighting,Streetlight
+,Electric Secondary Radial,,Low Voltage Motor,LV Single Phase Motor
+,Electric Secondary Radial,,Low Voltage Motor,LV Three Phase Motor
+,Electric Secondary Radial,,Low Voltage Network Protection,Network Protector
+,Electric Secondary Radial,,Low Voltage Power Conversion,LV Single Phase Inverter
+,Electric Secondary Radial,,Low Voltage Power Conversion,LV Single Phase Rectifier
+,Electric Secondary Radial,,Low Voltage Power Conversion,LV Three Phase Inverter
+,Electric Secondary Radial,,Low Voltage Power Conversion,LV Three Phase Rectifier
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Mobile Harmonic Filter
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Mobile Reactor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Overhead Capacitor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Overhead Harmonic Filter
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Overhead Reactor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,Pad Mounted Capacitor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,Pad Mounted Harmonic Filter
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,Pad Mounted Reactor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Station Capacitor
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Station Harmonic Filter
+,Electric Secondary Radial,,Low Voltage Power Factor Correcting,LV Station Reactor
+,Electric Secondary Radial,,Low Voltage Service,Single Phase Commercial
+,Electric Secondary Radial,,Low Voltage Service,Single Phase Residential
+,Electric Secondary Radial,,Low Voltage Service,Three Phase Commercial
+,Electric Secondary Radial,,Low Voltage Service,Three Phase Residential
+,Electric Secondary Radial,,Low Voltage Service,Unmetered Load
+,Electric Secondary Radial,,Low Voltage Switch,Overhead AC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Overhead AC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Overhead DC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Overhead DC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Underground AC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Underground AC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Underground DC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Underground DC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Indoor AC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Indoor AC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Indoor DC Load Break
+,Electric Secondary Radial,,Low Voltage Switch,Indoor DC Disconnect
+,Electric Secondary Radial,,Low Voltage Switch,Source Selectable Switch
+,Electric Secondary Radial,,Low Voltage Switch,LV Overhead Jumper
+,Electric Secondary Radial,,Low Voltage Transformer,Single Phase
+,Electric Secondary Radial,,Low Voltage Transformer,Three Phase
+,Electric Secondary Radial,,Medium Voltage Transformer,Overhead Three Phase
+,Electric Secondary Radial,,Medium Voltage Transformer,Pad Mounted Three Phase
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Valid Lines - 9,Asset Group,Asset Type
+,Electric Secondary Radial,,Low Voltage Busbar,Cabinet
+,Electric Secondary Radial,,Low Voltage Busbar,Station
+,Electric Secondary Radial,,Low Voltage Conductor,Overhead
+,Electric Secondary Radial,,Low Voltage Conductor,Submersible
+,Electric Secondary Radial,,Low Voltage Conductor,Underground
+,Electric Secondary Radial,,Low Voltage Connector,Connector
+,Electric Secondary Radial,,Neutral,Overhead Bare
+,Electric Secondary Radial,,Neutral,Overhead Shielded
+,Electric Secondary Radial,,Neutral,Underground Shielded
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Aggregrated Lines for SubnetLine Feature - 3,Asset Group,Asset Type
+,Electric Secondary Radial,,Low Voltage Conductor,Overhead
+,Electric Secondary Radial,,Low Voltage Conductor,Submersible
+,Electric Secondary Radial,,Low Voltage Conductor,Underground
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Valid Junctions - 0,Asset Group,Asset Type
+,Electric Secondary Radial,,,
+,Electric Secondary Radial,Subnetwork Diagram Templates - 0,,
+,Electric Secondary Radial,,,
