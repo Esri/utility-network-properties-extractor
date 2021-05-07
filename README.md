@@ -3,7 +3,7 @@ This repository contains the source code for the 'Utility Network Property Extra
 
 The Add-in works against layers from featureservices, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
 
-The Add-in is domain network agnostic.  It doesn’t matter if the industry is Electric, Gas, Communications, District Heating & Cooling, Water, Sewer, or some other type.
+The Add-in is domain network agnostic.  It doesn’t matter if the industry is Electric, Gas, Communications, District Heating & Cooling, Water, Sewer, or others.
 
 <!-- TODO: Fill this section below with metadata about this sample-->
 ```
