@@ -31,10 +31,10 @@ Visual Studio:         2019
 ### 2.  Efficiency tools to help with map configuration.
 
 ####   Set Display Field Expressions
-- For Utility Network Layers, sets the primary display field to the following:
-  - Domain/Structure Layers:  Asset Type and Objectid
-  - Subnetline Layer:  Subnetwork Name
-  - Dirty Areas Layer:  Objectid
+- For Utility Network layers, sets the primary display field to the following:
+  - Domain/Structure layers:  Asset Type and Objectid
+  - Subnetline layer:  Subnetwork Name
+  - Dirty Areas layer:  Objectid
 
 ####   Set Containment Display Filters
 * Creates a new Display Filter used by containment for Utility Network layers with an assocationstatus field
