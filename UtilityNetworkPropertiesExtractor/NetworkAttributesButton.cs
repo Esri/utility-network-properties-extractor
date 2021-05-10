@@ -110,7 +110,7 @@ namespace UtilityNetworkPropertiesExtractor
                     properties = Common.GetPropertiesOfClass(emptyAssignmentRec);
 
                     //Write column headers based on properties in the class
-                    columnHeader = properties.Select(n => n.Name).Aggregate((a, b) => a + Common.Delimiter + b);
+                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
                     foreach (NetworkAttribute networkAttribute in networkAttributes)
