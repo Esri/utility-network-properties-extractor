@@ -1,10 +1,15 @@
 # utility-network-properties-extractor
-Contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in which creates individual CSV files for Utility Network, Geodatabase and Map properties.
+This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
+
+The Add-in works against layers from feature services, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
+
+The Add-in is domain network agnostic.  It doesn’t matter if the industry is Electric, Gas, Communications, District Heating & Cooling, Water, Sewer, or others.
 
 <!-- TODO: Fill this section below with metadata about this sample-->
 ```
 Language:              C#
 Subject:               Utility Network
+Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
 Date:                  5/01/2021
 ArcGIS Pro:            2.7
@@ -13,56 +18,63 @@ Visual Studio:         2019
 ```
 
 
-## ArcGIS Pro Add-in contains
+## ArcGIS Pro Add-In
  ![Screenshot](Screenshots/Toolbar.PNG) 
       
-### 1.  Buttons that extract Utility Network, Geodatabase and Map information to individual CSV files
-* **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Categories, Network Attributes, Network Diagrams, Terminal Configuration, Trace Configuration
-* **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Versioning Info, Attribute Rules, Contingent Values
+### 1.  Single click buttons that extract Utility Network, Geodatabase and Map properties to CSV files
+* **Utility Network**:   Asset Groups, Domain Networks, Network Rules, Network Attributes, Network Categories, Network Diagram Info, Terminal Configuration, Trace Configuration, No Network Rules
+* **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Relationship Classes, Versioning Info, Attribute Rules, Contingent Values, GDB Object Names
 * **Map**:  Layer Info, Map Field Settings
+
+* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\ Pro Project Name\
                         
 ### 2.  Efficiency tools to help with map configuration.
 
-#### A. Import Map Field Settings
-* Using a generated CSV from “Map Field Settings” extraction, field settings can be modified and applied to the map.
-* Field Settings include:  Visibility, Read-Only, Highlighted and Field Alias
+####   Set Display Field Expressions
+- For Utility Network Layers, sets the primary display field to the following:
+  - Domain/Structure Layers:  Asset Type and Objectid
+  - Subnetline Layer:  Subnetwork Name
+  - Dirty Areas Layer:  Objectid
 
-#### B. Set Display Field Expressions
-* For Utility Network Layers, set the primary display field to an Arcade Expression
-* Domain/Structure Layers:  Asset Group, Asset Type and Objectid
-* Subnetline Layer:  Subnetwork Name
+####   Set Containment Display Filters
+* Creates a new Display Filter used by containment for Utility Network layers with an assocationstatus field
+* Name: DisplayContent          
+* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
 
-#### C. Set Containment Display Filters
-* For Utility Network Layers with an assocationstatus field, sets the Display Filter used by Containment
-* Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)            
+####   Import Map Field Settings
+* Using a CSV from a “Map Field Settings” extraction, field settings can be modified and applied to the active map.
+* Map Field Settings that can be changed:  Visibility, Read-Only, Highlighted and Field Alias
 
-## Directions
+_Directions_
+ 1.  Open any map
+ 2.  Generate a CSV by clicking the Map Field Settings button
+ 3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
+ 4.  Once done, make sure to save the file in CSV format and then close the file
+ 5.  In Pro, click on the 'Import Map Field Settings' button
+ 6.  Choose the CSV file to import
+ 7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
+ 8.  You MUST save the Pro project for settings to persist
 
+## Compilation Directions
 1.  Download the source code
-2.  In Visual studio compile the solution
-3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+2.  In Visual studio .NET compile the solution
+3.  **The source code was written against ArcGIS Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 4.  Start up ArcGIS Pro
-5.  Open a map that contains the Utility Network
-6.  Generate a report by clicking on the appropriate button  
-
-
-
+5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
 ## ArcGIS Pro SDK Resources
+* [ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
 
-[ArcGIS Pro SDK for Microsoft .NET](https://pro.arcgis.com/en/pro-app/latest/sdk/)
+* [ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
 
-[ProConcepts Migrating to ArcGIS Pro](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Migrating-to-ArcGIS-Pro)
+* [ProConcepts Utility Network](https://github.com/esri/arcgis-pro-sdk/wiki/ProConcepts-Utility-Network)
 
-[Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
-
+* [Pro SDK Community Samples](https://github.com/esri/arcgis-pro-sdk-community-samples)
 
 ## Issues
-
 Find a bug or want to request a new feature?  Please let us know by submitting an issue.
 
 ## Contributing
-
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing

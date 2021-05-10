@@ -1,0 +1,575 @@
+5/7/2021 9:09,Network Categories,,,,,
+,,,,,,
+Enterprise Geodatabase,file:///C:/Users/mike/AppData/Local/Temp/ArcGISProTemp56640/cb2ab6ec990ede1a3d3c83d65b4c1634.sde,,,,,
+Utility Network Name,meh.unadmin.ElectricUN,,,,,
+Utility Network Release,3,,,,,
+ArcGIS Pro Version,2.7.0.0,,,,,
+,,,,,,
+,,,,,,
+Network Categories,,,,,,
+,Attribute Substitution,,,,,
+,E:Commercial Load,,,,,
+,E:Customer Load,,,,,
+,E:Disconnect,,,,,
+,E:Distributed Generation,,,,,
+,E:Distribution Transformer,,,,,
+,E:Generation,,,,,
+,E:Ground,,,,,
+,E:High to Medium Voltage Cable,,,,,
+,E:High Voltage Cable,,,,,
+,E:Industrial Load,,,,,
+,E:Load,,,,,
+,E:Load Break,,,,,
+,E:Low Voltage Cable,,,,,
+,E:Medium to Low Voltage Cable,,,,,
+,E:Medium Voltage Cable,,,,,
+,E:Overhead,,,,,
+,E:Overhead Dead End,,,,,
+,E:Power Transformer,,,,,
+,E:Protective,,,,,
+,E:Reactive Power,,,,,
+,E:Reclosing,,,,,
+,E:Residential Load,,,,,
+,E:Sectionalizing,,,,,
+,E:Station,,,,,
+,E:Step Transformer,,,,,
+,E:Submersible,,,,,
+,E:Switching,,,,,
+,E:Underground,,,,,
+,E:Utility Load,,,,,
+,E:Voltage Regulation,,,,,
+,Subnetwork Controller,,,,,
+,Subnetwork Tap,,,,,
+,,,,,,
+Assignments,NetworkCategory,ClassName,AssetGroupCode,AssetGroup,AssetTypeCode,AssetType
+,Attribute Substitution,meh.unadmin.ElectricJunction,5,Low Voltage Connection Point,82,Overhead Tap
+,Attribute Substitution,meh.unadmin.ElectricJunction,8,Medium Voltage Connection Point,82,Overhead Tap
+,Attribute Substitution,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,101,Underground Terminator
+,Attribute Substitution,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,102,Overhead Wire Change
+,Attribute Substitution,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,103,Riser
+,Attribute Substitution,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,160,Busbar Terminator
+,Attribute Substitution,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,164,Underground Wire Change
+,E:Commercial Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,421,Single Phase Commercial
+,E:Commercial Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,423,Three Phase Commercial
+,E:Commercial Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,281,PM Commercial Customer
+,E:Customer Load,meh.unadmin.ElectricDevice,9,High Voltage Service,161,AC Metering
+,E:Customer Load,meh.unadmin.ElectricDevice,9,High Voltage Service,162,DC Metering
+,E:Customer Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,421,Single Phase Commercial
+,E:Customer Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,422,Single Phase Residential
+,E:Customer Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,423,Three Phase Commercial
+,E:Customer Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,424,Three Phase Residential
+,E:Customer Load,meh.unadmin.ElectricDevice,36,Medium Voltage Service,701,Primary Meter - Industrial Customer
+,E:Customer Load,meh.unadmin.ElectricDevice,36,Medium Voltage Service,702,Primary Meter - Utility Customer
+,E:Customer Load,meh.unadmin.ElectricAssembly,3,High Voltage Service Bank,41,Industrial Customer
+,E:Customer Load,meh.unadmin.ElectricAssembly,3,High Voltage Service Bank,42,Utility Customer
+,E:Customer Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,281,PM Commercial Customer
+,E:Customer Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,282,PM Industrial Customer
+,E:Customer Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,283,Primary Meter
+,E:Customer Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,284,Residential
+,E:Disconnect,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,726,Overhead Jumper
+,E:Disconnect,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,728,Overhead Single Phase Disconnect
+,E:Disconnect,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,732,Overhead Three Phase Disconnect
+,E:Disconnect,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,755,Underground Single Phase Disconnect
+,E:Disconnect,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,759,Underground Three Phase Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,181,Overhead AC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,183,Overhead DC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,185,Underground AC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,187,Underground DC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,189,Indoor AC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,191,Indoor DC Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,221,Overhead Disconnect Fuse Holder
+,E:Disconnect,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,223,Pad Mounted Disconnect
+,E:Disconnect,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,301,Overhead Disconnect Switch
+,E:Disconnect,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,305,Station Disconnect Switch
+,E:Disconnect,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,309,Pad Mounted Switch
+,E:Disconnect,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,311,Underground Switch
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,782,Mobile Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,783,Mobile Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,784,Network
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,785,Overhead Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,788,Overhead Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,792,Pad Mounted Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,793,Subsurface Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,794,Subsurface Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,795,Overhead Three Phase Open Delta
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,796,Overhead Three Phase Open Wye
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,797,Pad Mounted Three Phase Open Delta
+,E:Distribution Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,798,Pad Mounted Three Phase Open Wye
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,321,Overhead Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,322,Overhead Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,323,Overhead Three Phase Delta
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,324,Overhead Three Phase Open Delta
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,325,Overhead Three Phase Open Wye
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,326,Overhead Three Phase Wye
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,333,Pad Mounted Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,334,Pad Mounted Three Phase
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,335,Pad Mounted Three Phase Delta
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,336,Pad Mounted Three Phase Wye
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,341,Pad Mounted Three Phase Open Delta
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,342,Pad Mounted Three Phase Open Wye
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,343,Submersible Single Phase
+,E:Distribution Transformer,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,344,Submersible Three Phase
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,61,Battery
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,62,Biomass
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,63,Coal
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,64,Gas Turbine
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,65,Geothermal
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,66,Hydro
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,67,Nuclear
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,68,Photovoltaic Solar
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,69,Thermal Solar
+,E:Generation,meh.unadmin.ElectricDevice,4,High Voltage Generation,70,Wind
+,E:Generation,meh.unadmin.ElectricDevice,15,Low Voltage Generation,61,Battery
+,E:Generation,meh.unadmin.ElectricDevice,15,Low Voltage Generation,282,Car Charger
+,E:Generation,meh.unadmin.ElectricDevice,15,Low Voltage Generation,283,Generator
+,E:Generation,meh.unadmin.ElectricDevice,15,Low Voltage Generation,284,Residential Photovoltaic Solar
+,E:Generation,meh.unadmin.ElectricDevice,15,Low Voltage Generation,285,Wind Turbine
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,62,Biomass
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,64,Gas Turbine
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,65,Geothermal
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,66,Hydro
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,68,Photovoltaic Solar
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,69,Thermal Solar
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,70,Wind
+,E:Generation,meh.unadmin.ElectricDevice,30,Medium Voltage Generation,283,Generator
+,E:Ground,meh.unadmin.ElectricDevice,1,Ground,1,Bound
+,E:Ground,meh.unadmin.ElectricDevice,1,Ground,2,Rod
+,E:Ground,meh.unadmin.ElectricDevice,1,Ground,3,Voltage Grid
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,20,AC Overhead
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,21,AC Submersible
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,22,AC Underground
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,23,DC Overhead
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,24,DC Submersible
+,E:High Voltage Cable,meh.unadmin.ElectricLine,2,High Voltage Conductor,25,DC Underground
+,E:Industrial Load,meh.unadmin.ElectricDevice,36,Medium Voltage Service,701,Primary Meter - Industrial Customer
+,E:Industrial Load,meh.unadmin.ElectricAssembly,3,High Voltage Service Bank,41,Industrial Customer
+,E:Industrial Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,282,PM Industrial Customer
+,E:Industrial Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,283,Primary Meter
+,E:Load Break,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,E:Load Break,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,E:Load Break,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,E:Load Break,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,541,Load Break Feedthru
+,E:Load Break,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,542,Load Break Junction
+,E:Load Break,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,544,Single Phase Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,546,Three Phase Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,565,Overhead Cutout Fused Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,566,Overhead Cutout Sectionalizer
+,E:Load Break,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,567,Overhead Cutout Solid Blade
+,E:Load Break,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,571,Underground Fuse Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,729,Overhead Single Phase Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,730,Overhead Single Phase Recloser
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,733,Overhead Three Phase Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,744,Overhead Three Phase Recloser
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,747,Pad Mounted Single Phase Recloser
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,748,Pad Mounted Three Phase Recloser
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,753,T Blade
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,754,V Blade
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,758,Underground Single Phase Load Break
+,E:Load Break,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,760,Underground Three Phase Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,182,Overhead AC Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,184,Overhead DC Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,186,Underground AC Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,188,Underground DC Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,222,Overhead Load Break Fuse Holder
+,E:Load Break,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,224,Pad Mounted Load Break
+,E:Load Break,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,302,Overhead Load Break Switch
+,E:Load Break,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,303,Overhead Recloser
+,E:Load Break,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,306,Station Load Break Switch
+,E:Load Break,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,307,Pad Mounted Recloser
+,E:Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,100,Overhead
+,E:Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,101,Submersible
+,E:Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,102,Underground
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,100,Overhead
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,101,Submersible
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,6,Low Voltage Conductor,102,Underground
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,160,Overhead Single Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,161,Overhead Three Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,162,Overhead Two Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,163,Submersible Single Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,164,Submersible Three Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,165,Underground Single Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,166,Underground Three Phase
+,E:Medium to Low Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,167,Underground Two Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,160,Overhead Single Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,161,Overhead Three Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,162,Overhead Two Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,163,Submersible Single Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,164,Submersible Three Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,165,Underground Single Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,166,Underground Three Phase
+,E:Medium Voltage Cable,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,167,Underground Two Phase
+,E:Overhead,meh.unadmin.ElectricDevice,25,Medium Voltage Arrester,482,MV Line Arrester
+,E:Overhead,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,562,Fault Limiter
+,E:Overhead,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,564,Overhead Cutout Fused Disconnect
+,E:Overhead,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,565,Overhead Cutout Fused Load Break
+,E:Overhead,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,566,Overhead Cutout Sectionalizer
+,E:Overhead,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,567,Overhead Cutout Solid Blade
+,E:Overhead,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,664,Overhead Single Phase Capacitor
+,E:Overhead,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,665,Overhead Three Phase Capacitor
+,E:Overhead,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,666,Overhead Harmonic Filter
+,E:Overhead,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,667,Overhead Reactor
+,E:Overhead,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,681,Overhead Single Phase VR
+,E:Overhead,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,683,Overhead Three Phase VR
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,724,Overhead Bypass
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,725,Overhead Grounding Switch
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,726,Overhead Jumper
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,728,Overhead Single Phase Disconnect
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,729,Overhead Single Phase Load Break
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,730,Overhead Single Phase Recloser
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,731,Overhead Single Phase Sectionalizer
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,732,Overhead Three Phase Disconnect
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,733,Overhead Three Phase Load Break
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,744,Overhead Three Phase Recloser
+,E:Overhead,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,745,Overhead Three Phase Sectionalizer
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,785,Overhead Single Phase
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,786,Overhead Step Single Phase
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,787,Overhead Step Three Phase
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,788,Overhead Three Phase
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,795,Overhead Three Phase Open Delta
+,E:Overhead,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,796,Overhead Three Phase Open Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,12,Medium Voltage Arrester Bank,202,Line
+,E:Overhead,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,221,Overhead Disconnect Fuse Holder
+,E:Overhead,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,222,Overhead Load Break Fuse Holder
+,E:Overhead,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,242,Overhead Capacitor
+,E:Overhead,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,243,Overhead Harmonic Filter
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,261,Overhead Single Phase Regulator
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,262,Overhead Single Phase Regulator Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,264,Overhead Single Phase Regulator Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,265,Overhead Three Phase Regulator
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,266,Overhead Three Phase Regulator Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,267,Overhead Three Phase Regulator Open Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,268,Overhead Three Phase Regulator Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,301,Overhead Disconnect Switch
+,E:Overhead,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,302,Overhead Load Break Switch
+,E:Overhead,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,303,Overhead Recloser
+,E:Overhead,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,304,Overhead Sectionalizer
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,321,Overhead Single Phase
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,322,Overhead Three Phase
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,323,Overhead Three Phase Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,324,Overhead Three Phase Open Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,325,Overhead Three Phase Open Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,326,Overhead Three Phase Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,327,Overhead Step Single Phase
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,328,Overhead Step Three Phase
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,329,Overhead Step Three Phase Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,330,Overhead Step Three Phase Wye
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,331,Overhead Step Three Phase Open Delta
+,E:Overhead,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,332,Overhead Step Three Phase Open Wye
+,E:Overhead,meh.unadmin.ElectricLine,2,High Voltage Conductor,20,AC Overhead
+,E:Overhead,meh.unadmin.ElectricLine,2,High Voltage Conductor,23,DC Overhead
+,E:Overhead,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,160,Overhead Single Phase
+,E:Overhead,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,161,Overhead Three Phase
+,E:Overhead,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,162,Overhead Two Phase
+,E:Overhead Dead End,meh.unadmin.ElectricJunction,3,High Voltage Line End,41,AC
+,E:Overhead Dead End,meh.unadmin.ElectricJunction,3,High Voltage Line End,42,DC
+,E:Overhead Dead End,meh.unadmin.ElectricJunction,6,Low Voltage Line End,100,Overhead Line End
+,E:Overhead Dead End,meh.unadmin.ElectricJunction,9,Medium Voltage Line End,100,Overhead Line End
+,E:Power Transformer,meh.unadmin.ElectricDevice,11,High Voltage Transformer,201,AC Single Phase Power
+,E:Power Transformer,meh.unadmin.ElectricDevice,11,High Voltage Transformer,202,AC Three Phase Power
+,E:Power Transformer,meh.unadmin.ElectricDevice,11,High Voltage Transformer,203,DC Power
+,E:Power Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,786,Overhead Step Single Phase
+,E:Power Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,787,Overhead Step Three Phase
+,E:Protective,meh.unadmin.ElectricDevice,10,High Voltage Switch,181,AC Circuit Breaker
+,E:Protective,meh.unadmin.ElectricDevice,10,High Voltage Switch,184,DC Circuit Breaker
+,E:Protective,meh.unadmin.ElectricDevice,14,Low Voltage Fuse,261,AC Overhead
+,E:Protective,meh.unadmin.ElectricDevice,14,Low Voltage Fuse,262,AC Underground
+,E:Protective,meh.unadmin.ElectricDevice,14,Low Voltage Fuse,263,DC Overhead
+,E:Protective,meh.unadmin.ElectricDevice,14,Low Voltage Fuse,264,DC Underground
+,E:Protective,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,E:Protective,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,E:Protective,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,561,Bayonet
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,562,Fault Limiter
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,563,Indoor Fuse
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,568,Cabinet Fuse
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,569,Underground Fuse
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,570,Underground Fuse Disconnect
+,E:Protective,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,571,Underground Fuse Load Break
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,730,Overhead Single Phase Recloser
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,744,Overhead Three Phase Recloser
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,746,Pad Mounted Fault Interrupter
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,747,Pad Mounted Single Phase Recloser
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,748,Pad Mounted Three Phase Recloser
+,E:Protective,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,763,Two Phase Recloser
+,E:Protective,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,221,Overhead Disconnect Fuse Holder
+,E:Protective,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,222,Overhead Load Break Fuse Holder
+,E:Protective,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,223,Pad Mounted Disconnect
+,E:Protective,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,224,Pad Mounted Load Break
+,E:Reactive Power,meh.unadmin.ElectricDevice,7,High Voltage Power Factor Correcting,121,AC Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,7,High Voltage Power Factor Correcting,123,AC Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,7,High Voltage Power Factor Correcting,124,DC Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,7,High Voltage Power Factor Correcting,125,DC Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,402,LV Mobile Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,403,LV Overhead Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,405,LV Overhead Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,406,Pad Mounted Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,408,Pad Mounted Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,409,LV Station Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,21,Low Voltage Power Factor Correcting,411,LV Station Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,402,Mobile Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,407,Pad Mounted Harmonic Filter
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,408,Pad Mounted Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,409,Station Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,411,Station Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,661,Mobile Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,664,Overhead Single Phase Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,665,Overhead Three Phase Capacitor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,667,Overhead Reactor
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,668,Pad Mounted Capacitor Single Phase
+,E:Reactive Power,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,669,Pad Mounted Capacitor Three Phase
+,E:Reactive Power,meh.unadmin.ElectricAssembly,1,High Voltage AC Power Factor Correcting Bank,1,Series
+,E:Reactive Power,meh.unadmin.ElectricAssembly,1,High Voltage AC Power Factor Correcting Bank,2,Shunt
+,E:Reactive Power,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,241,Mobile Capacitor
+,E:Reactive Power,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,242,Overhead Capacitor
+,E:Reactive Power,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,243,Overhead Harmonic Filter
+,E:Reactive Power,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,244,Pad Mounted Capacitor
+,E:Reactive Power,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,245,Pad Mounted Harmonic Filter
+,E:Reclosing,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,E:Reclosing,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,E:Reclosing,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,E:Reclosing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,730,Overhead Single Phase Recloser
+,E:Reclosing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,744,Overhead Three Phase Recloser
+,E:Reclosing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,747,Pad Mounted Single Phase Recloser
+,E:Reclosing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,748,Pad Mounted Three Phase Recloser
+,E:Reclosing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,763,Two Phase Recloser
+,E:Reclosing,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,61,AC Circuit Breaker
+,E:Reclosing,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,303,Overhead Recloser
+,E:Reclosing,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,307,Pad Mounted Recloser
+,E:Residential Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,422,Single Phase Residential
+,E:Residential Load,meh.unadmin.ElectricDevice,22,Low Voltage Service,424,Three Phase Residential
+,E:Residential Load,meh.unadmin.ElectricAssembly,17,Medium Voltage Service Bank,284,Residential
+,E:Sectionalizing,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,566,Overhead Cutout Sectionalizer
+,E:Sectionalizing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,731,Overhead Single Phase Sectionalizer
+,E:Sectionalizing,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,745,Overhead Three Phase Sectionalizer
+,E:Station,meh.unadmin.ElectricDevice,25,Medium Voltage Arrester,483,MV Station Arrester
+,E:Station,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,501,Isolator Switch
+,E:Station,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,E:Station,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,E:Station,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,E:Station,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,409,Station Capacitor
+,E:Station,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,410,Station Harmonic Filter
+,E:Station,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,411,Station Reactor
+,E:Station,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,751,Station Single Phase
+,E:Station,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,752,Station Three Phase
+,E:Station,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,784,Network
+,E:Station,meh.unadmin.ElectricLine,1,High Voltage Busbar,1,AC Station Single Phase
+,E:Station,meh.unadmin.ElectricLine,1,High Voltage Busbar,2,AC Station Three Phase
+,E:Station,meh.unadmin.ElectricLine,1,High Voltage Busbar,3,DC Station
+,E:Station,meh.unadmin.ElectricLine,8,Medium Voltage Busbar,142,Station Single Phase
+,E:Station,meh.unadmin.ElectricLine,8,Medium Voltage Busbar,143,Station Three Phase
+,E:Step Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,786,Overhead Step Single Phase
+,E:Step Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,787,Overhead Step Three Phase
+,E:Step Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,790,Pad Mounted Step Single Phase
+,E:Step Transformer,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,791,Pad Mounted Step Three Phase
+,E:Submersible,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,343,Submersible Single Phase
+,E:Submersible,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,344,Submersible Three Phase
+,E:Submersible,meh.unadmin.ElectricLine,2,High Voltage Conductor,21,AC Submersible
+,E:Submersible,meh.unadmin.ElectricLine,2,High Voltage Conductor,24,DC Submersible
+,E:Submersible,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,163,Submersible Single Phase
+,E:Submersible,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,164,Submersible Three Phase
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,181,AC Circuit Breaker
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,182,AC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,183,AC Switchgear
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,184,DC Circuit Breaker
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,185,DC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,10,High Voltage Switch,186,DC Switchgear
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,441,Overhead AC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,442,Overhead AC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,443,Overhead DC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,444,Overhead DC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,445,Underground AC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,446,Underground AC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,447,Underground DC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,448,Underground DC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,449,Indoor AC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,450,Indoor AC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,451,Indoor DC Load Break
+,E:Switching,meh.unadmin.ElectricDevice,23,Low Voltage Switch,452,Indoor DC Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,501,Isolator Switch
+,E:Switching,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,E:Switching,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,E:Switching,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,541,Load Break Feedthru
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,542,Load Break Junction
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,543,Single Phase Dead Break
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,544,Single Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,545,Three Phase Dead Break
+,E:Switching,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,546,Three Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,564,Overhead Cutout Fused Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,565,Overhead Cutout Fused Load Break
+,E:Switching,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,566,Overhead Cutout Sectionalizer
+,E:Switching,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,567,Overhead Cutout Solid Blade
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,721,Cabinet Bypass
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,722,Cabinet Switch
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,723,Cabinet Switch - Grounded
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,724,Overhead Bypass
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,725,Overhead Grounding Switch
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,726,Overhead Jumper
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,728,Overhead Single Phase Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,729,Overhead Single Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,730,Overhead Single Phase Recloser
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,732,Overhead Three Phase Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,733,Overhead Three Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,744,Overhead Three Phase Recloser
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,747,Pad Mounted Single Phase Recloser
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,748,Pad Mounted Three Phase Recloser
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,749,Pad Mounted Single Phase Sectionalizer
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,750,Pad Mounted Three Phase Sectionalizer
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,751,Station Single Phase
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,752,Station Three Phase
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,753,T Blade
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,754,V Blade
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,755,Underground Single Phase Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,758,Underground Single Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,759,Underground Three Phase Disconnect
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,760,Underground Three Phase Load Break
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,761,Underground Transfer Switch
+,E:Switching,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,763,Two Phase Recloser
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,61,AC Circuit Breaker
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,62,AC Line Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,63,AC Station Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,64,DC Circuit Breaker
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,65,DC Line Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,4,High Voltage Switch Bank,66,DC Station Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,181,Overhead AC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,182,Overhead AC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,183,Overhead DC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,184,Overhead DC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,185,Underground AC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,186,Underground AC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,187,Underground DC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,188,Underground DC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,189,Indoor AC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,190,Indoor AC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,191,Indoor DC Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,11,Low Voltage Switch Bank,192,Indoor DC Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,221,Overhead Disconnect Fuse Holder
+,E:Switching,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,222,Overhead Load Break Fuse Holder
+,E:Switching,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,223,Pad Mounted Disconnect
+,E:Switching,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,224,Pad Mounted Load Break
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,301,Overhead Disconnect Switch
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,302,Overhead Load Break Switch
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,303,Overhead Recloser
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,304,Overhead Sectionalizer
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,305,Station Disconnect Switch
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,306,Station Load Break Switch
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,307,Pad Mounted Recloser
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,308,Pad Mounted Sectionalizer
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,309,Pad Mounted Switch
+,E:Switching,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,311,Underground Switch
+,E:Underground,meh.unadmin.ElectricDevice,25,Medium Voltage Arrester,481,MV Elbow Arrester
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,541,Load Break Feedthru
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,542,Load Break Junction
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,543,Single Phase Dead Break
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,544,Single Phase Load Break
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,545,Three Phase Dead Break
+,E:Underground,meh.unadmin.ElectricDevice,28,Medium Voltage Elbow,546,Three Phase Load Break
+,E:Underground,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,561,Bayonet
+,E:Underground,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,568,Cabinet Fuse
+,E:Underground,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,569,Underground Fuse
+,E:Underground,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,570,Underground Fuse Disconnect
+,E:Underground,meh.unadmin.ElectricDevice,29,Medium Voltage Fuse,571,Underground Fuse Load Break
+,E:Underground,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,407,Pad Mounted Harmonic Filter
+,E:Underground,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,408,Pad Mounted Reactor
+,E:Underground,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,668,Pad Mounted Capacitor Single Phase
+,E:Underground,meh.unadmin.ElectricDevice,34,Medium Voltage Power Factor Correcting,669,Pad Mounted Capacitor Three Phase
+,E:Underground,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,685,Pad Mounted Single Phase VR
+,E:Underground,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,687,Pad Mounted Three Phase VR
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,721,Cabinet Bypass
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,722,Cabinet Switch
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,723,Cabinet Switch - Grounded
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,746,Pad Mounted Fault Interrupter
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,747,Pad Mounted Single Phase Recloser
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,748,Pad Mounted Three Phase Recloser
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,749,Pad Mounted Single Phase Sectionalizer
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,750,Pad Mounted Three Phase Sectionalizer
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,753,T Blade
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,754,V Blade
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,755,Underground Single Phase Disconnect
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,758,Underground Single Phase Load Break
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,759,Underground Three Phase Disconnect
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,760,Underground Three Phase Load Break
+,E:Underground,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,761,Underground Transfer Switch
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,789,Pad Mounted Single Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,790,Pad Mounted Step Single Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,791,Pad Mounted Step Three Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,792,Pad Mounted Three Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,793,Subsurface Single Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,794,Subsurface Three Phase
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,797,Pad Mounted Three Phase Open Delta
+,E:Underground,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,798,Pad Mounted Three Phase Open Wye
+,E:Underground,meh.unadmin.ElectricAssembly,12,Medium Voltage Arrester Bank,201,Indoor
+,E:Underground,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,223,Pad Mounted Disconnect
+,E:Underground,meh.unadmin.ElectricAssembly,14,Medium Voltage Fuse Bank,224,Pad Mounted Load Break
+,E:Underground,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,244,Pad Mounted Capacitor
+,E:Underground,meh.unadmin.ElectricAssembly,15,Medium Voltage Power Factor Correcting Bank,245,Pad Mounted Harmonic Filter
+,E:Underground,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,269,Pad Mounted Single Phase Regulator
+,E:Underground,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,270,Pad Mounted Three Phase Regulator
+,E:Underground,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,271,Pad Mounted Three Phase Regulator Delta
+,E:Underground,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,272,Pad Mounted Three Phase Regulator Wye
+,E:Underground,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,307,Pad Mounted Recloser
+,E:Underground,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,308,Pad Mounted Sectionalizer
+,E:Underground,meh.unadmin.ElectricAssembly,18,Medium Voltage Switch Bank,309,Pad Mounted Switch
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,333,Pad Mounted Single Phase
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,334,Pad Mounted Three Phase
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,335,Pad Mounted Three Phase Delta
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,336,Pad Mounted Three Phase Wye
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,337,Pad Mounted Step Single Phase
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,338,Pad Mounted Step Three Phase
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,339,Pad Mounted Step Three Phase Delta
+,E:Underground,meh.unadmin.ElectricAssembly,19,Medium Voltage Transformer Bank,340,Pad Mounted Step Three Phase Wye
+,E:Underground,meh.unadmin.ElectricLine,2,High Voltage Conductor,22,AC Underground
+,E:Underground,meh.unadmin.ElectricLine,2,High Voltage Conductor,25,DC Underground
+,E:Underground,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,165,Underground Single Phase
+,E:Underground,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,166,Underground Three Phase
+,E:Underground,meh.unadmin.ElectricLine,9,Medium Voltage Conductor,167,Underground Two Phase
+,E:Utility Load,meh.unadmin.ElectricDevice,36,Medium Voltage Service,702,Primary Meter - Utility Customer
+,E:Utility Load,meh.unadmin.ElectricAssembly,3,High Voltage Service Bank,42,Utility Customer
+,E:Voltage Regulation,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,681,Overhead Single Phase VR
+,E:Voltage Regulation,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,683,Overhead Three Phase VR
+,E:Voltage Regulation,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,685,Pad Mounted Single Phase VR
+,E:Voltage Regulation,meh.unadmin.ElectricDevice,35,Medium Voltage Regulator,687,Pad Mounted Three Phase VR
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,2,High Voltage DC Power Factor Correcting Bank,1,Series
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,261,Overhead Single Phase Regulator
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,262,Overhead Single Phase Regulator Delta
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,264,Overhead Single Phase Regulator Wye
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,265,Overhead Three Phase Regulator
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,266,Overhead Three Phase Regulator Delta
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,267,Overhead Three Phase Regulator Open Delta
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,268,Overhead Three Phase Regulator Wye
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,269,Pad Mounted Single Phase Regulator
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,270,Pad Mounted Three Phase Regulator
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,271,Pad Mounted Three Phase Regulator Delta
+,E:Voltage Regulation,meh.unadmin.ElectricAssembly,16,Medium Voltage Regulator Bank,272,Pad Mounted Three Phase Regulator Wye
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,61,Battery
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,62,Biomass
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,63,Coal
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,64,Gas Turbine
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,65,Geothermal
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,66,Hydro
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,67,Nuclear
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,68,Photovoltaic Solar
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,69,Thermal Solar
+,Subnetwork Controller,meh.unadmin.ElectricDevice,4,High Voltage Generation,70,Wind
+,Subnetwork Controller,meh.unadmin.ElectricDevice,11,High Voltage Transformer,202,AC Three Phase Power
+,Subnetwork Controller,meh.unadmin.ElectricDevice,11,High Voltage Transformer,203,DC Power
+,Subnetwork Controller,meh.unadmin.ElectricDevice,19,Low Voltage Network Protection,361,Network Protector
+,Subnetwork Controller,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,502,Single Phase Circuit Breaker
+,Subnetwork Controller,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,503,Three Phase Circuit Breaker
+,Subnetwork Controller,meh.unadmin.ElectricDevice,26,Medium Voltage Circuit Breaker,504,Two Phase Circuit Breaker
+,Subnetwork Controller,meh.unadmin.ElectricDevice,37,Medium Voltage Switch,752,Station Three Phase
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,784,Network
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,787,Overhead Step Three Phase
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,788,Overhead Three Phase
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,791,Pad Mounted Step Three Phase
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,792,Pad Mounted Three Phase
+,Subnetwork Controller,meh.unadmin.ElectricDevice,38,Medium Voltage Transformer,794,Subsurface Three Phase
+,Subnetwork Tap,meh.unadmin.ElectricDevice,31,Medium Voltage Line Monitor and Relay,601,MV Fault Indicator
+,Subnetwork Tap,meh.unadmin.ElectricJunction,2,High Voltage Connection Point,21,AC Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,2,High Voltage Connection Point,23,DC Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,2,High Voltage Connection Point,24,AC Busbar Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,2,High Voltage Connection Point,25,DC Busbar Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,5,Low Voltage Connection Point,82,Overhead Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,5,Low Voltage Connection Point,80,Busbar Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,8,Medium Voltage Connection Point,80,Busbar Tap
+,Subnetwork Tap,meh.unadmin.ElectricJunction,8,Medium Voltage Connection Point,82,Overhead Tap
