@@ -1,7 +1,7 @@
 # utility-network-properties-extractor
-This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
+This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 3 efficiency tools to help set up your map.  
 
-The Add-in works against layers from featureservices, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
+The Add-in works against layers from feature services, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
 
 The Add-in is domain network agnostic.  It doesn’t matter if the industry is Electric, Gas, Communications, District Heating & Cooling, Water, Sewer, or others.
 
@@ -58,7 +58,7 @@ _Directions_
 ## Compilation Directions
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
-3.  **The source code was written against Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+3.  **The source code was written against ArcGIS Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
