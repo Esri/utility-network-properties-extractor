@@ -132,7 +132,7 @@ namespace UtilityNetworkPropertiesExtractor
                 CSVLayoutDomainNetworks networkRec = new CSVLayoutDomainNetworks()
                 {
                     DomainNetworkID = domainNetwork.ID.ToString(),
-                    DomainName = domainNetwork.Name
+                    DomainName = domainNetwork.Name,
                 };
 
                 myDomainNetworksCSVList.Add(networkRec);
@@ -152,6 +152,7 @@ namespace UtilityNetworkPropertiesExtractor
                         TierRank = tier.Rank.ToString(),
                         Tier = tier.Name,
                         TierGroup = tierGroupName,
+                        SubnetworkFieldName = tier.SubnetworkFieldName,
                         TopologyType = tier.TopologyType.ToString(),
                         SupportDisjointSubnetworks = tier.IsDisjointSubnetworkSupported.ToString(),
                         UpdateSubnetworkContainers = updPolicyForContainers,
@@ -445,6 +446,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string TierRank { get; set; }
             public string Tier { get; set; }
             public string TierGroup { get; set; }
+            public string SubnetworkFieldName { get; set; }
             public string TopologyType { get; set; }
             public string SupportDisjointSubnetworks { get; set; }
             public string UpdateSubnetworkContainers { get; set; }
