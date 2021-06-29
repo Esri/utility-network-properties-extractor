@@ -136,7 +136,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsSelectable = featureLayer.IsSelectable.ToString(),
                                     IsEditable = featureLayer.IsEditable.ToString(),
                                     RefreshRate = cimFeatureLayerDef.RefreshRate.ToString(),
-                                    DefinitionQuery = featureLayer.DefinitionFilter.DefinitionExpression,
+                                    DefinitionQuery = Common.EncloseStringInDoubleQuotes(featureLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(layer.MinScale),
                                     MaxScale = GetScaleValue(layer.MaxScale),
                                     PrimarySymbology = primarySymbology,
@@ -215,7 +215,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     LayerType = "Subtype Group Layer",
                                     GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                                     IsVisible = layer.IsVisible.ToString(),
-                                    DefinitionQuery = subtypeGroupLayer.DefinitionFilter.DefinitionExpression,
+                                    DefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(layer.MinScale),
                                     MaxScale = GetScaleValue(layer.MaxScale)
                                 };
@@ -261,7 +261,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsSelectable = annotationLayer.IsSelectable.ToString(),
                                     IsEditable = annotationLayer.IsEditable.ToString(),
                                     RefreshRate = cimAnnotationLayer.RefreshRate.ToString(),
-                                    DefinitionQuery = annotationLayer.DefinitionFilter.DefinitionExpression,
+                                    DefinitionQuery = Common.EncloseStringInDoubleQuotes(annotationLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(annotationLayer.MinScale),
                                     MaxScale = GetScaleValue(annotationLayer.MaxScale),
                                 };
@@ -310,7 +310,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsSelectable = dimensionLayer.IsSelectable.ToString(),
                                     IsEditable = dimensionLayer.IsEditable.ToString(),
                                     RefreshRate = cimDimensionLayer.RefreshRate.ToString(),
-                                    DefinitionQuery = dimensionLayer.DefinitionFilter.DefinitionExpression,
+                                    DefinitionQuery = Common.EncloseStringInDoubleQuotes(dimensionLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(dimensionLayer.MinScale),
                                     MaxScale = GetScaleValue(dimensionLayer.MaxScale)
                                 };
@@ -469,7 +469,7 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerType = "Table",
                             LayerSource = standaloneTable.GetTable().GetPath().ToString(),
                             ClassName = standaloneTable.GetTable().GetName(),
-                            DefinitionQuery = standaloneTable.DefinitionFilter.DefinitionExpression,
+                            DefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
                             DisplayField = Common.EncloseStringInDoubleQuotes(displayField),
                         };
                         CSVLayoutList.Add(rec);
