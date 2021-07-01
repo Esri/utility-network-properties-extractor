@@ -77,6 +77,12 @@ namespace UtilityNetworkPropertiesExtractor
                             return;
                         }
 
+                        else if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
+                        {
+                            sw.WriteLine("Trace Configuration can only be determined against a database connection");
+                            return;
+                        }
+
                         //Get all properties defined in the class.  This will be used to generate the CSV file
                         CSVLayout emptyRec = new CSVLayout();
                         PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
