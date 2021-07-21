@@ -122,6 +122,10 @@ namespace UtilityNetworkPropertiesExtractor
                                 //symbology
                                 DetermineSymbology(cimFeatureLayerDef, out string primarySymbology, out string field1, out string field2, out string field3);
 
+                                string subtypeValue = string.Empty;
+                                if (featureLayer.IsSubtypeLayer)
+                                    subtypeValue = featureLayer.SubtypeValue.ToString();
+
                                 CSVLayout rec = new CSVLayout()
                                 {
                                     LayerPos = layerPos.ToString(),
@@ -131,14 +135,17 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsVisible = layer.IsVisible.ToString(),
                                     LayerSource = featureLayer.GetTable().GetPath().ToString(),
                                     ClassName = featureLayer.GetTable().GetName(),
-                                    IsSubtypeGroupLayer = featureLayer.IsSubtypeLayer.ToString(),
+                                    IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString(),
+                                    SubtypeValue = subtypeValue,
                                     GeometryType = featureLayer.ShapeType.ToString(),
                                     IsSelectable = featureLayer.IsSelectable.ToString(),
+                                    IsSnappable = featureLayer.IsSnappable.ToString(),
                                     IsEditable = featureLayer.IsEditable.ToString(),
                                     RefreshRate = cimFeatureLayerDef.RefreshRate.ToString(),
                                     DefinitionQuery = Common.EncloseStringInDoubleQuotes(featureLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(layer.MinScale),
                                     MaxScale = GetScaleValue(layer.MaxScale),
+                                    ShowMapTips = cimFeatureLayerDef.ShowMapTips.ToString(),
                                     PrimarySymbology = primarySymbology,
                                     SymbologyField1 = field1,
                                     SymbologyField2 = field2,
@@ -256,14 +263,14 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsVisible = layer.IsVisible.ToString(),
                                     LayerSource = annotationLayer.GetTable().GetPath().ToString(),
                                     ClassName = annotationLayer.GetTable().GetName(),
-                                    IsSubtypeGroupLayer = "FALSE",
+                                    IsSubtypeLayer = "FALSE",
                                     GeometryType = annotationLayer.ShapeType.ToString(),
                                     IsSelectable = annotationLayer.IsSelectable.ToString(),
                                     IsEditable = annotationLayer.IsEditable.ToString(),
                                     RefreshRate = cimAnnotationLayer.RefreshRate.ToString(),
                                     DefinitionQuery = Common.EncloseStringInDoubleQuotes(annotationLayer.DefinitionFilter.DefinitionExpression),
                                     MinScale = GetScaleValue(annotationLayer.MinScale),
-                                    MaxScale = GetScaleValue(annotationLayer.MaxScale),
+                                    MaxScale = GetScaleValue(annotationLayer.MaxScale)
                                 };
                                 CSVLayoutList.Add(rec);
                                 increaseLayerPos = true;
@@ -305,7 +312,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     IsVisible = layer.IsVisible.ToString(),
                                     LayerSource = dimensionLayer.GetTable().GetPath().ToString(),
                                     ClassName = dimensionLayer.GetTable().GetName(),
-                                    IsSubtypeGroupLayer = "FALSE",
+                                    IsSubtypeLayer = "FALSE",
                                     GeometryType = dimensionLayer.ShapeType.ToString(),
                                     IsSelectable = dimensionLayer.IsSelectable.ToString(),
                                     IsEditable = dimensionLayer.IsEditable.ToString(),
@@ -635,8 +642,10 @@ namespace UtilityNetworkPropertiesExtractor
             public string IsVisible { get; set; }
             public string LayerSource { get; set; }
             public string ClassName { get; set; }
-            public string IsSubtypeGroupLayer { get; set; }
+            public string IsSubtypeLayer { get; set; }
+            public string SubtypeValue { get; set; }
             public string GeometryType { get; set; }
+            public string IsSnappable { get; set; }
             public string IsSelectable { get; set; }
             public string IsEditable { get; set; }
             public string RefreshRate { get; set; }
@@ -646,6 +655,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string DisplayFilterExpresssion { get; set; }
             public string MinScale { get; set; }
             public string MaxScale { get; set; }
+            public string ShowMapTips { get; set; }
             public string PrimarySymbology { get; set; }
             public string SymbologyField1 { get; set; }
             public string SymbologyField2 { get; set; }

@@ -70,46 +70,52 @@ namespace UtilityNetworkPropertiesExtractor
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
+                    string output = string.Empty;
+
                     //Header information
                     UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Domain Networks");
 
-                    IReadOnlyList<DomainNetwork> domainNetworksList = utilityNetworkDefinition.GetDomainNetworks();
-
-                    //Domain Networks
-                    List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayoutDomainNetworks emptyRec = new CSVLayoutDomainNetworks();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
+                    //Network Topology section
+                    CSVLayoutNetworkTopology emptyNetworkRec = new CSVLayoutNetworkTopology();
+                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyNetworkRec);
                     string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
-                    DomainNetworks(reportHeaderInfo, domainNetworksList, ref csvLayoutDomainNetworksList);
-                    foreach (CSVLayoutDomainNetworks row in csvLayoutDomainNetworksList)
+                    List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = new List<CSVLayoutNetworkTopology>();
+                    NetworkTopologyInfo(utilityNetwork, ref csvLayoutNetworkTopoList);
+                    foreach (CSVLayoutNetworkTopology row in csvLayoutNetworkTopoList)
                     {
-                        string output = Common.ExtractClassValuesToString(row, properties);
+                        output = Common.ExtractClassValuesToString(row, properties);
                         sw.WriteLine(output);
                     }
 
-                    //Tier Info
-                    List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayoutTierInfo emptyTierRec = new CSVLayoutTierInfo();
-                    properties = Common.GetPropertiesOfClass(emptyTierRec);
-
-                    //Write column headers based on properties in the class
+                    //Domain Networks section
+                    CSVLayoutDomainNetworks emptyRec = new CSVLayoutDomainNetworks();
+                    properties = Common.GetPropertiesOfClass(emptyRec);
                     columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
-                    TierInfo(reportHeaderInfo, domainNetworksList, ref csvLayoutTierInfo);
+                    List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
+                    IReadOnlyList<DomainNetwork> domainNetworksList = utilityNetworkDefinition.GetDomainNetworks();
+                    DomainNetworks(reportHeaderInfo, domainNetworksList, ref csvLayoutDomainNetworksList);
+                    foreach (CSVLayoutDomainNetworks row in csvLayoutDomainNetworksList)
+                    {
+                        output = Common.ExtractClassValuesToString(row, properties);
+                        sw.WriteLine(output);
+                    }
 
+                    //Tier Section
+                    CSVLayoutTierInfo emptyTierRec = new CSVLayoutTierInfo();
+                    properties = Common.GetPropertiesOfClass(emptyTierRec);
+                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                    sw.WriteLine(columnHeader);
+
+                    List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
+                    TierInfo(reportHeaderInfo, domainNetworksList, ref csvLayoutTierInfo);
                     foreach (CSVLayoutTierInfo row in csvLayoutTierInfo)
                     {
-                        string output = Common.ExtractClassValuesToString(row, properties);
+                        output = Common.ExtractClassValuesToString(row, properties);
                         sw.WriteLine(output);
                     }
 
@@ -119,6 +125,42 @@ namespace UtilityNetworkPropertiesExtractor
                     _fileGenerated = true;
                 }
             });
+        }
+
+        private static void NetworkTopologyInfo(UtilityNetwork utilityNetwork, ref List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList)
+        {
+            //Build List of Network Topology Properties
+            UtilityNetworkState utilityNetworkState = utilityNetwork.GetState();
+
+            CSVLayoutNetworkTopology rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Is Enabled", 
+                Value = utilityNetworkState.IsNetworkTopologyEnabled.ToString()
+            };
+            csvLayoutNetworkTopoList.Add(rec);
+
+            rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Dirty Area Count", 
+                Value = GetErrorCount(utilityNetwork, SystemTableType.DirtyAreas).ToString() 
+            };
+            csvLayoutNetworkTopoList.Add(rec);
+
+            rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Last Full Validate Time", 
+                Value = utilityNetworkState.LastConsistentMoment.ToString()
+            };
+            csvLayoutNetworkTopoList.Add(rec);
+
+            rec = new CSVLayoutNetworkTopology();
+            csvLayoutNetworkTopoList.Add(rec);
+        }
+
+        private static int GetErrorCount(UtilityNetwork utilityNetwork, SystemTableType systemTableType)
+        {
+            Table table = utilityNetwork.GetSystemTable(systemTableType);
+            return table.GetCount();
         }
 
         private static void DomainNetworks(Common.ReportHeaderInfo reportHeaderInfo, IReadOnlyList<DomainNetwork> domainNetworksList, ref List<CSVLayoutDomainNetworks> myDomainNetworksCSVList)
@@ -133,6 +175,8 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     DomainNetworkID = domainNetwork.ID.ToString(),
                     DomainName = domainNetwork.Name,
+                    TierDefinition = domainNetwork.TierDefinition.ToString(),
+                    SubnetworkControllerType = domainNetwork.SubnetworkControllerType.ToString()
                 };
 
                 myDomainNetworksCSVList.Add(networkRec);
@@ -150,7 +194,7 @@ namespace UtilityNetworkPropertiesExtractor
                     networkRec = new CSVLayoutDomainNetworks()
                     {
                         TierRank = tier.Rank.ToString(),
-                        Tier = tier.Name,
+                        TierName = tier.Name,
                         TierGroup = tierGroupName,
                         SubnetworkFieldName = tier.SubnetworkFieldName,
                         TopologyType = tier.TopologyType.ToString(),
@@ -164,7 +208,6 @@ namespace UtilityNetworkPropertiesExtractor
             }
 
             CSVLayoutDomainNetworks rec = new CSVLayoutDomainNetworks();
-            myDomainNetworksCSVList.Add(rec);
             myDomainNetworksCSVList.Add(rec);
         }
 
@@ -439,12 +482,21 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
+        private class CSVLayoutNetworkTopology
+        {
+            public string NetworkTopology { get; set; }
+            public string Property { get; set; }
+            public string Value { get; set; }
+        }
+
         private class CSVLayoutDomainNetworks
         {
             public string DomainNetworkID { get; set; }
             public string DomainName { get; set; }
+            public string TierDefinition { get; set; }
+            public string SubnetworkControllerType { get; set; }
             public string TierRank { get; set; }
-            public string Tier { get; set; }
+            public string TierName { get; set; }
             public string TierGroup { get; set; }
             public string SubnetworkFieldName { get; set; }
             public string TopologyType { get; set; }
