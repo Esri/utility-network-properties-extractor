@@ -77,14 +77,13 @@ namespace UtilityNetworkPropertiesExtractor
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Domain Networks");
 
                     //Network Topology section
-                    CSVLayoutNetworkTopology emptyNetworkTopoRec = new CSVLayoutNetworkTopology();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyNetworkTopoRec);
-
-                    //Write column headers based on properties in the class
+                    CSVLayoutNetworkTopology emptyNetworkRec = new CSVLayoutNetworkTopology();
+                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyNetworkRec);
                     string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
-                    List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = NetworkTopologyInfo(utilityNetwork);
+                    List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = new List<CSVLayoutNetworkTopology>();
+                    NetworkTopologyInfo(utilityNetwork, ref csvLayoutNetworkTopoList);
                     foreach (CSVLayoutNetworkTopology row in csvLayoutNetworkTopoList)
                     {
                         output = Common.ExtractClassValuesToString(row, properties);
@@ -92,16 +91,12 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Domain Networks section
-                    List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
                     CSVLayoutDomainNetworks emptyRec = new CSVLayoutDomainNetworks();
                     properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
                     columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
+                    List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
                     IReadOnlyList<DomainNetwork> domainNetworksList = utilityNetworkDefinition.GetDomainNetworks();
                     DomainNetworks(reportHeaderInfo, domainNetworksList, ref csvLayoutDomainNetworksList);
                     foreach (CSVLayoutDomainNetworks row in csvLayoutDomainNetworksList)
@@ -111,16 +106,12 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Tier Section
-                    List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
                     CSVLayoutTierInfo emptyTierRec = new CSVLayoutTierInfo();
                     properties = Common.GetPropertiesOfClass(emptyTierRec);
-
-                    //Write column headers based on properties in the class
                     columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
+                    List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
                     TierInfo(reportHeaderInfo, domainNetworksList, ref csvLayoutTierInfo);
                     foreach (CSVLayoutTierInfo row in csvLayoutTierInfo)
                     {
@@ -136,25 +127,34 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-        private static List<CSVLayoutNetworkTopology> NetworkTopologyInfo(UtilityNetwork utilityNetwork)
+        private static void NetworkTopologyInfo(UtilityNetwork utilityNetwork, ref List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList)
         {
-            List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = new List<CSVLayoutNetworkTopology>();
+            //Build List of Network Topology Properties
             UtilityNetworkState utilityNetworkState = utilityNetwork.GetState();
 
-            CSVLayoutNetworkTopology rec = new CSVLayoutNetworkTopology() { Property = "Is Enabled", Value = utilityNetworkState.IsNetworkTopologyEnabled.ToString()};
+            CSVLayoutNetworkTopology rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Is Enabled", 
+                Value = utilityNetworkState.IsNetworkTopologyEnabled.ToString()
+            };
             csvLayoutNetworkTopoList.Add(rec);
 
-            rec = new CSVLayoutNetworkTopology() { Property = "Dirty Area Count", Value = GetErrorCount(utilityNetwork, SystemTableType.DirtyAreas).ToString() };
+            rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Dirty Area Count", 
+                Value = GetErrorCount(utilityNetwork, SystemTableType.DirtyAreas).ToString() 
+            };
             csvLayoutNetworkTopoList.Add(rec);
 
-            rec = new CSVLayoutNetworkTopology() { Property = "Last Full Validate Time", Value = utilityNetworkState.LastConsistentMoment.ToString()};
+            rec = new CSVLayoutNetworkTopology() 
+            { 
+                Property = "Last Full Validate Time", 
+                Value = utilityNetworkState.LastConsistentMoment.ToString()
+            };
             csvLayoutNetworkTopoList.Add(rec);
 
-            //Added empty record for XLS spacing purposes
             rec = new CSVLayoutNetworkTopology();
             csvLayoutNetworkTopoList.Add(rec);
-
-            return csvLayoutNetworkTopoList;
         }
 
         private static int GetErrorCount(UtilityNetwork utilityNetwork, SystemTableType systemTableType)
