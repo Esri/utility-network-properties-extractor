@@ -62,6 +62,7 @@ limitations under the License.
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
           <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
       </groups>
@@ -152,6 +153,9 @@ limitations under the License.
         </button>
         <button id="UtilityNetworkPropertiesExtractor_LayerScalesButton" caption="Layer Scales" className="LayerScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" keytip="ZD">
           <tooltip heading="Tooltip Heading">Extract Layer Scale Info<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Name" className="MachineNameButton" loadOnClick="true" keytip="ZC">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
