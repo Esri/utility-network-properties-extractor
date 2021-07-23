@@ -141,6 +141,7 @@
     <Compile Include="FieldsExtractButton.cs" />
     <Compile Include="GdbObjectNamesButton.cs" />
     <Compile Include="LayerInfoButton.cs" />
+    <Compile Include="LayerScalesButton.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="NetworkAttributesButton.cs" />
     <Compile Include="NetworkCategoriesButton.cs" />

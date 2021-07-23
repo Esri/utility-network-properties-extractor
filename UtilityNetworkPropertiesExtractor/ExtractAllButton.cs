@@ -41,6 +41,7 @@ namespace UtilityNetworkPropertiesExtractor
                 await DomainOrphansButton.ExtractOrphanDomainsAsync();
                 await FieldsExtractButton.ExtractFieldsAsync();
                 await LayerInfoButton.ExtractLayerInfoAsync();
+                await LayerScalesButton.ExtractLayerScalesAsync();
                 await VersionInfoButton.ExtractVersionInfoAsync(false);
                 await AttributeRulesButton.ExtractAttributeRulesAsync();
                 await ContingentValuesButton.ExtractContingentValuesAsync();
