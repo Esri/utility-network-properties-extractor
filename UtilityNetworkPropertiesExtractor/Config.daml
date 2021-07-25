@@ -154,8 +154,8 @@ limitations under the License.
         <button id="UtilityNetworkPropertiesExtractor_LayerScalesButton" caption="Layer Scales" className="LayerScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" keytip="ZD">
           <tooltip heading="Tooltip Heading">Extract Layer Scale Info<disabledText /></tooltip>
         </button>
-        <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Name" className="MachineNameButton" loadOnClick="true" keytip="ZC">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Info" className="MachineInfoButton" loadOnClick="true" keytip="ZC">
+          <tooltip heading="Tooltip Heading">Get Machine Info (ArcGIS Pro version, O/S, CPU, Memory, etc)<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
