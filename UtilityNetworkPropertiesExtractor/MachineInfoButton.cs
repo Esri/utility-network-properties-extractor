@@ -34,8 +34,9 @@ namespace UtilityNetworkPropertiesExtractor
             string operatingSystem = "Operating System: " + Environment.OSVersion.VersionString;
             string cpuSpeed = "CPU base speed: " + CpuSpeed() + " ghz";
             string coreCount = "Number Of Cores: " + NumberOfCores();
-            string processorCount = "Logical Processor Count: " + Environment.ProcessorCount;            
+            string processorCount = "Logical Processor Count: " + Environment.ProcessorCount;
             string memory = "Total Physical Memory: " + TotalPhysicalMemory();
+            string videoControllerInfo = "\nVideo Controllers:\n" + VideoControllers();
 
             string mesg = machineName + "\n" +
                           proVersion + "\n" +
@@ -43,7 +44,8 @@ namespace UtilityNetworkPropertiesExtractor
                           cpuSpeed + "\n" +
                           coreCount + "\n" +
                           processorCount + "\n" +
-                          memory;
+                          memory + "\n" +
+                          videoControllerInfo;
 
             Clipboard.SetText(mesg);
             MessageBox.Show(mesg + "\n\nThis information has been copied to the clipboard!", machineName);
@@ -89,7 +91,36 @@ namespace UtilityNetworkPropertiesExtractor
                 }
             }
 
-           return Math.Round(((double)Maxsp / 1000), 2).ToString();
+            return Math.Round(((double)Maxsp / 1000), 2).ToString();
         }
+
+        private static string VideoControllers()
+        {
+            string retVal = string.Empty;
+            ManagementObjectSearcher myVideoObject = new ManagementObjectSearcher("select * from Win32_VideoController");
+
+            foreach (ManagementObject obj in myVideoObject.Get())
+            {
+                retVal += "\n  DeviceID  -  " + obj["DeviceID"] + "\n";
+                retVal += "    Name  -  " + obj["Name"] + "\n";
+                
+                
+                //Console.WriteLine("Name  -  " + obj["Name"];
+                //Console.WriteLine("Status  -  " + obj["Status"];
+                //Console.WriteLine("Caption  -  " + obj["Caption"];
+                //Console.WriteLine("DeviceID  -  " + obj["DeviceID"];
+                //Console.WriteLine("AdapterRAM  -  " + obj["AdapterRAM"];
+                //Console.WriteLine("AdapterDACType  -  " + obj["AdapterDACType"];
+                //Console.WriteLine("Monochrome  -  " + obj["Monochrome"];
+                //Console.WriteLine("InstalledDisplayDrivers  -  " + obj["InstalledDisplayDrivers"];
+                //Console.WriteLine("DriverVersion  -  " + obj["DriverVersion"];
+                //Console.WriteLine("VideoProcessor  -  " + obj["VideoProcessor"];
+                //Console.WriteLine("VideoArchitecture  -  " + obj["VideoArchitecture"];
+                //Console.WriteLine("VideoMemoryType  -  " + obj["VideoMemoryType"];
+            }
+
+            return retVal;
+        }
+
     }
 }
