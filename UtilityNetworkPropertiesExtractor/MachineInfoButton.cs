@@ -32,7 +32,7 @@ namespace UtilityNetworkPropertiesExtractor
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             string proVersion = $"ArcGIS Pro {fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";
             string operatingSystem = "Operating System: " + Environment.OSVersion.VersionString;
-            string cpuSpeed = "CPU base speed: " + CpuSpeed() + " ghz";
+            string cpu = "CPU: " + CpuName(); 
             string coreCount = "Number Of Cores: " + NumberOfCores();
             string processorCount = "Logical Processor Count: " + Environment.ProcessorCount;
             string memory = "Total Physical Memory: " + TotalPhysicalMemory();
@@ -41,7 +41,7 @@ namespace UtilityNetworkPropertiesExtractor
             string mesg = machineName + "\n" +
                           proVersion + "\n" +
                           operatingSystem + "\n" +
-                          cpuSpeed + "\n" +
+                          cpu + "\n" +
                           coreCount + "\n" +
                           processorCount + "\n" +
                           memory + "\n" +
@@ -81,17 +81,14 @@ namespace UtilityNetworkPropertiesExtractor
             return fres.ToString() + " GB";
         }
 
-        private static string CpuSpeed()
+        private static string CpuName()
         {
-            uint Maxsp = 0;
+            string cpuName = string.Empty;
+            using (ManagementObject Mo = new ManagementObject("Win32_Processor.DeviceID='CPU0'"))
             {
-                using (ManagementObject Mo = new ManagementObject("Win32_Processor.DeviceID='CPU0'"))
-                {
-                    Maxsp = (uint)(Mo["MaxClockSpeed"]);
-                }
+                cpuName = (string)(Mo["Name"]);
             }
-
-            return Math.Round(((double)Maxsp / 1000), 2).ToString();
+            return cpuName;
         }
 
         private static string VideoControllers()
@@ -103,8 +100,7 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 retVal += "\n  DeviceID  -  " + obj["DeviceID"] + "\n";
                 retVal += "    Name  -  " + obj["Name"] + "\n";
-                
-                
+                                
                 //Console.WriteLine("Name  -  " + obj["Name"];
                 //Console.WriteLine("Status  -  " + obj["Status"];
                 //Console.WriteLine("Caption  -  " + obj["Caption"];
@@ -118,9 +114,7 @@ namespace UtilityNetworkPropertiesExtractor
                 //Console.WriteLine("VideoArchitecture  -  " + obj["VideoArchitecture"];
                 //Console.WriteLine("VideoMemoryType  -  " + obj["VideoMemoryType"];
             }
-
             return retVal;
         }
-
     }
 }
