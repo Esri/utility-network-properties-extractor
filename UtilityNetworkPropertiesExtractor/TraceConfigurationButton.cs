@@ -39,7 +39,9 @@ namespace UtilityNetworkPropertiesExtractor
         {
             try
             {
-                ProgressDialog progDlg = new ProgressDialog("Extracting Trace Configuration .JSON and .CSV to: \n" + Common.ExtractFilePath);
+                Common.CreateOutputDirectory();
+
+                ProgressDialog progDlg = new ProgressDialog("Extracting trace configuration files to: \n" + Common.ExtractFilePath);
                 progDlg.Show();
 
                 await ExtractTraceConfigurationAsync(true);
@@ -86,6 +88,8 @@ namespace UtilityNetworkPropertiesExtractor
                             return;
                         }
 
+                        UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
+
                         //Get all properties defined in the class.  This will be used to generate the CSV file
                         CSVLayout emptyRec = new CSVLayout();
                         PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
@@ -100,23 +104,9 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
                             if (portal == null)
-                            {
-                                //logger.Warn($"The portal with uri of {portalUri} was not found in the portal manager.");
                                 throw new Exception($"Portal hosting the utility network was not found ({portal.PortalUri})... Please add the portal and log in.");
-                            }
 
-                            var token = portal.GetToken();
-
-                            string traceConfigUrl = string.Empty;
-                            CIMDataConnection dataConn = featureLayer.GetDataConnection();
-                            if (dataConn is CIMStandardDataConnection stDataConn)
-                            {
-                                string[] splitConnectionStr = stDataConn.WorkspaceConnectionString.Split(';');
-                                string urlParam = splitConnectionStr?.FirstOrDefault(val => val.Contains("URL"));
-                                string unUrl = urlParam?.Split('=')[1];
-                                traceConfigUrl = unUrl.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
-                                traceConfigUrl = $"{traceConfigUrl}?f=json&token={token}";
-                            }
+                            string traceConfigUrl = GetTraceConfigurationQueryUrl(unLayer, portal.GetToken());
 
                             EsriHttpResponseMessage response;
                             try
@@ -129,13 +119,13 @@ namespace UtilityNetworkPropertiesExtractor
                                 throw e;
                             }
 
-                            var json = response?.Content?.ReadAsStringAsync()?.Result;
+                            string json = response?.Content?.ReadAsStringAsync()?.Result;
                             if (json == null)
                                 throw new Exception("Failed to get data from trace configuration endpoint");
 
-                            TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<TraceConfigurationJSONMapping>(json);
-
                             string globalids = string.Empty;
+
+                            TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<TraceConfigurationJSONMapping>(json);
                             for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
                             {
                                 //globalids needed for GP Tool
@@ -150,10 +140,9 @@ namespace UtilityNetworkPropertiesExtractor
                                 csvLayoutList.Add(rec);
                             }
 
-                            await CallGpTool(outputFile, globalids);
+                            await CallGpTool(unLayer, globalids, outputFile);
                         }
-
-                        else
+                        else  // File Geodatabase or Database connection
                         { 
                             //Get table definition for Trace Configuration table:  UN_<datasetid>_TraceConfigurations 
                             //  Example in file GDB:  UN_5_TraceConfigurations
@@ -187,8 +176,7 @@ namespace UtilityNetworkPropertiesExtractor
                                         }
                                     }
                                 }
-
-                                await CallGpTool(outputFile, globalids);
+                                await CallGpTool(unLayer, globalids, outputFile);
                             }
                         }
 
@@ -206,28 +194,33 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-        private static async Task CallGpTool(string outputFile, string globalids)
+        private static string GetTraceConfigurationQueryUrl(UtilityNetworkLayer unLayer, string token)
         {
-            //https://pro.arcgis.com/en/pro-app/latest/tool-reference/utility-networks/export-trace-configurations.htm
+            string url = string.Empty;
+            CIMDataConnection dataConn = unLayer.GetDataConnection();
+            if (dataConn is CIMStandardDataConnection stDataConn)
+            {
+                string[] splitConnectionStr = stDataConn.WorkspaceConnectionString.Split(';');
+                string urlParam = splitConnectionStr?.FirstOrDefault(x => x.Contains("URL"));
+                string unUrl = urlParam?.Split('=')[1];
+                url = unUrl.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+                url = $"{url}?f=json&token={token}";
+            }
 
+            return url;
+        }
+
+        private static async Task CallGpTool(UtilityNetworkLayer unLayer, string globalids, string outputFile)
+        {
             if (string.IsNullOrEmpty(globalids))
                 return;
 
-            UtilityNetworkLayer unLayer = GetUtilityNetworkLayer();
-            if (unLayer is null)
-                return;
-
+            //https://pro.arcgis.com/en/pro-app/latest/tool-reference/utility-networks/export-trace-configurations.htm
             string traceConfigJsonFullPath = outputFile.Replace(".csv", ".json");
             IReadOnlyList<string> gpArgs = Geoprocessing.MakeValueArray(unLayer, globalids, traceConfigJsonFullPath);
             await Geoprocessing.ExecuteToolAsync("un.ExportTraceConfigurations", gpArgs);
         }
-
-        private static UtilityNetworkLayer GetUtilityNetworkLayer()
-        {
-            IEnumerable<Layer> layers = MapView.Active.Map.GetLayersAsFlattenedList().OfType<UtilityNetworkLayer>();
-            return layers.FirstOrDefault() as UtilityNetworkLayer;
-        }
-
+       
         private class CSVLayout
         {
             public string Name { get; set; }

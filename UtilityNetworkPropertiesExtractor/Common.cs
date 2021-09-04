@@ -129,6 +129,11 @@ namespace UtilityNetworkPropertiesExtractor
             return "\"" + value + "\"";
         }
 
+        public static UtilityNetworkLayer FindTheUtilityNetworkLayer()
+        {
+            return MapView.Active.Map.GetLayersAsFlattenedList().OfType<UtilityNetworkLayer>().FirstOrDefault();
+        }
+
         public static string GetCodedValueDomainValue(CodedValueDomain cvd, string code)
         {
             string retVal = string.Empty;

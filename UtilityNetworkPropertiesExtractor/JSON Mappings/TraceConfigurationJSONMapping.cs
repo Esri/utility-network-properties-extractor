@@ -110,4 +110,3 @@ namespace UtilityNetworkPropertiesExtractor
         public bool isSpecificValue { get; set; }
     }
 }
-
