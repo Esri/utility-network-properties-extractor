@@ -73,7 +73,7 @@ namespace UtilityNetworkPropertiesExtractor
             int pos;
             if (reportHeaderInfo.FullPath.Contains(@"/rest/"))
             {
-                //Path is to a specific layer.  https://utilities-un.bd.esri.com/server/rest/services/Naperville1081/NapervilleUN_V34_1081/FeatureServer/6
+                //Path is to a specific layer.  https://<webadaptorname>/server/rest/services/Naperville/NapervilleUN/FeatureServer/6
                 //Need to strip off all characters after FeatureServer
                 string searchstring = "FeatureServer";
                 pos = reportHeaderInfo.FullPath.IndexOf(searchstring);

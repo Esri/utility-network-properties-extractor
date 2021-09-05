@@ -55,6 +55,7 @@ namespace UtilityNetworkPropertiesExtractor
 
         public static async Task ExtractTraceConfigurationAsync(bool showNoUtilityNetworkPrompt)
         {
+            //Extracts a CSV file of all trace names along with a JSON file of the actual configuration
             await QueuedTask.Run(async () =>
             {
                 UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
@@ -175,7 +176,7 @@ namespace UtilityNetworkPropertiesExtractor
                         }
 
                         //Write body of CSV
-                        foreach (CSVLayout row in csvLayoutList)
+                        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Name))
                         {
                             string output = Common.ExtractClassValuesToString(row, properties);
                             sw.WriteLine(output);
