@@ -145,6 +145,7 @@
     <Compile Include="FieldSettingsInMapImportButton.cs" />
     <Compile Include="FieldsExtractButton.cs" />
     <Compile Include="GdbObjectNamesButton.cs" />
+    <Compile Include="JSON Mappings\ArcRestError.cs" />
     <Compile Include="JSON Mappings\TraceConfigurationJSONMapping.cs" />
     <Compile Include="LayerInfoButton.cs" />
     <Compile Include="LayerScalesButton.cs" />

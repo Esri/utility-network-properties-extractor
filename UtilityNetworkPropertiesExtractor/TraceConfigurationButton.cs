@@ -33,7 +33,6 @@ namespace UtilityNetworkPropertiesExtractor
     internal class TraceConfigurationButton : Button
     {
         private static string _fileName = string.Empty;
-        private static readonly EsriHttpClient esriHttpClient = new EsriHttpClient();
 
         protected async override void OnClick()
         {
@@ -104,27 +103,20 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
                             if (portal == null)
-                                throw new Exception($"Portal hosting the utility network was not found ({portal.PortalUri})... Please add the portal and log in.");
+                                throw new Exception("You must be logged into portal to extract the trace configuration's JSON.");
 
                             string traceConfigUrl = GetTraceConfigurationQueryUrl(unLayer, portal.GetToken());
-
-                            EsriHttpResponseMessage response;
-                            try
-                            {
-                                response = esriHttpClient.Get(traceConfigUrl);
-                                response.EnsureSuccessStatusCode();
-                            }
-                            catch (Exception e)
-                            {
-                                throw e;
-                            }
+                            EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(traceConfigUrl);
 
                             string json = response?.Content?.ReadAsStringAsync()?.Result;
                             if (json == null)
                                 throw new Exception("Failed to get data from trace configuration endpoint");
 
-                            string globalids = string.Empty;
+                            ArcRestError arcRestError = JsonConvert.DeserializeObject<ArcRestError>(json);
+                            if (arcRestError?.error != null)
+                                throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
 
+                            string globalids = string.Empty;
                             TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<TraceConfigurationJSONMapping>(json);
                             for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
                             {
@@ -135,15 +127,16 @@ namespace UtilityNetworkPropertiesExtractor
                                 {
                                     Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].name)),
                                     Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].description)),
-                                    Creator = Convert.ToString(parsedJson.traceConfigurations[i].creator)
+                                    Creator = Convert.ToString(parsedJson.traceConfigurations[i].creator),
+                                    CreationDate = Convert.ToString(Common.ConvertEpochTimeToReadableDate(parsedJson.traceConfigurations[i].creationDate))
                                 };
                                 csvLayoutList.Add(rec);
                             }
 
-                            await CallGpTool(unLayer, globalids, outputFile);
+                            await CallGpToolAsync(unLayer, globalids, outputFile);
                         }
                         else  // File Geodatabase or Database connection
-                        { 
+                        {
                             //Get table definition for Trace Configuration table:  UN_<datasetid>_TraceConfigurations 
                             //  Example in file GDB:  UN_5_TraceConfigurations
                             TableDefinition traceConfigDefinition = geodatabase.GetDefinitions<TableDefinition>().FirstOrDefault(x => x.GetName().Contains("TraceConfigurations"));
@@ -151,7 +144,7 @@ namespace UtilityNetworkPropertiesExtractor
                             {
                                 QueryFilter queryFilter = new QueryFilter
                                 {
-                                    SubFields = "GLOBALID, NAME, DESCRIPTION, CREATOR",
+                                    SubFields = "GLOBALID, NAME, DESCRIPTION, CREATOR, CREATIONDATE",
                                     PostfixClause = "ORDER BY NAME"
                                 };
 
@@ -171,12 +164,13 @@ namespace UtilityNetworkPropertiesExtractor
                                                 Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["NAME"])),
                                                 Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["DESCRIPTION"])),
                                                 Creator = Convert.ToString(row["CREATOR"]),
+                                                CreationDate = Convert.ToString(row["CREATIONDATE"])
                                             };
                                             csvLayoutList.Add(rec);
                                         }
                                     }
                                 }
-                                await CallGpTool(unLayer, globalids, outputFile);
+                                await CallGpToolAsync(unLayer, globalids, outputFile);
                             }
                         }
 
@@ -194,6 +188,7 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
+
         private static string GetTraceConfigurationQueryUrl(UtilityNetworkLayer unLayer, string token)
         {
             string url = string.Empty;
@@ -210,7 +205,7 @@ namespace UtilityNetworkPropertiesExtractor
             return url;
         }
 
-        private static async Task CallGpTool(UtilityNetworkLayer unLayer, string globalids, string outputFile)
+        private static async Task CallGpToolAsync(UtilityNetworkLayer unLayer, string globalids, string outputFile)
         {
             if (string.IsNullOrEmpty(globalids))
                 return;
@@ -220,12 +215,13 @@ namespace UtilityNetworkPropertiesExtractor
             IReadOnlyList<string> gpArgs = Geoprocessing.MakeValueArray(unLayer, globalids, traceConfigJsonFullPath);
             await Geoprocessing.ExecuteToolAsync("un.ExportTraceConfigurations", gpArgs);
         }
-       
+
         private class CSVLayout
         {
             public string Name { get; set; }
             public string Description { get; set; }
             public string Creator { get; set; }
+            public string CreationDate { get; set; }
         }
     }
 }

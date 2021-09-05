@@ -45,6 +45,12 @@ namespace UtilityNetworkPropertiesExtractor
                 Directory.CreateDirectory(ExtractFilePath);
         }
 
+        public static DateTime ConvertEpochTimeToReadableDate(long epoch)
+        {
+            DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeMilliseconds(epoch);
+            return dateTimeOffSet.DateTime;
+        }
+
         public static class DatastoreTypeDescriptions
         {
             public const string FeatureService = "FeatureService";
@@ -227,6 +233,23 @@ namespace UtilityNetworkPropertiesExtractor
                 }
             }
             return utilityNetwork;
+        }
+
+        public static EsriHttpResponseMessage QueryRestPointUsingGet(string url)
+        {
+            EsriHttpClient esriHttpClient = new EsriHttpClient();
+            EsriHttpResponseMessage response;
+            try
+            {
+                response = esriHttpClient.Get(url);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return response;
         }
 
         public static void WriteHeaderInfo(StreamWriter sw, ReportHeaderInfo reportHeaderInfo, UtilityNetworkDefinition utilityNetworkDefinition, string reportTitle)
