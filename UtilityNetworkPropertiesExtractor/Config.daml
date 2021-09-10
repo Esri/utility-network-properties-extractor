@@ -16,7 +16,7 @@ limitations under the License.
     <Description>Add-in for extracting Utility Network, GDB and Map properties to CSV files</Description>
     <Image>Images\AddinDesktop32.png</Image>
     <Author>Mike Hirschheimer, mhirschheimer@esri.com</Author>
-    <Company>>esri, http://www.esri.com</Company>
+    <Company>&gt;esri, http://www.esri.com</Company>
     <Date>4/29/2021 6:46:08 PM</Date>
     <Subject>UtilityNetwork</Subject>
   </AddInInfo>
@@ -51,16 +51,18 @@ limitations under the License.
           <button refID="UtilityNetworkPropertiesExtractor_RelationshipClassButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_VersionInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerInfoButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_LayerScalesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_AttributeRulesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ContingentValuesButton" size="middle" />
-          <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />                  
-          <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />     
+          <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
         </group>
         <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
           <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
       </groups>
@@ -135,19 +137,25 @@ limitations under the License.
           <tooltip heading="Tooltip Heading">Identifies Utility Network assets where network rules aren't defined<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_ProjectItemsButton" caption="Project Items" className="ProjectItemsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ArcGISProject32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ArcGISProject32.png" keytip="ZC">
-          <tooltip heading="Tooltip Heading">Extracts Project Items to a CSV file<disabledText /></tooltip>
+          <tooltip heading="Tooltip Heading">Extract Project Items<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_RelationshipClassButton" caption="Relationship Classes" className="RelationshipClassButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseRelationship16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GeodatabaseRelationship16.png" keytip="ZA">
-          <tooltip heading="Tooltip Heading"> Extracts Relationship Class info to a CSV file </tooltip>
+          <tooltip heading="Tooltip Heading"> Extract Relationship Class Info </tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_TerminalConfigurationButton" caption="Terminal Configuration" className="TerminalConfigurationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DataReviewerReviewerRule32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/DataReviewerReviewerRule32.png" keytip="ZP" condition="esri_mapping_utilityNetworkCondition">
           <tooltip heading="Tooltip Heading">Extract Terminal Configuration<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_TraceConfigurationButton" caption="Trace Configuration" className="TraceConfigurationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingTraceTool32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingTraceTool32.png" keytip="ZB" condition="esri_mapping_utilityNetworkCondition">
-          <tooltip heading="Tooltip Heading">Extracts Trace Configuration header info to a CSV file<disabledText /></tooltip>
+          <tooltip heading="Tooltip Heading">Extract Trace Configuration Header Info<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_VersionInfoButton" caption="Versioning Info" className="VersionInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" keytip="ZE">
           <tooltip heading="Tooltip Heading">Extract Versioning Info <disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_LayerScalesButton" caption="Layer Scales" className="LayerScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" keytip="ZD">
+          <tooltip heading="Tooltip Heading">Extract Layer Scale Info<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Info" className="MachineInfoButton" loadOnClick="true" keytip="ZC">
+          <tooltip heading="Tooltip Heading">Get Machine Info (ArcGIS Pro version, O/S, CPU, Memory, etc)<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

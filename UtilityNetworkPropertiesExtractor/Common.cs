@@ -45,6 +45,12 @@ namespace UtilityNetworkPropertiesExtractor
                 Directory.CreateDirectory(ExtractFilePath);
         }
 
+        public static DateTime ConvertEpochTimeToReadableDate(long epoch)
+        {
+            DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeMilliseconds(epoch);
+            return dateTimeOffSet.DateTime;
+        }
+
         public static class DatastoreTypeDescriptions
         {
             public const string FeatureService = "FeatureService";
@@ -67,7 +73,7 @@ namespace UtilityNetworkPropertiesExtractor
             int pos;
             if (reportHeaderInfo.FullPath.Contains(@"/rest/"))
             {
-                //Path is to a specific layer.  https://utilities-un.bd.esri.com/server/rest/services/Naperville1081/NapervilleUN_V34_1081/FeatureServer/6
+                //Path is to a specific layer.  https://<webadaptorname>/server/rest/services/Naperville/NapervilleUN/FeatureServer/6
                 //Need to strip off all characters after FeatureServer
                 string searchstring = "FeatureServer";
                 pos = reportHeaderInfo.FullPath.IndexOf(searchstring);
@@ -127,6 +133,11 @@ namespace UtilityNetworkPropertiesExtractor
         public static string EncloseStringInDoubleQuotes(string value)
         {
             return "\"" + value + "\"";
+        }
+
+        public static UtilityNetworkLayer FindTheUtilityNetworkLayer()
+        {
+            return MapView.Active.Map.GetLayersAsFlattenedList().OfType<UtilityNetworkLayer>().FirstOrDefault();
         }
 
         public static string GetCodedValueDomainValue(CodedValueDomain cvd, string code)
@@ -222,6 +233,23 @@ namespace UtilityNetworkPropertiesExtractor
                 }
             }
             return utilityNetwork;
+        }
+
+        public static EsriHttpResponseMessage QueryRestPointUsingGet(string url)
+        {
+            EsriHttpClient esriHttpClient = new EsriHttpClient();
+            EsriHttpResponseMessage response;
+            try
+            {
+                response = esriHttpClient.Get(url);
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return response;
         }
 
         public static void WriteHeaderInfo(StreamWriter sw, ReportHeaderInfo reportHeaderInfo, UtilityNetworkDefinition utilityNetworkDefinition, string reportTitle)
