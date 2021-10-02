@@ -22,7 +22,7 @@
 //7.  Now you can use this code to deserialize the JSON string
 
 
-namespace UtilityNetworkPropertiesExtractor
+namespace UtilityNetworkPropertiesExtractor.JSONMappings
 {
     public class ArcRestError
     {

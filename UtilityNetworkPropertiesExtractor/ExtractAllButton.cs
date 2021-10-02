@@ -28,6 +28,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 DateTime startTime = DateTime.Now;
 
+                await UNFeatureServiceInfoButton.ExtractUNFeatureServiceInfo(false);
                 await AssetGroupsButton.ExtractAssetGroupsAsync(false);
                 await NetworkAttributesButton.ExtractNetworkAttributesAsync(false);
                 await NetworkCategoriesButton.ExtractNetworkCategoriesAsync(false);

@@ -35,6 +35,7 @@ limitations under the License.
         <group id="UtilityNetworkPropertiesExtractor_Group1" caption="Extract to CSV" appearsOnAddInTab="false" keytip="AF">
           <!-- host controls within groups -->
           <button refID="UtilityNetworkPropertiesExtractor_ExtractAllButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_UNFeatureServiceInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_AssetGroupsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DomainNetworksButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_NetworkRulesButton" size="middle" />
@@ -156,6 +157,9 @@ limitations under the License.
         </button>
         <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Info" className="MachineInfoButton" loadOnClick="true" keytip="ZC">
           <tooltip heading="Tooltip Heading">Get Machine Info (ArcGIS Pro version, O/S, CPU, Memory, etc)<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_UNFeatureServiceInfoButton" caption="UN FeatureService" className="UNFeatureServiceInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" keytip ="ZB" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">Extract Utility Network FeatureService Info<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

@@ -113,12 +113,12 @@ namespace UtilityNetworkPropertiesExtractor
                             if (json == null)
                                 throw new Exception("Failed to get data from trace configuration endpoint");
 
-                            ArcRestError arcRestError = JsonConvert.DeserializeObject<ArcRestError>(json);
+                            JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
                             if (arcRestError?.error != null)
                                 throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
 
                             string globalids = string.Empty;
-                            TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<TraceConfigurationJSONMapping>(json);
+                            JSONMappings.TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.TraceConfigurationJSONMapping>(json);
                             for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
                             {
                                 //globalids needed for GP Tool

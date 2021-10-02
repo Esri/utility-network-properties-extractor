@@ -141,6 +141,7 @@
     <Compile Include="DomainOrphansButton.cs" />
     <Compile Include="DomainValuesButton.cs" />
     <Compile Include="ExtractAllButton.cs" />
+    <Compile Include="JSON Mappings\FeatureServiceJSONMapping.cs" />
     <Compile Include="FieldSettingsInMapButton.cs" />
     <Compile Include="FieldSettingsInMapImportButton.cs" />
     <Compile Include="FieldsExtractButton.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="RelationshipClassButton.cs" />
     <Compile Include="TerminalConfigurationButton.cs" />
     <Compile Include="TraceConfigurationButton.cs" />
+    <Compile Include="UNFeatureServiceInfoButton.cs" />
     <Compile Include="VersionInfoButton.cs" />
   </ItemGroup>
   <ItemGroup>
