@@ -196,13 +196,10 @@ namespace UtilityNetworkPropertiesExtractor
             CIMDataConnection dataConn = unLayer.GetDataConnection();
             if (dataConn is CIMStandardDataConnection stDataConn)
             {
-                string[] splitConnectionStr = stDataConn.WorkspaceConnectionString.Split(';');
-                string urlParam = splitConnectionStr?.FirstOrDefault(x => x.Contains("URL"));
-                string unUrl = urlParam?.Split('=')[1];
-                url = unUrl.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+                url = stDataConn.WorkspaceConnectionString.Split('=')[1];
+                url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
                 url = $"{url}?f=json&token={token}";
             }
-
             return url;
         }
 
