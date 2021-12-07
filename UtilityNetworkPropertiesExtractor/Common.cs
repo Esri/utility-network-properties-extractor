@@ -16,6 +16,7 @@ using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -167,6 +168,13 @@ namespace UtilityNetworkPropertiesExtractor
             return retVal;
         }
 
+        private static string GetProVersion()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return $"{fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";
+        }
+
         public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
         {
             Table table = featureLayer.GetTable();
@@ -259,7 +267,7 @@ namespace UtilityNetworkPropertiesExtractor
             sw.WriteLine(reportHeaderInfo.SourceType + "," + reportHeaderInfo.FullPath);
             if (utilityNetworkDefinition != null)
                 WriteUnHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition);
-            sw.WriteLine("ArcGIS Pro Version," + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+            sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
             sw.WriteLine();
         }
 
