@@ -44,12 +44,12 @@ namespace UtilityNetworkPropertiesExtractor
                 await LayerInfoButton.ExtractLayerInfoAsync();
                 await LayerScalesButton.ExtractLayerScalesAsync();
                 await VersionInfoButton.ExtractVersionInfoAsync(false);
-                await AttributeRulesButton.ExtractAttributeRulesAsync();
-                await ContingentValuesButton.ExtractContingentValuesAsync();
                 await FieldSettingsInMapButton.ExtractFieldSettingsInMapAsync();
                 await NetworkDiagramsButton.ExtractNetworkDiagramsAsync(false);
                 await GdbObjectNamesButton.ExtractGdbObjectNamesAsync();
                 await RelationshipClassButton.ExtractRelationshipClassesAsync();
+                await AttributeRulesButton.ExtractAttributeRulesAsync();
+                await ContingentValuesButton.ExtractContingentValuesAsync();
                 ProjectItemsButton.ExtractProjectItem();
 
                 DateTime endTime = DateTime.Now;
