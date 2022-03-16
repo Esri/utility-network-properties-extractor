@@ -105,6 +105,9 @@ namespace UtilityNetworkPropertiesExtractor
                             continue;
 
                         Uri uri = datastore.GetPath();
+                        if (uri.AbsoluteUri.ToLower().Contains("https")) // can't extract Attibute Rules when layer's source is a FeatuerService
+                            continue; 
+
                         FeatureClass featureclass = pair.Value as FeatureClass;
                         FeatureDataset featureDataset = null;
 
