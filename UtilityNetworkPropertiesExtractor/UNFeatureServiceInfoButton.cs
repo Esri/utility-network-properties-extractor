@@ -62,7 +62,12 @@ namespace UtilityNetworkPropertiesExtractor
 
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
                 if (reportHeaderInfo.SourceType != Common.DatastoreTypeDescriptions.FeatureService)
-                    MessageBox.Show("The Utility Network layer is NOT from a FeatureService");
+                {
+                    if (showNoUtilityNetworkPrompt)
+                        MessageBox.Show("The Utility Network layer is NOT from a FeatureService", "Extract UN FeatureService Info", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
 
                 Common.CreateOutputDirectory();
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -80,8 +85,8 @@ namespace UtilityNetworkPropertiesExtractor
                     if (portal == null)
                         throw new Exception("You must be logged into portal to extract the Utility Network FeatureService Info");
 
-                    string traceConfigUrl = GetUNFeatureServiceURL(unLayer, portal.GetToken());
-                    EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(traceConfigUrl);
+                    string unFeatureServiceURL = GetUNFeatureServiceURL(unLayer, portal.GetToken());
+                    EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(unFeatureServiceURL);
 
                     string json = response?.Content?.ReadAsStringAsync()?.Result;
                     if (json == null)
@@ -89,7 +94,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
                     if (arcRestError?.error != null)
-                        throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
+                        throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + unFeatureServiceURL);
 
                     JSONMappings.FeatureServiceJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.FeatureServiceJSONMapping>(json);
 
