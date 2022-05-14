@@ -196,7 +196,13 @@ namespace UtilityNetworkPropertiesExtractor
             CIMDataConnection dataConn = unLayer.GetDataConnection();
             if (dataConn is CIMStandardDataConnection stDataConn)
             {
+                //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
+                //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
                 url = stDataConn.WorkspaceConnectionString.Split('=')[1];
+                int pos = url.IndexOf(";");
+                if (pos > 0)  // if the URL contains VERSION details, strip that off.
+                    url = url.Substring(0, pos);
+
                 url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
                 url = $"{url}?f=json&token={token}";
             }
