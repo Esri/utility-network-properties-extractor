@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using MessageBox = System.Windows.MessageBox;
 
@@ -67,14 +68,15 @@ namespace UtilityNetworkPropertiesExtractor
 
                         Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "GDB Object Names");
 
-                        if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
-                        {
-                            sw.WriteLine("UN_#_Rules and other system table can be determined against direct connection only.");
-                            sw.WriteLine("Against a service it will be shown as 'Rules' which is likely the Layer name.");
-                            sw.WriteLine("");
-                        }
+                        //Get all properties defined in the class.  This will be used to generate the CSV file
+                        CSVLayout emptyRec = new CSVLayout();
+                        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
 
-                        sw.WriteLine("ObjectName,ObjectType");
+                        //Write column headers based on properties in the class
+                        string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                        sw.WriteLine(columnHeader);
+
+                        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
 
                         List<DatasetType> datasetTypeList = new List<DatasetType>
                                                                     { DatasetType.UtilityNetwork,
@@ -119,7 +121,61 @@ namespace UtilityNetworkPropertiesExtractor
                             }
 
                             foreach (Definition definition in definitionList)
-                                sw.WriteLine(definition.GetName() + "," + definition.DatasetType.ToString());
+                            {
+                                string featureDatasetName = string.Empty;
+
+                                //Determine the feature dataset name (if applicable) for the featureclass
+                                if (datasetType == DatasetType.FeatureClass)
+                                {
+                                    using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(definition.GetName()))
+                                    {
+                                        FeatureDataset featureDataset = featureClass.GetFeatureDataset();
+                                        if (featureDataset != null)
+                                            featureDatasetName = featureDataset.GetName();
+                                    }
+
+                                }
+
+                                //Determine the feature dataset name (if applicable) for the RelationshipClass
+                                else if (datasetType == DatasetType.RelationshipClass)
+                                {
+                                    using (RelationshipClass relationshipClass = geodatabase.OpenDataset<RelationshipClass>(definition.GetName()))
+                                    {
+                                        FeatureDataset featureDataset = relationshipClass.GetFeatureDataset();
+                                        if (featureDataset != null)
+                                            featureDatasetName = featureDataset.GetName();
+
+                                    }
+                                }
+                                
+                                //Determine the feature dataset name for the Utility Network object
+                                else if (datasetType == DatasetType.UtilityNetwork)
+                                {
+                                    using (UtilityNetwork un = geodatabase.OpenDataset<UtilityNetwork>(definition.GetName()))
+                                    {
+                                        NetworkSource assemblyNetworkSource = utilityNetworkDefinition.GetNetworkSources().Where(x => x.UsageType == SourceUsageType.Assembly).First();
+                                        //Table assemblyTable = un.GetTable(assemblyNetworkSource);
+                                        FeatureClass assemblyFeatureClass = un.GetTable(assemblyNetworkSource) as FeatureClass;
+                                        featureDatasetName = assemblyFeatureClass.GetFeatureDataset()?.GetName();
+                                    }
+                                }
+
+                                CSVLayout rec = new CSVLayout()
+                                {
+                                    ObjectType = definition.DatasetType.ToString(),
+                                    ObjectName = definition.GetName(),
+                                    FeatureDataset = featureDatasetName
+                                };
+                                csvLayoutList.Add(rec);
+                            }
+
+                        }
+
+                        //Write body of CSV
+                        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ObjectType).ThenBy(x => x.ObjectName))
+                        {
+                            string output = Common.ExtractClassValuesToString(row, properties);
+                            sw.WriteLine(output);
                         }
 
                         sw.Flush();
@@ -127,6 +183,13 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                 }
             });
+        }
+
+        private class CSVLayout
+        {
+            public string ObjectType { get; set; }
+            public string ObjectName { get; set; }
+            public string FeatureDataset { get; set; }
         }
     }
 }
