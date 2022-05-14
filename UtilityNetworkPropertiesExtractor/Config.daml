@@ -60,7 +60,6 @@ limitations under the License.
           <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
         </group>
         <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
-          <!--<button refID="UtilityNetworkPropertiesExtractor_NetworkRulesSelectedFeatureButton" size="middle" /> -->
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
@@ -161,9 +160,6 @@ limitations under the License.
         </button>
         <button id="UtilityNetworkPropertiesExtractor_UNFeatureServiceInfoButton" caption="UN FeatureService" className="UNFeatureServiceInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" keytip ="ZB" condition="esri_mapping_utilityNetworkCondition">
           <tooltip heading="Tooltip Heading">Extract Utility Network FeatureService Info<disabledText /></tooltip>
-        </button>
-        <button id="UtilityNetworkPropertiesExtractor_NetworkRulesSelectedFeatureButton" caption="Network Rules Selected Feature" className="NetworkRulesSelectedFeatureButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png" keytip="ZA" condition="esri_mapping_utilityNetworkCondition">
-          <tooltip heading="Tooltip Heading">Display Utility Network Rules for selected feature<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

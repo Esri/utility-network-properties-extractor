@@ -156,7 +156,6 @@
     <Compile Include="NetworkCategoriesButton.cs" />
     <Compile Include="NetworkDiagramsButton.cs" />
     <Compile Include="NetworkRulesButton.cs" />
-    <Compile Include="NetworkRulesSelectedFeatureButton.cs" />
     <Compile Include="NoNetworkRulesButton.cs" />
     <Compile Include="ProjectItemsButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
