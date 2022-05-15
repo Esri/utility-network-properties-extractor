@@ -11,7 +11,7 @@
    limitations under the License.
 */
 
-// Esri Community blog on creating C# classes needed to deseriable JSON.  
+// Esri Community blog on creating C# classes needed to deserialize the JSON.  
 //  https://community.esri.com/t5/arcgis-pro-sdk-questions/extracting-coordinates-from-json-results/td-p/1014686
 //1.  Copy your [valid] JSON string to the Clipboard
 //2.  In Visual Studio:
