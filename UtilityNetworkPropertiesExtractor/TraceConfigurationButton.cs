@@ -192,21 +192,25 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static string GetTraceConfigurationQueryUrl(UtilityNetworkLayer unLayer, string token)
         {
-            string url = string.Empty;
-            CIMDataConnection dataConn = unLayer.GetDataConnection();
-            if (dataConn is CIMStandardDataConnection stDataConn)
-            {
-                //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
-                //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
-                url = stDataConn.WorkspaceConnectionString.Split('=')[1];
-                int pos = url.IndexOf(";");
-                if (pos > 0)  // if the URL contains VERSION details, strip that off.
-                    url = url.Substring(0, pos);
+            string url = Common.GetURLOfUtilityNetworkLayer(unLayer, token);
 
-                url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
-                url = $"{url}?f=json&token={token}";
-            }
-            return url;
+            //Tweak the UN Layer URL to point to the TraceConfigurations Query endpoint
+            return url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+
+            //CIMDataConnection dataConn = unLayer.GetDataConnection();
+            //if (dataConn is CIMStandardDataConnection stDataConn)
+            //{
+            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
+            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
+            //    url = stDataConn.WorkspaceConnectionString.Split('=')[1];
+            //    int pos = url.IndexOf(";");
+            //    if (pos > 0)  // if the URL contains VERSION details, strip that off.
+            //        url = url.Substring(0, pos);
+
+            //    url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+            //    url = $"{url}?f=json&token={token}";
+            //}
+            //return url;
         }
 
         private static async Task CallGpToolAsync(UtilityNetworkLayer unLayer, string globalids, string outputFile)
