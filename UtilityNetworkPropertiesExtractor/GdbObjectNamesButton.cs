@@ -92,7 +92,6 @@ namespace UtilityNetworkPropertiesExtractor
                         foreach (DatasetType datasetType in datasetTypeList)
                         {
                             IReadOnlyList<Definition> definitionList = null;
-
                             switch (datasetType)
                             {
                                 case DatasetType.UtilityNetwork:
@@ -120,6 +119,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     break;
                             }
 
+                            //Loop through each object in the definitionList and determine it's FeatureDataset before writing it to the CSV file
                             foreach (Definition definition in definitionList)
                             {
                                 string featureDatasetName = string.Empty;
@@ -133,7 +133,6 @@ namespace UtilityNetworkPropertiesExtractor
                                         if (featureDataset != null)
                                             featureDatasetName = featureDataset.GetName();
                                     }
-
                                 }
 
                                 //Determine the feature dataset name (if applicable) for the RelationshipClass
@@ -144,7 +143,6 @@ namespace UtilityNetworkPropertiesExtractor
                                         FeatureDataset featureDataset = relationshipClass.GetFeatureDataset();
                                         if (featureDataset != null)
                                             featureDatasetName = featureDataset.GetName();
-
                                     }
                                 }
                                 
@@ -154,7 +152,6 @@ namespace UtilityNetworkPropertiesExtractor
                                     using (UtilityNetwork un = geodatabase.OpenDataset<UtilityNetwork>(definition.GetName()))
                                     {
                                         NetworkSource assemblyNetworkSource = utilityNetworkDefinition.GetNetworkSources().Where(x => x.UsageType == SourceUsageType.Assembly).First();
-                                        //Table assemblyTable = un.GetTable(assemblyNetworkSource);
                                         FeatureClass assemblyFeatureClass = un.GetTable(assemblyNetworkSource) as FeatureClass;
                                         featureDatasetName = assemblyFeatureClass.GetFeatureDataset()?.GetName();
                                     }
@@ -168,7 +165,6 @@ namespace UtilityNetworkPropertiesExtractor
                                 };
                                 csvLayoutList.Add(rec);
                             }
-
                         }
 
                         //Write body of CSV
