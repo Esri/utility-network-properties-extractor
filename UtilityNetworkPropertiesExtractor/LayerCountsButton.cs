@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 
 namespace UtilityNetworkPropertiesExtractor
 {
+    //For each layer and table in the map, it's underlying datasource is queried for it's record count.
+    //The number of layers in the map will impact the execution duration.  
     internal class LayerCountsButton : Button
     {
         private static string _fileName = string.Empty;
@@ -37,7 +39,7 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 Common.CreateOutputDirectory();
 
-                ProgressDialog progDlg = new ProgressDialog("Extracting Layer and Table counts to: \n" + Common.ExtractFilePath);
+                ProgressDialog progDlg = new ProgressDialog("Extracting Layer and Table Counts to: \n" + Common.ExtractFilePath);
                 progDlg.Show();
 
                 await ExtractLayerCountAsync();
@@ -111,7 +113,7 @@ namespace UtilityNetworkPropertiesExtractor
                             if (cimFeatureTable.UseSubtypeValue)
                             {
                                 string subtypeField = featureClass.GetDefinition().GetSubtypeField();
-                                queryFilter.WhereClause = string.Format("{0} = {1}", subtypeField, cimFeatureTable.SubtypeValue);
+                                queryFilter.WhereClause = $"{subtypeField} = {cimFeatureTable.SubtypeValue}";
                             }
 
                             if (!string.IsNullOrEmpty(queryFilter.WhereClause))
