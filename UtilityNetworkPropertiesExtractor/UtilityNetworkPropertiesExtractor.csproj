@@ -134,6 +134,7 @@
     <Compile Include="AttributeRulesButton.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="ContingentValuesButton.cs" />
+    <Compile Include="LayerCountsButton.cs" />
     <Compile Include="DisplayFieldExpressionButton.cs" />
     <Compile Include="DisplayFilterButton.cs" />
     <Compile Include="DomainAssignmentsButton.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="DomainOrphansButton.cs" />
     <Compile Include="DomainValuesButton.cs" />
     <Compile Include="ExtractAllButton.cs" />
+    <Compile Include="JSON Mappings\FeatureServiceJSONMapping.cs" />
     <Compile Include="FieldSettingsInMapButton.cs" />
     <Compile Include="FieldSettingsInMapImportButton.cs" />
     <Compile Include="FieldsExtractButton.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="RelationshipClassButton.cs" />
     <Compile Include="TerminalConfigurationButton.cs" />
     <Compile Include="TraceConfigurationButton.cs" />
+    <Compile Include="UNFeatureServiceInfoButton.cs" />
     <Compile Include="VersionInfoButton.cs" />
   </ItemGroup>
   <ItemGroup>

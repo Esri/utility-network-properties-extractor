@@ -109,7 +109,16 @@ namespace UtilityNetworkPropertiesExtractor
                             try
                             {
                                 IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
-                                BuildFieldInfo(tableDefinition, null, fieldsList, ref csvLayoutList);
+                                IReadOnlyList<Subtype> subtypesList = tableDefinition.GetSubtypes();
+                                
+                                if (subtypesList.Count != 0)
+                                {
+                                    //process each subtype in the table
+                                    foreach (Subtype subtype in subtypesList)
+                                        BuildFieldInfo(tableDefinition, subtype, fieldsList, ref csvLayoutList);
+                                }
+                                else
+                                    BuildFieldInfo(tableDefinition, null, fieldsList, ref csvLayoutList);
                             }
                             catch (Exception ex)
                             {

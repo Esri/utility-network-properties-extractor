@@ -10,12 +10,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -167,6 +169,37 @@ namespace UtilityNetworkPropertiesExtractor
             return retVal;
         }
 
+        public static string GetURLOfUtilityNetworkLayer(UtilityNetworkLayer unLayer)
+        {
+            string url = string.Empty;
+            CIMDataConnection dataConn = unLayer.GetDataConnection();
+            if (dataConn is CIMStandardDataConnection stDataConn)
+            {
+                //the data connection value could look like either of these
+                //<WorkspaceConnectionString> URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer </WorkspaceConnectionString>
+                //<WorkspaceConnectionString> URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;... </WorkspaceConnectionString>
+
+                url = stDataConn.WorkspaceConnectionString.Split('=')[1];
+                int pos = url.IndexOf(";");
+                if (pos > 0)  // if the URL contains VERSION details, strip that off.
+                    url = url.Substring(0, pos);
+            }
+            return url;
+        }
+
+        public static string GetURLOfUtilityNetworkLayer(UtilityNetworkLayer unLayer, string token)
+        {
+            string url = GetURLOfUtilityNetworkLayer(unLayer);
+            return $"{url}?f=json&token={token}";
+        }
+
+        private static string GetProVersion()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return $"{fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";
+        }
+
         public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
         {
             Table table = featureLayer.GetTable();
@@ -259,7 +292,7 @@ namespace UtilityNetworkPropertiesExtractor
             sw.WriteLine(reportHeaderInfo.SourceType + "," + reportHeaderInfo.FullPath);
             if (utilityNetworkDefinition != null)
                 WriteUnHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition);
-            sw.WriteLine("ArcGIS Pro Version," + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString());
+            sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
             sw.WriteLine();
         }
 

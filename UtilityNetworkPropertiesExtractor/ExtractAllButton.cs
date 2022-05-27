@@ -28,6 +28,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 DateTime startTime = DateTime.Now;
 
+                await UNFeatureServiceInfoButton.ExtractUNFeatureServiceInfo(false);
                 await AssetGroupsButton.ExtractAssetGroupsAsync(false);
                 await NetworkAttributesButton.ExtractNetworkAttributesAsync(false);
                 await NetworkCategoriesButton.ExtractNetworkCategoriesAsync(false);
@@ -43,12 +44,13 @@ namespace UtilityNetworkPropertiesExtractor
                 await LayerInfoButton.ExtractLayerInfoAsync();
                 await LayerScalesButton.ExtractLayerScalesAsync();
                 await VersionInfoButton.ExtractVersionInfoAsync(false);
-                await AttributeRulesButton.ExtractAttributeRulesAsync();
-                await ContingentValuesButton.ExtractContingentValuesAsync();
                 await FieldSettingsInMapButton.ExtractFieldSettingsInMapAsync();
                 await NetworkDiagramsButton.ExtractNetworkDiagramsAsync(false);
                 await GdbObjectNamesButton.ExtractGdbObjectNamesAsync();
                 await RelationshipClassButton.ExtractRelationshipClassesAsync();
+                await LayerCountsButton.ExtractLayerCountAsync();
+                await AttributeRulesButton.ExtractAttributeRulesAsync();
+                await ContingentValuesButton.ExtractContingentValuesAsync();
                 ProjectItemsButton.ExtractProjectItem();
 
                 DateTime endTime = DateTime.Now;

@@ -113,12 +113,12 @@ namespace UtilityNetworkPropertiesExtractor
                             if (json == null)
                                 throw new Exception("Failed to get data from trace configuration endpoint");
 
-                            ArcRestError arcRestError = JsonConvert.DeserializeObject<ArcRestError>(json);
+                            JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
                             if (arcRestError?.error != null)
                                 throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
 
                             string globalids = string.Empty;
-                            TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<TraceConfigurationJSONMapping>(json);
+                            JSONMappings.TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.TraceConfigurationJSONMapping>(json);
                             for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
                             {
                                 //globalids needed for GP Tool
@@ -192,18 +192,25 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static string GetTraceConfigurationQueryUrl(UtilityNetworkLayer unLayer, string token)
         {
-            string url = string.Empty;
-            CIMDataConnection dataConn = unLayer.GetDataConnection();
-            if (dataConn is CIMStandardDataConnection stDataConn)
-            {
-                string[] splitConnectionStr = stDataConn.WorkspaceConnectionString.Split(';');
-                string urlParam = splitConnectionStr?.FirstOrDefault(x => x.Contains("URL"));
-                string unUrl = urlParam?.Split('=')[1];
-                url = unUrl.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
-                url = $"{url}?f=json&token={token}";
-            }
+            string url = Common.GetURLOfUtilityNetworkLayer(unLayer, token);
 
-            return url;
+            //Tweak the UN Layer URL to point to the TraceConfigurations Query endpoint
+            return url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+
+            //CIMDataConnection dataConn = unLayer.GetDataConnection();
+            //if (dataConn is CIMStandardDataConnection stDataConn)
+            //{
+            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
+            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
+            //    url = stDataConn.WorkspaceConnectionString.Split('=')[1];
+            //    int pos = url.IndexOf(";");
+            //    if (pos > 0)  // if the URL contains VERSION details, strip that off.
+            //        url = url.Substring(0, pos);
+
+            //    url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+            //    url = $"{url}?f=json&token={token}";
+            //}
+            //return url;
         }
 
         private static async Task CallGpToolAsync(UtilityNetworkLayer unLayer, string globalids, string outputFile)

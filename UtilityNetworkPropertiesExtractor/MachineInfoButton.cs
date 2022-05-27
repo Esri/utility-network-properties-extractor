@@ -24,9 +24,10 @@ namespace UtilityNetworkPropertiesExtractor
     {
         protected override void OnClick()
         {
-            var plugin = FrameworkApplication.GetPlugInWrapper("UtilityNetworkPropertiesExtractor_MachineNameButton");
             string machineName = "Machine: " + Environment.MachineName;
-            plugin.Caption = machineName;
+
+            //var plugin = FrameworkApplication.GetPlugInWrapper("UtilityNetworkPropertiesExtractor_MachineNameButton");
+            //plugin.Caption = machineName;
 
             Assembly assembly = Assembly.GetEntryAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
