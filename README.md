@@ -24,7 +24,7 @@ Visual Studio:         2019
 ### 1.  Single click buttons that extract Utility Network, Geodatabase and Map properties to CSV files
 * **Utility Network**:   UN FeatureService, Asset Groups, Domain Networks, Network Rules, Network Attributes, Network Categories, Network Diagram Info, Terminal Configuration, Trace Configuration, No Network Rules
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Relationship Classes, Versioning Info, Attribute Rules, Contingent Values, GDB Object Names
-* **Map**:  Layer Info, Layer Scales, Layoer Counts, Map Field Settings
+* **Map**:  Layer Info, Layer Scales, Layer Counts, Map Field Settings
 
 * **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\ Pro Project Name\
                         
