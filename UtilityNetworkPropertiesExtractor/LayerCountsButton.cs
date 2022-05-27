@@ -88,10 +88,12 @@ namespace UtilityNetworkPropertiesExtractor
                     string layerContainer = string.Empty;
                     int recordCount = 0;
                     int sum = 0;
+                    string definitionQuery = string.Empty;
 
                     List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
                     foreach (Layer layer in layerList)
                     {
+                        definitionQuery = string.Empty;
                         recordCount = 0;
 
                         layerContainer = layer.Parent.ToString();
@@ -102,7 +104,7 @@ namespace UtilityNetworkPropertiesExtractor
                         }
                         else
                             layerContainer = string.Empty;
-                                              
+                                                
                         if (layer is FeatureLayer featureLayer)
                         {
                             CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
@@ -114,6 +116,15 @@ namespace UtilityNetworkPropertiesExtractor
                             {
                                 string subtypeField = featureClass.GetDefinition().GetSubtypeField();
                                 queryFilter.WhereClause = $"{subtypeField} = {cimFeatureTable.SubtypeValue}";
+                                definitionQuery = queryFilter.WhereClause;
+                            }
+                            else
+                            {
+                                if (!string.IsNullOrEmpty(featureLayer.DefinitionFilter.DefinitionExpression))
+                                {
+                                    queryFilter.WhereClause = featureLayer.DefinitionFilter.DefinitionExpression;
+                                    definitionQuery = queryFilter.WhereClause;
+                                }
                             }
 
                             if (!string.IsNullOrEmpty(queryFilter.WhereClause))
@@ -136,6 +147,7 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerPos = layerPos.ToString(),
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
+                            DefinitionQuery = definitionQuery,
                             RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}")
                         };
                         CSVLayoutList.Add(rec);
@@ -148,13 +160,22 @@ namespace UtilityNetworkPropertiesExtractor
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        recordCount = standaloneTable.GetTable().GetCount();
+                        definitionQuery = string.Empty;
+                        if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
+                        {
+                            QueryFilter queryFilter = new QueryFilter() { WhereClause = standaloneTable.DefinitionFilter.DefinitionExpression };
+                            recordCount = standaloneTable.GetTable().GetCount(queryFilter);
+                            definitionQuery = queryFilter.WhereClause;
+                        }
+                        else
+                            recordCount = standaloneTable.GetTable().GetCount();
 
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
                             GroupLayerName = "Standalone Tables",
                             LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
+                            DefinitionQuery = definitionQuery,
                             RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}")
                         };
                         CSVLayoutList.Add(rec);
@@ -192,6 +213,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string LayerPos { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
+            public string DefinitionQuery { get; set; }
             public string RecordCount { get; set; }
         }
     }
