@@ -29,12 +29,11 @@ namespace UtilityNetworkPropertiesExtractor
     {
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
             ProgressDialog progDlg = new ProgressDialog("Extracting Contingent Value CSV(s) to:\n" + Common.ExtractFilePath);
 
             try
             {
-                Common.CreateOutputDirectory();
-
                 progDlg.Show();
 
                 await ExtractContingentValuesAsync();
@@ -114,6 +113,8 @@ namespace UtilityNetworkPropertiesExtractor
                         if (uri.AbsoluteUri.ToLower().Contains("https")) // can't extract Contingent Values when layer's source is a FeatuerService
                             continue;
 
+                        var datastorePath = uri.LocalPath;
+
                         FeatureClass featureclass = pair.Value as FeatureClass;
                         FeatureDataset featureDataset = null;
 
@@ -123,19 +124,19 @@ namespace UtilityNetworkPropertiesExtractor
                         if (featureDataset == null)
                         {
                             //<path to connfile>.sde/meh.unadmin.featureclass
-                            pathToTable = string.Format("{0}\\{1}", uri.AbsolutePath, pair.Value.GetName());
+                            pathToTable = string.Format("{0}\\{1}", datastorePath, pair.Value.GetName());
                         }
                         else
                         {
                             //<path to connfile>.sde/meh.unadmin.Electric\meh.unadmin.ElectricDevice
                             string featureDatasetName = featureclass.GetFeatureDataset().GetName();
-                            pathToTable = string.Format("{0}\\{1}\\{2}", uri.AbsolutePath, featureDatasetName, pair.Value.GetName());
+                            pathToTable = string.Format("{0}\\{1}\\{2}", datastorePath, featureDatasetName, pair.Value.GetName());
                         }
 
                         ////arcpy.management.ExportContingentValues("DHC Line", r"C:\temp\ProSdk_CSV\DHC_Line_CV_groups.CSV", r"C:\temp\ProSdk_CSV\DHC_Line_CV.CSV")
                         pathToTable = pathToTable.Replace("\\", "/");
                         cvArgs = Geoprocessing.MakeValueArray(pathToTable, cvGroupOutputFile, cvOutputFile);
-                        await Geoprocessing.ExecuteToolAsync("management.ExportContingentValues", cvArgs);
+                        var result = await Geoprocessing.ExecuteToolAsync("management.ExportContingentValues", cvArgs);
                     }
                 }
 
