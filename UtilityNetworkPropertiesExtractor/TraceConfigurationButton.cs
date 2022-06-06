@@ -36,20 +36,23 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            ProgressDialog progDlg = new ProgressDialog("Extracting trace configuration files to: \n" + Common.ExtractFilePath);
+
             try
             {
                 Common.CreateOutputDirectory();
 
-                ProgressDialog progDlg = new ProgressDialog("Extracting trace configuration files to: \n" + Common.ExtractFilePath);
                 progDlg.Show();
 
                 await ExtractTraceConfigurationAsync(true);
-
-                progDlg.Dispose();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Trace Configuration");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 

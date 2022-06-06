@@ -29,20 +29,23 @@ namespace UtilityNetworkPropertiesExtractor
     {
         protected async override void OnClick()
         {
+            ProgressDialog progDlg = new ProgressDialog("Extracting Attribute Rule CSV(s) to:\n" + Common.ExtractFilePath); ;
+
             try
             {
                 Common.CreateOutputDirectory();
-
-                ProgressDialog progDlg = new ProgressDialog("Extracting Attribute Rule CSV(s) to:\n" + Common.ExtractFilePath);
+                
                 progDlg.Show();
 
                 await ExtractAttributeRulesAsync();
-
-                progDlg.Dispose();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Attribute Rules");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -54,7 +57,9 @@ namespace UtilityNetworkPropertiesExtractor
                 string attrRuleFileName = string.Empty;
 
                 UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer firstFeatureLayer);
-                if (utilityNetwork == null)
+
+                //Only call this if there's an active mapview, otherwise we get a null reference exception
+                if (utilityNetwork == null && MapView.Active != null)
                     firstFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
 
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, firstFeatureLayer);
@@ -106,7 +111,10 @@ namespace UtilityNetworkPropertiesExtractor
 
                         Uri uri = datastore.GetPath();
                         if (uri.AbsoluteUri.ToLower().Contains("https")) // can't extract Attibute Rules when layer's source is a FeatuerService
-                            continue; 
+                            continue;
+
+                        //Using the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
+                        var datastorePath = uri.LocalPath;
 
                         FeatureClass featureclass = pair.Value as FeatureClass;
                         FeatureDataset featureDataset = null;
@@ -117,20 +125,19 @@ namespace UtilityNetworkPropertiesExtractor
                         if (featureDataset == null)
                         {
                             //<path to connfile>.sde/meh.unadmin.featureclass
-                            pathToTable = string.Format("{0}\\{1}", uri.AbsolutePath, pair.Value.GetName());
+                            pathToTable = string.Format("{0}\\{1}", datastorePath, pair.Value.GetName());
                         }
                         else
                         {
                             //<path to connfile>.sde/meh.unadmin.Electric\meh.unadmin.ElectricDevice
                             string featureDatasetName = featureclass.GetFeatureDataset().GetName();
-                            pathToTable = string.Format("{0}\\{1}\\{2}", uri.AbsolutePath, featureDatasetName, pair.Value.GetName());
+                            pathToTable = string.Format("{0}\\{1}\\{2}", datastorePath, featureDatasetName, pair.Value.GetName());
                         }
-
 
                         //arcpy.management.ExportAttributeRules("DHC Line", r"C:\temp\DHCLine_AR_rules.CSV")
                         pathToTable = pathToTable.Replace("\\", "/");
                         attrRuleArgs = Geoprocessing.MakeValueArray(pathToTable, attrRuleoutputFile);
-                        await Geoprocessing.ExecuteToolAsync("management.ExportAttributeRules", attrRuleArgs);
+                        var result = await Geoprocessing.ExecuteToolAsync("management.ExportAttributeRules", attrRuleArgs);
                     }
                 }
 
