@@ -31,12 +31,11 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
             ProgressDialog progDlg = new ProgressDialog("Extracting Version Info to:\n" + Common.ExtractFilePath);
 
             try
             {
-                Common.CreateOutputDirectory();
-
                 progDlg.Show();
 
                 await ExtractVersionInfoAsync(true);

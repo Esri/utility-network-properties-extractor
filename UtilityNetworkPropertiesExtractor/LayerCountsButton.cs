@@ -35,12 +35,11 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
             ProgressDialog progDlg = new ProgressDialog("Extracting Layer and Table Counts to: \n" + Common.ExtractFilePath);
 
             try
             {
-                Common.CreateOutputDirectory();
-
                 progDlg.Show();
 
                 await ExtractLayerCountAsync();
