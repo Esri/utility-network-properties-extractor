@@ -29,20 +29,23 @@ namespace UtilityNetworkPropertiesExtractor
     {
         protected async override void OnClick()
         {
+            ProgressDialog progDlg = new ProgressDialog("Extracting Contingent Value CSV(s) to:\n" + Common.ExtractFilePath);
+
             try
             {
                 Common.CreateOutputDirectory();
 
-                ProgressDialog progDlg = new ProgressDialog("Extracting Contingent Value CSV(s) to:\n" + Common.ExtractFilePath);
                 progDlg.Show();
 
                 await ExtractContingentValuesAsync();
-
-                progDlg.Dispose();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Contingent Values");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
