@@ -58,6 +58,7 @@ namespace UtilityNetworkPropertiesExtractor
             public const string FeatureService = "FeatureService";
             public const string FileGDB = "File Geodatabase";
             public const string EnterpriseGDB = "Enterprise Geodatabase";
+            public const string MobileGDB = "Mobile Geodatabase";
         }
 
         public static ReportHeaderInfo DetermineReportHeaderProperties(UtilityNetwork utilityNetwork, FeatureLayer featureLayer)
@@ -93,6 +94,12 @@ namespace UtilityNetworkPropertiesExtractor
                 reportHeaderInfo.SourceType = DatastoreTypeDescriptions.EnterpriseGDB;
                 pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".sde");
                 reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 4);
+            }
+            else if (reportHeaderInfo.FullPath.Contains(".geodatabase"))
+            {
+                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.MobileGDB;
+                pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".geodatabase");
+                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 12);
             }
 
             // Only applies if Utility Network is detected

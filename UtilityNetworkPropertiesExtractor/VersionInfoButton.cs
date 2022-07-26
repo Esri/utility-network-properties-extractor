@@ -62,8 +62,10 @@ namespace UtilityNetworkPropertiesExtractor
 
                 using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
                 {
-                    if (!geodatabase.IsVersioningSupported())
+                    if ( (!geodatabase.IsVersioningSupported()) || reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.MobileGDB)
                     {
+                        //Pro 2.9 SDK:  Against a mobile geodatabase, geodatabase.IsVersioningSupported() is incorrectly returning true.
+                        //  According to help docs, mobile geodatabase doesn't support versioning
                         if (showErrorPrompt)
                             throw new Exception("Versioning is not supported in a " + reportHeaderInfo.SourceType);
 
