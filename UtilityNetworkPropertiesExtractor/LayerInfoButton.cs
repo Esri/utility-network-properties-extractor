@@ -185,6 +185,7 @@ namespace UtilityNetworkPropertiesExtractor
         private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout)
         {
             int layerPos = 1;
+            string layerType = "";
             string prevGroupLayerName = string.Empty;
             string layerContainer = string.Empty;
             bool increaseLayerPos = false;
@@ -218,6 +219,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     if (layer is FeatureLayer featureLayer)
                     {
+                        layerType = "Feature Layer";
                         CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
                         CIMFeatureTable cimFeatureTable = cimFeatureLayerDef.FeatureTable;
                         CIMExpressionInfo cimExpressionInfo = cimFeatureTable.DisplayExpressionInfo; ;
@@ -285,6 +287,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     PopupLayout popupRec = new PopupLayout()
                                     {
                                         LayerPos = layerPos.ToString(),
+                                        LayerType = layerType,
                                         GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
                                         LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                                         PopupExpresssionName = cimFeatureLayerDef.PopupInfo.ExpressionInfos[i].Name,
@@ -304,7 +307,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimFeatureLayerDef.DisplayFilterChoices;
                             CIMDisplayFilter[] cimDisplayFilter = cimFeatureLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), Common.EncloseStringInDoubleQuotes(layerContainer), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
@@ -312,7 +315,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             LayerPos = layerPos.ToString(),
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Feature Layer",
+                            LayerType = layerType,
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
                             IsVisible = layer.IsVisible.ToString(),
                             LayerSource = featureLayer.GetTable().GetPath().ToString(),
@@ -350,19 +353,20 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                     else if (layer is SubtypeGroupLayer subtypeGroupLayer)
                     {
+                        layerType = "Subtype Group Layer";
                         CIMSubtypeGroupLayer cimSubtypeGroupLayer = layer.GetDefinition() as CIMSubtypeGroupLayer;
                         if (cimSubtypeGroupLayer.EnableDisplayFilters)
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimSubtypeGroupLayer.DisplayFilterChoices;
                             CIMDisplayFilter[] cimDisplayFilter = cimSubtypeGroupLayer.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layer.Name), string.Empty, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
-                            LayerType = "Subtype Group Layer",
+                            LayerType = layerType,
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                             IsVisible = layer.IsVisible.ToString(),
                             DefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression),
@@ -391,12 +395,13 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                     else if (layer is AnnotationLayer annotationLayer)
                     {
+                        layerType = "Annotation";
                         CIMAnnotationLayer cimAnnotationLayerDef = layer.GetDefinition() as CIMAnnotationLayer;
                         if (cimAnnotationLayerDef.EnableDisplayFilters)
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimAnnotationLayerDef.DisplayFilterChoices;
                             CIMDisplayFilter[] cimDisplayFilter = cimAnnotationLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
@@ -404,7 +409,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             LayerPos = layerPos.ToString(),
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Annotation",
+                            LayerType = layerType,
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
                             IsVisible = layer.IsVisible.ToString(),
                             LayerSource = annotationLayer.GetTable().GetPath().ToString(),
@@ -442,12 +447,13 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                     else if (layer is DimensionLayer dimensionLayer)
                     {
+                        layerType = "Dimension";
                         CIMDimensionLayer cimDimensionLayerDef = layer.GetDefinition() as CIMDimensionLayer;
                         if (cimDimensionLayerDef.EnableDisplayFilters)
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimDimensionLayerDef.DisplayFilterChoices;
                             CIMDisplayFilter[] cimDisplayFilter = cimDimensionLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
@@ -455,7 +461,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             LayerPos = layerPos.ToString(),
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Dimension",
+                            LayerType = layerType,
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
                             IsVisible = layer.IsVisible.ToString(),
                             LayerSource = dimensionLayer.GetTable().GetPath().ToString(),
@@ -478,6 +484,7 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                     else if (layer is UtilityNetworkLayer utilityNetworkLayer)
                     {
+                        layerType = "Utility Network Layer";
                         string sharedTraceConfiguation = "";
 
                         //Active Trace Configuration introduced in Utility Network version 5.
@@ -494,6 +501,7 @@ namespace UtilityNetworkPropertiesExtractor
                                     SharedTraceConfigurationLayout traceConfig = new SharedTraceConfigurationLayout()
                                     {
                                         LayerPos = layerPos.ToString(),
+                                        LayerType = layerType,
                                         LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                                         GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                                         TraceConfiguration = Common.EncloseStringInDoubleQuotes(cimNetworkTraceConfigurations[j].Name)
@@ -509,17 +517,14 @@ namespace UtilityNetworkPropertiesExtractor
                             sharedTraceConfiguation = shared.TraceConfiguration;
                         }
                         else if (sharedTraceConfigurationLayout.Count >= 2)
-                        {
                             sharedTraceConfiguation = "see LayerInfo_SharedTraceConfiguration.csv";
-                        }
-
 
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Utility Network Layer",
+                            LayerType = layerType,
                             IsVisible = layer.IsVisible.ToString(),
                             SharedTraceConfigurationCount = sharedTraceConfigurationLayout.Count.ToString(),
                             SharedTraceConfiguration = sharedTraceConfiguation
@@ -621,6 +626,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
 
             //Standalone Tables
+            layerType = "Table";
             IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
             foreach (StandaloneTable standaloneTable in standaloneTableList)
             {
@@ -666,6 +672,7 @@ namespace UtilityNetworkPropertiesExtractor
                             PopupLayout popupRec = new PopupLayout()
                             {
                                 LayerPos = layerPos.ToString(),
+                                LayerType = layerType,
                                 LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
                                 PopupExpresssionName = cimStandaloneTable.PopupInfo.ExpressionInfos[i].Name,
                                 PopupExpresssionTitle = Common.EncloseStringInDoubleQuotes(cimStandaloneTable.PopupInfo.ExpressionInfos[i].Title.Replace("\"", "'")),
@@ -684,7 +691,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     LayerPos = layerPos.ToString(),
                     LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
-                    LayerType = "Table",
+                    LayerType = layerType,
                     LayerSource = standaloneTable.GetTable().GetPath().ToString(),
                     ClassName = standaloneTable.GetTable().GetName(),
                     DefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
@@ -731,7 +738,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static int AddDisplayFiltersToList(string layerPos, string groupLayerName, CIMDisplayFilter[] cimDisplayFilterChoices, CIMDisplayFilter[] cimDisplayFilter, ref List<DisplayFilterLayout> displayFilterList)
+        private static int AddDisplayFiltersToList(string layerPos, string layerType, string groupLayerName, string layerName, CIMDisplayFilter[] cimDisplayFilterChoices, CIMDisplayFilter[] cimDisplayFilter, ref List<DisplayFilterLayout> displayFilterList)
         {
             int recsAdded = 0;
             //In Pro, there are 2 choices to set the Active Display Filters
@@ -743,7 +750,9 @@ namespace UtilityNetworkPropertiesExtractor
                     DisplayFilterLayout rec = new DisplayFilterLayout()
                     {
                         LayerPos = layerPos,
+                        LayerType = layerType,
                         GroupLayerName = groupLayerName,
+                        LayerName = layerName,
                         DisplayFilterType = "Manually",
                         DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].Name),
                         DisplayFilterExpresssion = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].WhereClause),
@@ -764,7 +773,9 @@ namespace UtilityNetworkPropertiesExtractor
                     DisplayFilterLayout rec = new DisplayFilterLayout()
                     {
                         LayerPos = layerPos,
+                        LayerType = layerType,
                         GroupLayerName = groupLayerName,
+                        LayerName = layerName,
                         DisplayFilterType = "By Scale",
                         DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilter[k].Name),
                         MinScale = GetScaleValue(cimDisplayFilter[k].MinScale),
@@ -874,6 +885,7 @@ namespace UtilityNetworkPropertiesExtractor
         private class PopupLayout
         {
             public string LayerPos { get; set; }
+            public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string PopupExpresssionName { get; set; }
@@ -885,6 +897,7 @@ namespace UtilityNetworkPropertiesExtractor
         private class DisplayFilterLayout
         {
             public string LayerPos { get; set; }
+            public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string DisplayFilterType { get; set; }
@@ -897,6 +910,7 @@ namespace UtilityNetworkPropertiesExtractor
         private class SharedTraceConfigurationLayout
         {
             public string LayerPos { get; set; }
+            public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string TraceConfiguration { get; set; }
