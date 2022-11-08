@@ -199,6 +199,8 @@ namespace UtilityNetworkPropertiesExtractor
                         SubnetworkFieldName = tier.SubnetworkFieldName,
                         TopologyType = tier.TopologyType.ToString(),
                         SupportDisjointSubnetworks = tier.IsDisjointSubnetworkSupported.ToString(),
+                        EditModeInDefault = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.DefaultVersion).ToString(),
+                        EditModeInNamedVersion = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.NamedVersion).ToString(),
                         UpdateSubnetworkContainers = updPolicyForContainers,
                         UpdateSubnetworkStructures = updPolicyForStructures
                     };
@@ -503,6 +505,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string SupportDisjointSubnetworks { get; set; }
             public string UpdateSubnetworkContainers { get; set; }
             public string UpdateSubnetworkStructures { get; set; }
+            public string EditModeInDefault { get; set; }
+            public string EditModeInNamedVersion { get; set; }
         }
 
         private class CSVLayoutTierInfo
