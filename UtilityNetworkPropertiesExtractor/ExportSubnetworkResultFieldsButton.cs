@@ -25,16 +25,21 @@ using System.Threading.Tasks;
 
 namespace UtilityNetworkPropertiesExtractor
 {
+    // 11/10/22
+    // Geoprocessing Tool, Extract Subnetwork, has a parameter for ResultFields which identifies all the fields to be written to a JSON file
+    //   Using the GP tool to manually identify thoses fields is not efficient.
+    //   This Pro SDK button will extract all Attribute fields to a text file in the format that the GP tool is expecting it.
+    //   If you don't want all fields on every class, you'll need to make a code change.
     internal class ExportSubnetworkResultFieldsButton : Button
     {
         private static string _fileName = string.Empty;
 
-        protected override void OnClick()
+        protected async override void OnClick()
         {
             try
             {
-
-                BuildResultFieldsAsync();
+                await BuildResultFieldsAsync();
+                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "TXT file has been generated");
 
             }
             catch (Exception ex)
@@ -54,7 +59,6 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
                 Common.CreateOutputDirectory();
 
-                string mesg = string.Empty;
                 string resultFields = string.Empty;
 
                 using (Geodatabase geodatabase = featureLayerInUn.GetTable().GetDatastore() as Geodatabase)
@@ -68,15 +72,16 @@ namespace UtilityNetworkPropertiesExtractor
                         IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();
                         IReadOnlyList<TableDefinition> tableDefinitionList = geodatabase.GetDefinitions<TableDefinition>();
 
-                        //Network Sources
+                        //Get all Network Sources
                         UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
                         IOrderedEnumerable<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources().OrderBy(x => x.ID);
                         foreach (NetworkSource networkSource in networkSourceList)
                         {
+                            // don't include these UN classes when builidng the ResultFields
                             if (networkSource.UsageType == SourceUsageType.SubnetLine || networkSource.UsageType == SourceUsageType.Association || networkSource.UsageType == SourceUsageType.SystemJunction)
                                 continue;
 
-                            // UN FeatureClasses's UsageType values are between 0 and 7
+                            // Utility Network FeatureClasses's UsageType values are between 0 and 7
                             if ((int)networkSource.UsageType <= 7)
                             {
                                 //search for featureclass
@@ -84,26 +89,28 @@ namespace UtilityNetworkPropertiesExtractor
                                 {
                                     string fcName = fcDefinition.GetName();
 
-                                    fcName = ReformatClassNames(fcName);
+                                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
+                                        fcName = ReformatClassNameFromService(fcName);
+
                                     if (fcName == networkSource.Name)
                                     {
-                                        mesg += "FC:" + networkSource.Name + "\n";
                                         IReadOnlyList<Field> fieldsList = fcDefinition.GetFields();
                                         BuildResultsString(fcName, fieldsList, ref resultFields);
                                         break;
                                     }
                                 }
                             }
-                            else
+                            else // Utility Network Tables
                             {
                                 foreach (TableDefinition tableDefinition in tableDefinitionList)
                                 {
                                     string tableName = tableDefinition.GetName();
 
-                                    tableName = ReformatClassNames(tableName);
+                                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
+                                        tableName = ReformatClassNameFromService(tableName);
+
                                     if (tableName == networkSource.Name)
                                     {
-                                        mesg += "Table:" + networkSource.Name + "\n";
                                         IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
                                         BuildResultsString(tableName, fieldsList, ref resultFields);
                                         break;
@@ -113,23 +120,34 @@ namespace UtilityNetworkPropertiesExtractor
                         }
 
                         sw.WriteLine(Common.EncloseStringInDoubleQuotes(resultFields));
-                        MessageBox.Show(mesg);
-                    }
+                        sw.Flush();
+                     }
                 }
             });
         }
 
-        private static string ReformatClassNames(string fcName)
+        private static string ReformatClassNameFromService(string fcName)
         {
             //strip out the leading number from the table name "L0Electric_Device".  
             //Also need to replace the underscore with a blank space
             int index = fcName.LastIndexOfAny("0123456789".ToCharArray());
-            fcName = fcName.Substring(index + 1).Replace("_", " ");
-            return fcName;
+            return fcName.Substring(index + 1).Replace("_", " ");
+        }
+
+        private static string StripOffDbOwner(string fcName)
+        {
+            //When exporting from a Mobile GDB, need to strip off db owner ("main.") from the class name
+            int index = fcName.IndexOf(".");
+            if (index == -1)
+                return fcName;
+            else
+                return fcName.Substring(index + 1);
         }
 
         private static void BuildResultsString(string fcName, IReadOnlyList<Field> fieldsList, ref string resultFields)
         {
+            fcName = StripOffDbOwner(fcName);
+
             foreach (Field field in fieldsList)
             {
                 if (field.FieldType == FieldType.Geometry || field.FieldType == FieldType.Blob || field.FieldType == FieldType.Raster || field.Name.Contains('('))
