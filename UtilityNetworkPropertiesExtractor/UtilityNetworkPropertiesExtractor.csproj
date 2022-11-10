@@ -134,6 +134,7 @@
     <Compile Include="AttributeRulesButton.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="ContingentValuesButton.cs" />
+    <Compile Include="ExportSubnetworkResultFieldsButton.cs" />
     <Compile Include="LayerCountsButton.cs" />
     <Compile Include="DisplayFieldExpressionButton.cs" />
     <Compile Include="DisplayFilterButton.cs" />
