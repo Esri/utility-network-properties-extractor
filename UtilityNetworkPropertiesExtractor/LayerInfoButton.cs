@@ -609,8 +609,9 @@ namespace UtilityNetworkPropertiesExtractor
                     CSVLayout rec = new CSVLayout()
                     {
                         LayerPos = layerPos.ToString(),
-                        GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                        LayerName = "Extract Error",
+                        LayerType = "Extract Error",
+                        GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
+                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),                       
                         IsVisible = layer.IsVisible.ToString(),
                         LayerSource = ex.Message
                     };

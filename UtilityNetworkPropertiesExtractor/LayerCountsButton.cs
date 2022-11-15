@@ -112,27 +112,31 @@ namespace UtilityNetworkPropertiesExtractor
                             CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
                             CIMFeatureTable cimFeatureTable = cimFeatureLayerDef.FeatureTable;
                             FeatureClass featureClass = featureLayer.GetFeatureClass();
-                            QueryFilter queryFilter = new QueryFilter();
 
-                            if (cimFeatureTable.UseSubtypeValue)
+                            if (featureClass != null)
                             {
-                                string subtypeField = featureClass.GetDefinition().GetSubtypeField();
-                                queryFilter.WhereClause = $"{subtypeField} = {cimFeatureTable.SubtypeValue}";
-                                definitionQuery = queryFilter.WhereClause;
-                            }
-                            else
-                            {
-                                if (!string.IsNullOrEmpty(featureLayer.DefinitionFilter.DefinitionExpression))
+                                QueryFilter queryFilter = new QueryFilter();
+
+                                if (cimFeatureTable.UseSubtypeValue)
                                 {
-                                    queryFilter.WhereClause = featureLayer.DefinitionFilter.DefinitionExpression;
+                                    string subtypeField = featureClass.GetDefinition().GetSubtypeField();
+                                    queryFilter.WhereClause = $"{subtypeField} = {cimFeatureTable.SubtypeValue}";
                                     definitionQuery = queryFilter.WhereClause;
                                 }
-                            }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(featureLayer.DefinitionFilter.DefinitionExpression))
+                                    {
+                                        queryFilter.WhereClause = featureLayer.DefinitionFilter.DefinitionExpression;
+                                        definitionQuery = queryFilter.WhereClause;
+                                    }
+                                }
 
-                            if (!string.IsNullOrEmpty(queryFilter.WhereClause))
-                                recordCount = featureClass.GetCount(queryFilter);
-                            else
-                                recordCount = featureClass.GetCount();
+                                if (!string.IsNullOrEmpty(queryFilter.WhereClause))
+                                    recordCount = featureClass.GetCount(queryFilter);
+                                else
+                                    recordCount = featureClass.GetCount();
+                            }
                         }
                         else if (layer is BasicFeatureLayer basicFeatureLayer)  //Annotation or Dimensions layer
                         {
