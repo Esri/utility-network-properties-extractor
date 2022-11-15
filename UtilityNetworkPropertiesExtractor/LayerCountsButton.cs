@@ -46,7 +46,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Extract Trace Configuration");
+                MessageBox.Show(ex.Message, "Extract Layer Counts");
             }
             finally
             {
