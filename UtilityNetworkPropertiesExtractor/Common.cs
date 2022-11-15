@@ -258,16 +258,19 @@ namespace UtilityNetworkPropertiesExtractor
                 featureLayer = layer as FeatureLayer;
                 using (FeatureClass featureClass = featureLayer.GetFeatureClass())
                 {
-                    if (featureClass.IsControllerDatasetSupported())
+                    if (featureClass != null) // invalid layers won't have a featureclass value
                     {
-                        IReadOnlyList<Dataset> controllerDatasets = new List<Dataset>();
-                        controllerDatasets = featureClass.GetControllerDatasets();
-                        foreach (Dataset controllerDataset in controllerDatasets)
+                        if (featureClass.IsControllerDatasetSupported())
                         {
-                            if (controllerDataset is UtilityNetwork)
-                                utilityNetwork = controllerDataset as UtilityNetwork;
-                            else
-                                controllerDataset.Dispose();
+                            IReadOnlyList<Dataset> controllerDatasets = new List<Dataset>();
+                            controllerDatasets = featureClass.GetControllerDatasets();
+                            foreach (Dataset controllerDataset in controllerDatasets)
+                            {
+                                if (controllerDataset is UtilityNetwork)
+                                    utilityNetwork = controllerDataset as UtilityNetwork;
+                                else
+                                    controllerDataset.Dispose();
+                            }
                         }
                     }
                 }
