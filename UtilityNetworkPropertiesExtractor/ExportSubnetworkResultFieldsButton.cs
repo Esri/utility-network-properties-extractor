@@ -26,10 +26,10 @@ using System.Threading.Tasks;
 namespace UtilityNetworkPropertiesExtractor
 {
     // 11/10/22
-    // Geoprocessing Tool, Extract Subnetwork, has a parameter for ResultFields which identifies all the fields to be written to a JSON file
-    //   Using the GP tool to manually identify thoses fields is not efficient.
+    // Geoprocessing Tool, Extract Subnetwork, has a parameter for ResultFields which identifies all the fields to be written to a JSON file.
+    //   Using the GP tool to manually select thoses fields is not efficient.
     //   This Pro SDK button will extract all Attribute fields to a text file in the format that the GP tool is expecting it.
-    //   If you don't want all fields on every class, you'll need to make a code change.
+    //   If you don't want all fields on every class, either manually remove specific fields or modify method, BuildResultsString()
     internal class ExportSubnetworkResultFieldsButton : Button
     {
         private static string _fileName = string.Empty;
@@ -136,8 +136,9 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static string StripOffDbOwner(string fcName)
         {
-            //When exporting from a Mobile GDB, need to strip off db owner ("main.") from the class name
-            int index = fcName.IndexOf(".");
+            //When exporting from a Mobile GDB, need to strip off db owner ("main.ElectricDevice") from the class name
+            //When data source is an database connection, need to strip off database name and owner ("prod.gis.ElectricDevice") from the class name.
+            int index = fcName.LastIndexOf(".");
             if (index == -1)
                 return fcName;
             else
@@ -152,12 +153,9 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 if (field.FieldType == FieldType.Geometry || field.FieldType == FieldType.Blob || field.FieldType == FieldType.Raster || field.Name.Contains('('))
                     continue;
-
                 else
                     resultFields += string.Format("'{0}' {1};", fcName, field.Name);
             }
-
-            return;
         }
     }
 }
