@@ -68,14 +68,23 @@ namespace UtilityNetworkPropertiesExtractor
                 string layerInfoFile = Path.Combine(Common.ExtractFilePath, _fileName);
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
 
-                string popupFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_Popups");
-                WritePopupCSV(popupLayoutList, popupFile);
+                if (popupLayoutList.Count >= 1)
+                {
+                    string popupFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_Popups");
+                    WritePopupCSV(popupLayoutList, popupFile);
+                }
 
-                string displayFilterFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DisplayFilters");
-                WriteDisplayFilterCSV(displayFilterLayoutList, displayFilterFile);
+                if (displayFilterLayoutList.Count >= 1)
+                {
+                    string displayFilterFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DisplayFilters");
+                    WriteDisplayFilterCSV(displayFilterLayoutList, displayFilterFile);
+                }
 
-                string sharedTraceConfigFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_SharedTraceConfiguration");
-                WriteSharedTraceConfigurationCSV(sharedTraceConfigurationLayout, sharedTraceConfigFile);
+                if (sharedTraceConfigurationLayout.Count >= 1)
+                {
+                    string sharedTraceConfigFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_SharedTraceConfiguration");
+                    WriteSharedTraceConfigurationCSV(sharedTraceConfigurationLayout, sharedTraceConfigFile);
+                }
             });
         }
 
