@@ -28,6 +28,7 @@ namespace UtilityNetworkPropertiesExtractor
     internal class LayerInfoButton : Button
     {
         private static string _fileName = string.Empty;
+        private const string _defQueriesMesg = "see LayerInfo_DefQueries";
 
         protected async override void OnClick()
         {
@@ -691,6 +692,10 @@ namespace UtilityNetworkPropertiesExtractor
             IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
             foreach (StandaloneTable standaloneTable in standaloneTableList)
             {
+                popupExpressionCount = 0;
+                popupName = string.Empty;
+                popupExpression = string.Empty;
+
                 CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
                 CIMExpressionInfo cimExpressionInfo = cimStandaloneTable.DisplayExpressionInfo;
 
@@ -746,7 +751,11 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                 }
 
+                //Popup
                 GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
+
+                //definition queries
+                additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(standaloneTable.Name), standaloneTable, ref definitionQueryLayout);
 
                 CSVLayout rec = new CSVLayout()
                 {
@@ -756,6 +765,7 @@ namespace UtilityNetworkPropertiesExtractor
                     LayerSource = standaloneTable.GetTable().GetPath().ToString(),
                     ClassName = standaloneTable.GetTable().GetName(),
                     ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
+                    AdditionalDefinitionQueries = additionalDefQueriesText,
                     DisplayField = Common.EncloseStringInDoubleQuotes(displayField),
                     PopupExpresssionCount = popupExpressionCount.ToString(),
                     PopupExpresssionName = popupName,
@@ -790,7 +800,6 @@ namespace UtilityNetworkPropertiesExtractor
                 PopupLayout popup = popupLayoutList.LastOrDefault();
                 popupName = popup.PopupExpresssionName;
                 popupExpression = popup.PopupExpressionArcade;
-
             }
             else if (popupCount >= 2)
             {
@@ -938,12 +947,57 @@ namespace UtilityNetworkPropertiesExtractor
             if (!string.IsNullOrEmpty(basicFeatureLayer.DefinitionFilter.DefinitionExpression))
             {
                 if (cnt > 1) 
-                    returnMessage = "see LayerInfo_DefQueries";
+                    returnMessage = _defQueriesMesg;
             }
             else  // No active definition query
             {
                 if (cnt > 0)  // Return Message indicates if additional queries exist.
-                    returnMessage = "see LayerInfo_DefQueries";
+                    returnMessage = _defQueriesMesg;
+            }
+            return returnMessage;
+        }
+
+        private static string AddDefinitionQueriesToList(string layerPos, string layerType, string groupLayerName, string layerName, StandaloneTable standaloneTable, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
+        {
+            string returnMessage = string.Empty;
+            int cnt = 0;
+            IReadOnlyList<CIMDefinitionFilter> definitionFilters = standaloneTable.GetDefinitionFilters();
+            if (definitionFilters.Count() > 0)
+            {
+                bool activeDefQuery;
+                foreach (CIMDefinitionFilter filter in definitionFilters)
+                {
+                    if (standaloneTable.DefinitionFilter.Name == filter.Name)
+                        activeDefQuery = true;
+                    else
+                        activeDefQuery = false;
+
+                    DefinitionQueryLayout definitionQueryLayout = new DefinitionQueryLayout()
+                    {
+                        LayerPos = layerPos,
+                        LayerType = layerType,
+                        GroupLayerName = groupLayerName,
+                        LayerName = layerName,
+                        DefinitionQueryName = filter.Name,
+                        DefinitionQuery = filter.DefinitionExpression,
+                        Active = activeDefQuery.ToString()
+                    };
+
+                    definitionQueryLayoutList.Add(definitionQueryLayout);
+                    cnt += 1;
+                }
+            }
+
+            // if active definition filter is defined, only indicate additional def queries if count is greater than 1.
+            if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
+            {
+                if (cnt > 1)
+                    returnMessage = _defQueriesMesg;
+            }
+            else  // No active definition query
+            {
+                if (cnt > 0)  // Return Message indicates if additional queries exist.
+                    returnMessage = _defQueriesMesg;
             }
             return returnMessage;
         }
