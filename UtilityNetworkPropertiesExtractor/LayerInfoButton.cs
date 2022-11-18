@@ -61,9 +61,10 @@ namespace UtilityNetworkPropertiesExtractor
                 List<CSVLayout> csvLayoutList = new List<CSVLayout>();
                 List<PopupLayout> popupLayoutList = new List<PopupLayout>();
                 List<DisplayFilterLayout> displayFilterLayoutList = new List<DisplayFilterLayout>();
-                List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout = new List<SharedTraceConfigurationLayout>();
+                List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayoutList = new List<SharedTraceConfigurationLayout>();
+                List<DefinitionQueryLayout> definitionQueryLayoutList = new List<DefinitionQueryLayout>();
 
-                InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayout);
+                InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList);
 
                 string layerInfoFile = Path.Combine(Common.ExtractFilePath, _fileName);
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
@@ -80,10 +81,16 @@ namespace UtilityNetworkPropertiesExtractor
                     WriteDisplayFilterCSV(displayFilterLayoutList, displayFilterFile);
                 }
 
-                if (sharedTraceConfigurationLayout.Count >= 1)
+                if (sharedTraceConfigurationLayoutList.Count >= 1)
                 {
                     string sharedTraceConfigFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_SharedTraceConfiguration");
-                    WriteSharedTraceConfigurationCSV(sharedTraceConfigurationLayout, sharedTraceConfigFile);
+                    WriteSharedTraceConfigurationCSV(sharedTraceConfigurationLayoutList, sharedTraceConfigFile);
+                }
+
+                if (definitionQueryLayoutList.Count >= 1)
+                {
+                    string defQueryFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DefQueries");
+                    WriteDefQueriesCSV(definitionQueryLayoutList, defQueryFile);
                 }
             });
         }
@@ -198,19 +205,47 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout)
+        private static void WriteDefQueriesCSV(List<DefinitionQueryLayout> defQueriesList, string outputFile)
         {
+            using (StreamWriter sw = new StreamWriter(outputFile))
+            {
+                //Header information
+                sw.WriteLine(DateTime.Now + "," + "Layer Info - Definition Queries");
+                sw.WriteLine();
+                sw.WriteLine("Project," + Project.Current.Path);
+                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine();
+
+                //Get all properties defined in the class.  This will be used to generate the CSV file
+                DefinitionQueryLayout emptyRec = new DefinitionQueryLayout();
+                PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                //Write column headers based on properties in the class
+                string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                sw.WriteLine(columnHeader);
+
+                foreach (DefinitionQueryLayout row in defQueriesList)
+                {
+                    string output = Common.ExtractClassValuesToString(row, properties);
+                    sw.WriteLine(output);
+                }
+            }
+        }
+
+        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout, ref List<DefinitionQueryLayout> definitionQueryLayout)
+        {
+            int popupExpressionCount = 0;
+            int displayFilterCount;
             int layerPos = 1;
-            string layerType = "";
+            bool increaseLayerPos;
+            string layerType;
             string prevGroupLayerName = string.Empty;
             string layerContainer = string.Empty;
-            bool increaseLayerPos = false;
-            int popupExpressionCount = 0;
-            int displayFilterCount = 0;
             string popupName = string.Empty;
             string popupExpression = string.Empty;
             string displayFilterExpression = string.Empty;
             string displayFilterName = string.Empty;
+            string additionalDefQueriesText;
 
             List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
             foreach (Layer layer in layerList)
@@ -327,6 +362,8 @@ namespace UtilityNetworkPropertiesExtractor
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
+                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), featureLayer, ref definitionQueryLayout);
+
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
@@ -343,7 +380,8 @@ namespace UtilityNetworkPropertiesExtractor
                             IsSnappable = featureLayer.IsSnappable.ToString(),
                             IsEditable = featureLayer.IsEditable.ToString(),
                             RefreshRate = cimFeatureLayerDef.RefreshRate.ToString(),
-                            DefinitionQuery = Common.EncloseStringInDoubleQuotes(featureLayer.DefinitionFilter.DefinitionExpression),
+                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(featureLayer.DefinitionFilter.DefinitionExpression),
+                            AdditionalDefinitionQueries = additionalDefQueriesText,
                             DisplayFilterCount = displayFilterCount.ToString(),
                             DisplayFilterName = displayFilterName,
                             DisplayFilterExpresssion = displayFilterExpression,
@@ -385,7 +423,7 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerType = layerType,
                             GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                             IsVisible = layer.IsVisible.ToString(),
-                            DefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression),
+                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression),
                             DisplayFilterCount = displayFilterCount.ToString(),
                             DisplayFilterName = displayFilterName,
                             DisplayFilterExpresssion = displayFilterExpression,
@@ -421,6 +459,8 @@ namespace UtilityNetworkPropertiesExtractor
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
+                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), annotationLayer, ref definitionQueryLayout);
+
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
@@ -435,7 +475,8 @@ namespace UtilityNetworkPropertiesExtractor
                             IsSelectable = annotationLayer.IsSelectable.ToString(),
                             IsEditable = annotationLayer.IsEditable.ToString(),
                             RefreshRate = cimAnnotationLayerDef.RefreshRate.ToString(),
-                            DefinitionQuery = Common.EncloseStringInDoubleQuotes(annotationLayer.DefinitionFilter.DefinitionExpression),
+                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(annotationLayer.DefinitionFilter.DefinitionExpression),
+                            AdditionalDefinitionQueries = additionalDefQueriesText,
                             DisplayFilterCount = displayFilterCount.ToString(),
                             DisplayFilterName = displayFilterName,
                             DisplayFilterExpresssion = displayFilterExpression,
@@ -473,6 +514,8 @@ namespace UtilityNetworkPropertiesExtractor
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
+                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), dimensionLayer, ref definitionQueryLayout);
+
                         CSVLayout rec = new CSVLayout()
                         {
                             LayerPos = layerPos.ToString(),
@@ -487,7 +530,8 @@ namespace UtilityNetworkPropertiesExtractor
                             IsSelectable = dimensionLayer.IsSelectable.ToString(),
                             IsEditable = dimensionLayer.IsEditable.ToString(),
                             RefreshRate = cimDimensionLayerDef.RefreshRate.ToString(),
-                            DefinitionQuery = Common.EncloseStringInDoubleQuotes(dimensionLayer.DefinitionFilter.DefinitionExpression),
+                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(dimensionLayer.DefinitionFilter.DefinitionExpression),
+                            AdditionalDefinitionQueries = additionalDefQueriesText,
                             DisplayFilterCount = displayFilterCount.ToString(),
                             DisplayFilterName = displayFilterName,
                             DisplayFilterExpresssion = displayFilterExpression,
@@ -627,7 +671,7 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerPos = layerPos.ToString(),
                         LayerType = "Extract Error",
                         GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),                       
+                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
                         IsVisible = layer.IsVisible.ToString(),
                         LayerSource = ex.Message
                     };
@@ -711,7 +755,7 @@ namespace UtilityNetworkPropertiesExtractor
                     LayerType = layerType,
                     LayerSource = standaloneTable.GetTable().GetPath().ToString(),
                     ClassName = standaloneTable.GetTable().GetName(),
-                    DefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
+                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
                     DisplayField = Common.EncloseStringInDoubleQuotes(displayField),
                     PopupExpresssionCount = popupExpressionCount.ToString(),
                     PopupExpresssionName = popupName,
@@ -859,6 +903,51 @@ namespace UtilityNetworkPropertiesExtractor
                 return scale.ToString();
         }
 
+        private static string AddDefinitionQueriesToList(string layerPos, string layerType, string groupLayerName, string layerName, BasicFeatureLayer basicFeatureLayer, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
+        {
+            string returnMessage = string.Empty;
+            int cnt = 0;
+            IReadOnlyList<CIMDefinitionFilter> definitionFilters = basicFeatureLayer.GetDefinitionFilters();
+            if (definitionFilters.Count() > 0)
+            {
+                bool activeDefQuery;
+                foreach (CIMDefinitionFilter filter in definitionFilters)
+                {
+                    if (basicFeatureLayer.DefinitionFilter.Name == filter.Name)
+                        activeDefQuery = true;
+                    else
+                        activeDefQuery = false;
+
+                    DefinitionQueryLayout definitionQueryLayout = new DefinitionQueryLayout()
+                    {
+                        LayerPos = layerPos,
+                        LayerType = layerType,
+                        GroupLayerName = groupLayerName,
+                        LayerName = layerName,
+                        DefinitionQueryName = filter.Name,
+                        DefinitionQuery = filter.DefinitionExpression,
+                        Active = activeDefQuery.ToString()
+                    };
+
+                    definitionQueryLayoutList.Add(definitionQueryLayout);
+                    cnt += 1;
+                }
+            }
+
+            // if active definition filter is defined, only indicate additional def queries if count is greater than 1.
+            if (!string.IsNullOrEmpty(basicFeatureLayer.DefinitionFilter.DefinitionExpression))
+            {
+                if (cnt > 1) 
+                    returnMessage = "see LayerInfo_DefQueries";
+            }
+            else  // No active definition query
+            {
+                if (cnt > 0)  // Return Message indicates if additional queries exist.
+                    returnMessage = "see LayerInfo_DefQueries";
+            }
+            return returnMessage;
+        }
+
         private class CSVLayout
         {
             public string LayerPos { get; set; }
@@ -877,7 +966,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string RefreshRate { get; set; }
             public string SharedTraceConfigurationCount { get; set; }
             public string SharedTraceConfiguration { get; set; }
-            public string DefinitionQuery { get; set; }
+            public string ActiveDefinitionQuery { get; set; }
+            public string AdditionalDefinitionQueries { get; set; }
             public string DisplayFilterCount { get; set; }
             public string DisplayFilterName { get; set; }
             public string DisplayFilterExpresssion { get; set; }
@@ -911,6 +1001,16 @@ namespace UtilityNetworkPropertiesExtractor
             public string PopupExpressionArcade { get; set; }
         }
 
+        private class DefinitionQueryLayout
+        {
+            public string LayerPos { get; set; }
+            public string LayerType { get; set; }
+            public string GroupLayerName { get; set; }
+            public string LayerName { get; set; }
+            public string Active { get; set; }
+            public string DefinitionQueryName { get; set; }
+            public string DefinitionQuery { get; set; }
+        }
         private class DisplayFilterLayout
         {
             public string LayerPos { get; set; }
