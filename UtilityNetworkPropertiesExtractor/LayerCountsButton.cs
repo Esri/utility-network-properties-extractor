@@ -72,7 +72,8 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + MapView.Active.Map.Name);
                     sw.WriteLine("Layer Count," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
-                    sw.WriteLine("Table Count," + MapView.Active.Map.StandaloneTables.Count);
+                    sw.WriteLine("Standalone Table Count," + MapView.Active.Map.StandaloneTables.Count);
+                    sw.WriteLine("Tables in Group Layers Count," + Common.GetCountOfTablesInGroupLayers());
                     sw.WriteLine();
 
                     //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -95,6 +96,7 @@ namespace UtilityNetworkPropertiesExtractor
                     List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
                     foreach (Layer layer in layerList)
                     {
+                        CSVLayout csvLayout = new CSVLayout();
                         definitionQuery = string.Empty;
                         recordCount = 0;
 
@@ -106,7 +108,12 @@ namespace UtilityNetworkPropertiesExtractor
                         }
                         else
                             layerContainer = string.Empty;
-                                                
+
+                        csvLayout.LayerPos = layerPos.ToString();
+                        csvLayout.LayerType = Common.GetLayerTypeDescription(layer);
+                        csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                        csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
+
                         if (layer is FeatureLayer featureLayer)
                         {
                             CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
@@ -142,21 +149,28 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             recordCount = basicFeatureLayer.GetTable().GetCount();
                         }
-                        else if (layer is GroupLayer groupLayer)
+                        else if (layer is GroupLayer)
                         {
-                            layerContainer = groupLayer.Name;
+                            csvLayout.GroupLayerName = csvLayout.LayerName;
+                            csvLayout.LayerName = string.Empty;
                             recordCount = 0;
                         }
-                        
-                        CSVLayout rec = new CSVLayout()
+                        else if (layer is UtilityNetworkLayer)
                         {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                            DefinitionQuery = definitionQuery,
-                            RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}")
-                        };
-                        CSVLayoutList.Add(rec);
+                            csvLayout.GroupLayerName = csvLayout.LayerName;
+                            recordCount = 0;
+                        }
+                        else if (layer is SubtypeGroupLayer subtypeGroupLayer)
+                        {
+                            csvLayout.GroupLayerName = csvLayout.LayerName;
+                            csvLayout.LayerName = string.Empty;
+                            recordCount = 0;
+                        }
+
+                        csvLayout.DefinitionQuery = definitionQuery;
+                        csvLayout.RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}");
+
+                        CSVLayoutList.Add(csvLayout);
 
                         sum += recordCount;
                         layerPos += 1;
@@ -164,30 +178,15 @@ namespace UtilityNetworkPropertiesExtractor
 
                     //Standalone Tables
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
-                    foreach (StandaloneTable standaloneTable in standaloneTableList)
+                    InterrogateStandaloneTables(standaloneTableList, string.Empty, ref CSVLayoutList, ref layerPos, ref sum);
+
+                    //Tables in Group Layers
+                    //  Will show up at the bottom of the CSV.  This isn't quite right.
+                    List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+                    foreach (GroupLayer groupLayer in groupLayerList)
                     {
-                        definitionQuery = string.Empty;
-                        if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
-                        {
-                            QueryFilter queryFilter = new QueryFilter() { WhereClause = standaloneTable.DefinitionFilter.DefinitionExpression };
-                            recordCount = standaloneTable.GetTable().GetCount(queryFilter);
-                            definitionQuery = queryFilter.WhereClause;
-                        }
-                        else
-                            recordCount = standaloneTable.GetTable().GetCount();
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            GroupLayerName = "Standalone Tables",
-                            LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
-                            DefinitionQuery = definitionQuery,
-                            RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}")
-                        };
-                        CSVLayoutList.Add(rec);
-
-                        sum += recordCount;
-                        layerPos += 1;
+                        if (groupLayer.StandaloneTables.Count > 0)
+                            InterrogateStandaloneTables(groupLayer.StandaloneTables, groupLayer.Name, ref CSVLayoutList, ref layerPos, ref sum);
                     }
 
                     CSVLayoutList.Add(emptyRec);
@@ -198,7 +197,7 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerName = "Total Records",
                         RecordCount = Common.EncloseStringInDoubleQuotes($"{sum:n0}")
                     };
-                                        
+
                     CSVLayoutList.Add(summary);
 
                     //Write entries to CSV File
@@ -214,9 +213,47 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
+        private static void InterrogateStandaloneTables(IReadOnlyList<StandaloneTable> standaloneTableList, string groupLayerName, ref List<CSVLayout> CSVLayoutList, ref int layerPos, ref int sum)
+        {
+            string layerType = "Standalone Table";
+            if (! string.IsNullOrEmpty(groupLayerName))
+                layerType = "Table in Group Layer";
+
+            int recordCount;
+            string definitionQuery;
+            foreach (StandaloneTable standaloneTable in standaloneTableList)
+            {
+                recordCount = 0;
+                definitionQuery = string.Empty;
+                if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
+                {
+                    QueryFilter queryFilter = new QueryFilter() { WhereClause = standaloneTable.DefinitionFilter.DefinitionExpression };
+                    recordCount = standaloneTable.GetTable().GetCount(queryFilter);
+                    definitionQuery = queryFilter.WhereClause;
+                }
+                else
+                    recordCount = standaloneTable.GetTable().GetCount();
+
+                CSVLayout rec = new CSVLayout()
+                {
+                    LayerPos = layerPos.ToString(),
+                    LayerType = layerType,
+                    LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
+                    GroupLayerName = groupLayerName,
+                    DefinitionQuery = definitionQuery,
+                    RecordCount = Common.EncloseStringInDoubleQuotes($"{recordCount:n0}")
+                };
+                CSVLayoutList.Add(rec);
+
+                sum += recordCount;
+                layerPos += 1;
+            }
+        }
+
         private class CSVLayout
         {
             public string LayerPos { get; set; }
+            public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string DefinitionQuery { get; set; }

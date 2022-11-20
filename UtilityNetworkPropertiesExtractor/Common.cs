@@ -34,9 +34,54 @@ namespace UtilityNetworkPropertiesExtractor
 
         public const string Delimiter = ",";
 
+        public static int GetCountOfTablesInGroupLayers()
+        {
+            int cnt = 0;
+            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+            foreach (GroupLayer groupLayer in groupLayerList)
+            {
+                if (groupLayer.StandaloneTables.Count > 0)
+                    cnt += groupLayer.StandaloneTables.Count;
+            }
+
+            return cnt;
+        }
+
         public static string GetExtractFilePath()
         {
             return _extractFileRootPath + GetProProjectName();
+        }
+
+        public static string GetLayerTypeDescription(Layer layer)
+        {
+            string retVal;
+
+            if (layer is FeatureLayer)
+                retVal = "Feature Layer";
+            else if (layer is GroupLayer)
+                retVal = "Group Layer";
+            else if (layer is SubtypeGroupLayer)
+                retVal = "Subtype Group Layer";
+            else if (layer is AnnotationLayer)
+                retVal = "Annotation";
+            else if (layer is AnnotationSubLayer)
+                retVal = "Annotation Sub Layer";
+            else if (layer is DimensionLayer)
+                retVal = "Dimension";
+            else if (layer is UtilityNetworkLayer)
+                retVal = "Utility Network Layer";
+            else if (layer is TiledServiceLayer)
+                retVal = "Tiled Service Layer";
+            else if (layer is VectorTileLayer)
+                retVal = "Vector Tile Layer";
+            else if (layer is GraphicsLayer)
+                retVal = "Graphics Layer";
+            else if (layer.MapLayerType == MapLayerType.BasemapBackground)
+                retVal = "Basemap";
+            else
+                retVal = "Undefined";
+
+            return retVal;
         }
 
         public static void CreateOutputDirectory()

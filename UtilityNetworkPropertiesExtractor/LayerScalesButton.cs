@@ -109,7 +109,7 @@ namespace UtilityNetworkPropertiesExtractor
                         else
                             layerContainer = string.Empty;
 
-                        layerType = GetLayerType(layer);
+                        layerType = Common.GetLayerTypeDescription(layer);
                         switch (layerType) {
                             case "Feature Layer":
                             case "Annotation":
@@ -171,36 +171,6 @@ namespace UtilityNetworkPropertiesExtractor
                 if (layer.MinScale >= scale && layer.MaxScale <= scale)
                     retVal = true;
             }
-            return retVal;
-        }
-
-        private static string GetLayerType(Layer layer)
-        {
-            string retVal;
-
-            if (layer is FeatureLayer)
-                retVal = "Feature Layer";
-            else if (layer is GroupLayer)
-                retVal = "Group Layer";
-            else if (layer is SubtypeGroupLayer)
-                retVal = "Subtype Group Layer";
-            else if (layer is AnnotationLayer)
-                retVal = "Annotation";
-            else if (layer is AnnotationSubLayer)
-                retVal = "Annotation Sub Layer";
-            else if (layer is DimensionLayer)
-                retVal = "Dimension";
-            else if (layer is UtilityNetworkLayer)
-                retVal = "Utility Network Layer";
-            else if (layer is TiledServiceLayer)
-                retVal = "Tiled Service Layer";
-            else if (layer is VectorTileLayer)
-                retVal = "Vector Tile Layer";
-            else if (layer is GraphicsLayer)
-                retVal = "Graphics Layer";
-            else
-                retVal = "Layer";
-
             return retVal;
         }
 
