@@ -28,7 +28,7 @@ namespace UtilityNetworkPropertiesExtractor
     internal class LayerInfoButton : Button
     {
         private static string _fileName = string.Empty;
-        private const string _defQueriesMesg = "see LayerInfo_DefQueries";
+        private const string _defQueriesMesg = "see LayerInfo_DefinitionQueries";
 
         protected async override void OnClick()
         {
@@ -336,7 +336,7 @@ namespace UtilityNetworkPropertiesExtractor
                             sharedTraceConfiguation = shared.TraceConfiguration;
                         }
                         else if (sharedTraceConfigurationLayout.Count >= 2)
-                            sharedTraceConfiguation = "see LayerInfo_SharedTraceConfiguration.csv";
+                            sharedTraceConfiguation = "see LayerInfo_SharedTraceConfig.csv";
 
                         csvLayout.SharedTraceConfigurationCount = sharedTraceConfigurationLayout.Count.ToString();
                         csvLayout.SharedTraceConfiguration = sharedTraceConfiguation;
@@ -596,7 +596,7 @@ namespace UtilityNetworkPropertiesExtractor
                     displayFilterExpression = filter.DisplayFilterExpresssion;
             }
             else if (displayFilterCount >= 2)
-                displayFilterName = "see LayerInfo_DisplayFilter.csv";
+                displayFilterName = "see LayerInfo_DisplayFilters.csv";
         }
 
         private static void GetPopupInfoInfoForCSV(List<PopupLayout> popupLayoutList, int popupCount, ref string popupName, ref string popupExpression)
