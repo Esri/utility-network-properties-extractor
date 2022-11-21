@@ -26,20 +26,24 @@ using System.Threading.Tasks;
 namespace UtilityNetworkPropertiesExtractor
 {
     // 11/10/22
-    // Geoprocessing Tool, Extract Subnetwork, has a parameter for ResultFields which identifies all the fields to be written to a JSON file.
-    //   Using the GP tool to manually select thoses fields is not efficient.
+    // https://pro.arcgis.com/en/pro-app/2.9/tool-reference/utility-networks/export-subnetwork.htm
+    // Geoprocessing Tool, Export Subnetwork, has a parameter for "result_fields" which identifies all the fields to be written to a JSON file.
+    //   Using ArcGIS Pro's GUI to manually select thoses fields in the GP Tool is not efficient.
     //   This Pro SDK button will extract all Attribute fields to a text file in the format that the GP tool is expecting it.
     //   If you don't want all fields on every class, either manually remove specific fields or modify method, BuildResultsString()
+    // Note: Export Subnetwork is not supported in client-server mode.  So this button will raise an error when exectued against a map using database connections.
     internal class ExportSubnetworkResultFieldsButton : Button
     {
         private static string _fileName = string.Empty;
-
+        private static bool _fileGenerated = false;
+        
         protected async override void OnClick()
         {
             try
             {
                 await BuildResultFieldsAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "TXT file has been generated");
+                if (_fileGenerated)
+                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "TXT file has been generated");
 
             }
             catch (Exception ex)
@@ -59,8 +63,13 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
                 Common.CreateOutputDirectory();
 
-                string resultFields = string.Empty;
+                if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.EnterpriseGDB)
+                {                   
+                    MessageBox.Show("Use a map with Utility Network layers from FeatureServices to generate the 'result_fields' value needed by the Export Subnetwork GP Tool", "Build Export Subnetwork Result Fields", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Stop);
+                    return;
+                }
 
+                string resultFields = string.Empty;
                 using (Geodatabase geodatabase = featureLayerInUn.GetTable().GetDatastore() as Geodatabase)
                 {
                     string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -121,7 +130,8 @@ namespace UtilityNetworkPropertiesExtractor
 
                         sw.WriteLine(Common.EncloseStringInDoubleQuotes(resultFields));
                         sw.Flush();
-                     }
+                        _fileGenerated = true;
+                    }
                 }
             });
         }
