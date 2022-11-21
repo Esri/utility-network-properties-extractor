@@ -59,7 +59,7 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + MapView.Active.Map.Name);
-                    sw.WriteLine("Layer Count," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
+                    sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine();
 
                     //Since you can't name a C#.NET property with numeric values, I spelled them out.

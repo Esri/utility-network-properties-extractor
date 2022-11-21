@@ -71,9 +71,11 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + MapView.Active.Map.Name);
-                    sw.WriteLine("Layer Count," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
-                    sw.WriteLine("Standalone Table Count," + MapView.Active.Map.StandaloneTables.Count);
-                    sw.WriteLine("Tables in Group Layers Count," + Common.GetCountOfTablesInGroupLayers());
+                    sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
+                    sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
+                    int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();
+                    if (tablesInGroupLayers > 0)
+                        sw.WriteLine("Tables in Group Layers," + Common.GetCountOfTablesInGroupLayers());
                     sw.WriteLine();
 
                     //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -182,11 +184,14 @@ namespace UtilityNetworkPropertiesExtractor
 
                     //Tables in Group Layers
                     //  Will show up at the bottom of the CSV.  This isn't quite right.
-                    List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
-                    foreach (GroupLayer groupLayer in groupLayerList)
+                    if (tablesInGroupLayers > 0)
                     {
-                        if (groupLayer.StandaloneTables.Count > 0)
-                            InterrogateStandaloneTables(groupLayer.StandaloneTables, groupLayer.Name, ref CSVLayoutList, ref layerPos, ref sum);
+                        List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+                        foreach (GroupLayer groupLayer in groupLayerList)
+                        {
+                            if (groupLayer.StandaloneTables.Count > 0)
+                                InterrogateStandaloneTables(groupLayer.StandaloneTables, groupLayer.Name, ref CSVLayoutList, ref layerPos, ref sum);
+                        }
                     }
 
                     CSVLayoutList.Add(emptyRec);

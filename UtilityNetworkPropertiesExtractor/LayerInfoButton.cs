@@ -72,7 +72,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 if (popupLayoutList.Count >= 1)
                 {
-                    string popupFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_Popups");
+                    string popupFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_PopupExprs");
                     WritePopupCSV(popupLayoutList, popupFile);
                 }
 
@@ -84,45 +84,362 @@ namespace UtilityNetworkPropertiesExtractor
 
                 if (sharedTraceConfigurationLayoutList.Count >= 1)
                 {
-                    string sharedTraceConfigFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_SharedTraceConfiguration");
+                    string sharedTraceConfigFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_SharedTraceConfig");
                     WriteSharedTraceConfigurationCSV(sharedTraceConfigurationLayoutList, sharedTraceConfigFile);
                 }
 
                 if (definitionQueryLayoutList.Count >= 1)
                 {
-                    string defQueryFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DefQueries");
+                    string defQueryFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DefinitionQueries");
                     WriteDefQueriesCSV(definitionQueryLayoutList, defQueryFile);
                 }
             });
         }
 
-        private static void WriteLayerInfoCSV(List<CSVLayout> csvLayoutList, string outputFile)
+        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout, ref List<DefinitionQueryLayout> definitionQueryLayout)
         {
-            using (StreamWriter sw = new StreamWriter(outputFile))
+            int displayFilterCount;
+            int layerPos = 1;
+            int popupExpressionCount;
+            string layerContainer;
+            string prevGroupLayerName = string.Empty;
+            string popupName = string.Empty;
+            string popupExpression = string.Empty;
+            string displayFilterExpression = string.Empty;
+            string displayFilterName = string.Empty;
+            string additionalDefQueriesText;
+
+            List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
+            foreach (Layer layer in layerList)
             {
-                //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
-                sw.WriteLine("Layer Count," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
-                sw.WriteLine("Table Count," + MapView.Active.Map.StandaloneTables.Count);
-                sw.WriteLine();
-
-                //Get all properties defined in the class.  This will be used to generate the CSV file
-                CSVLayout emptyRec = new CSVLayout();
-                PropertyInfo[] csvProperties = Common.GetPropertiesOfClass(emptyRec);
-
-                //Write column headers based on properties in the class
-                string columnHeader = Common.ExtractClassPropertyNamesToString(csvProperties);
-                sw.WriteLine(columnHeader);
-
-                foreach (CSVLayout row in csvLayoutList)
+                CSVLayout csvLayout = new CSVLayout();
+                try
                 {
-                    string output = Common.ExtractClassValuesToString(row, csvProperties);
-                    sw.WriteLine(output);
+                    popupExpressionCount = 0;
+                    popupName = string.Empty;
+                    popupExpression = string.Empty;
+                    displayFilterCount = 0;
+                    displayFilterExpression = string.Empty;
+                    displayFilterName = string.Empty;
+
+                    layerContainer = layer.Parent.ToString();
+                    if (layerContainer != MapView.Active.Map.Name) // Group layer
+                    {
+                        if (layerContainer != prevGroupLayerName)
+                            prevGroupLayerName = layerContainer;
+                    }
+                    else
+                        layerContainer = string.Empty;
+
+                    csvLayout.LayerPos = layerPos.ToString();
+                    csvLayout.LayerType = Common.GetLayerTypeDescription(layer);
+                    csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                    csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
+                    csvLayout.IsExpanded = layer.IsExpanded.ToString();
+                    csvLayout.IsVisible = layer.IsVisible.ToString();
+                    csvLayout.MaxScale = GetScaleValue(layer.MaxScale);
+                    csvLayout.MinScale = GetScaleValue(layer.MinScale);
+
+                    //BasicFeatureLayer (Layers that inherit from BasicFeatureLayer are FeatureLayer, AnnotationLayer and DimensionLayer)
+                    if (layer is BasicFeatureLayer basicFeatureLayer)
+                    {
+                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(basicFeatureLayer.DefinitionFilter.DefinitionExpression);
+                        csvLayout.ClassName = basicFeatureLayer.GetTable().GetName();
+                        csvLayout.GeometryType = basicFeatureLayer.ShapeType.ToString();
+                        csvLayout.IsEditable = basicFeatureLayer.IsEditable.ToString();
+                        csvLayout.IsSelectable = basicFeatureLayer.IsSelectable.ToString();
+                        csvLayout.LayerSource = basicFeatureLayer.GetTable().GetPath().ToString();
+
+                        // FeatureLayer
+                        if (basicFeatureLayer is FeatureLayer featureLayer)
+                        {
+                            CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
+                            CIMFeatureTable cimFeatureTable = cimFeatureLayer.FeatureTable;
+                            CIMExpressionInfo cimExpressionInfo = cimFeatureTable.DisplayExpressionInfo;
+
+                            //Primary Display Field
+                            string displayField = cimFeatureTable.DisplayField;
+                            if (cimExpressionInfo != null)
+                            {
+                                displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
+                            }
+
+                            //Labeling
+                            string labelExpression = string.Empty;
+                            string labelMinScale = string.Empty;
+                            string labelMaxScale = string.Empty;
+                            if (cimFeatureLayer.LabelClasses != null)
+                            {
+                                if (cimFeatureLayer.LabelClasses.Length != 0)
+                                {
+                                    List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
+                                    CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
+                                    labelExpression = cimLabelClass.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
+                                    labelMinScale = GetScaleValue(cimLabelClass.MinimumScale);
+                                    labelMaxScale = GetScaleValue(cimLabelClass.MaximumScale);
+                                }
+                            }
+
+                            //symbology
+                            DetermineSymbology(cimFeatureLayer, out string primarySymbology, out string field1, out string field2, out string field3);
+
+                            //Subtypes
+                            string subtypeValue = string.Empty;
+                            if (featureLayer.IsSubtypeLayer)
+                                subtypeValue = featureLayer.SubtypeValue.ToString();
+
+                            //Popups
+                            popupExpressionCount = AddPopupInfoToList(csvLayout, cimFeatureLayer.PopupInfo, ref popupLayoutList);
+                            GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
+
+                            //Display Filters
+                            if (cimFeatureLayer.EnableDisplayFilters)
+                            {
+                                CIMDisplayFilter[] cimDisplayFilterChoices = cimFeatureLayer.DisplayFilterChoices;
+                                CIMDisplayFilter[] cimDisplayFilter = cimFeatureLayer.DisplayFilters;
+                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
+                            }
+
+                            //Definition Queries
+                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.GetDefinitionFilters(), featureLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+
+                            //Assign Featurelayer values
+                            csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
+                            csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
+                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
+                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
+                            csvLayout.DisplayFilterName = displayFilterName;
+                            csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Count().ToString();
+                            csvLayout.IsSnappable = featureLayer.IsSnappable.ToString();
+                            csvLayout.IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString();
+                            csvLayout.IsLabelVisible = featureLayer.IsLabelVisible.ToString();
+                            csvLayout.LabelExpression = Common.EncloseStringInDoubleQuotes(labelExpression);
+                            csvLayout.LabelMaxScale = labelMaxScale;
+                            csvLayout.LabelMinScale = labelMinScale;
+                            csvLayout.PopupExpressionArcade = popupExpression;
+                            csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
+                            csvLayout.PopupExpressionName = popupName;
+                            csvLayout.PrimarySymbology = primarySymbology;
+                            csvLayout.SymbologyField1 = field1;
+                            csvLayout.SymbologyField2 = field2;
+                            csvLayout.SymbologyField3 = field3;
+                            csvLayout.RefreshRate = cimFeatureLayer.RefreshRate.ToString();
+                            csvLayout.ShowMapTips = cimFeatureLayer.ShowMapTips.ToString();
+                            csvLayout.SubtypeValue = subtypeValue;
+                        }
+
+                        // Annotation Layer
+                        else if (basicFeatureLayer is AnnotationLayer annotationLayer)
+                        {
+                            CIMAnnotationLayer cimAnnotationLayer = layer.GetDefinition() as CIMAnnotationLayer;
+                            if (cimAnnotationLayer.EnableDisplayFilters)
+                            {
+                                CIMDisplayFilter[] cimDisplayFilterChoices = cimAnnotationLayer.DisplayFilterChoices;
+                                CIMDisplayFilter[] cimDisplayFilter = cimAnnotationLayer.DisplayFilters;
+                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
+                            }
+
+                            //Definition Queries
+                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, annotationLayer.GetDefinitionFilters(), annotationLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+
+                            csvLayout.GroupLayerName = csvLayout.LayerName;
+                            csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
+                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
+                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
+                            csvLayout.DisplayFilterName = displayFilterName;
+                        }
+
+                        //Dimension Layer
+                        else if (basicFeatureLayer is DimensionLayer dimensionLayer)
+                        {
+                            CIMDimensionLayer cimDimensionLayerDef = layer.GetDefinition() as CIMDimensionLayer;
+                            if (cimDimensionLayerDef.EnableDisplayFilters)
+                            {
+                                CIMDisplayFilter[] cimDisplayFilterChoices = cimDimensionLayerDef.DisplayFilterChoices;
+                                CIMDisplayFilter[] cimDisplayFilter = cimDimensionLayerDef.DisplayFilters;
+                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
+                            }
+
+                            //Definition Queries
+                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, dimensionLayer.GetDefinitionFilters(), dimensionLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+
+                            csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
+                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
+                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
+                            csvLayout.DisplayFilterName = displayFilterName;
+                        }
+                    }
+
+                    //Subtype Group Layer
+                    else if (layer is SubtypeGroupLayer subtypeGroupLayer)
+                    {
+                        csvLayout.GroupLayerName = csvLayout.LayerName;
+                        csvLayout.LayerName = string.Empty;
+
+                        CIMSubtypeGroupLayer cimSubtypeGroupLayer = layer.GetDefinition() as CIMSubtypeGroupLayer;
+                        if (cimSubtypeGroupLayer.EnableDisplayFilters)
+                        {
+                            CIMDisplayFilter[] cimDisplayFilterChoices = cimSubtypeGroupLayer.DisplayFilterChoices;
+                            CIMDisplayFilter[] cimDisplayFilter = cimSubtypeGroupLayer.DisplayFilters;
+                            displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
+                        }
+
+                        csvLayout.DisplayFilterCount = displayFilterCount.ToString();
+                        csvLayout.DisplayFilterExpresssion = displayFilterExpression;
+                        csvLayout.DisplayFilterName = displayFilterName;
+                    }
+
+                    //Group Layer
+                    else if (layer is GroupLayer groupLayer)
+                    {
+                        csvLayout.GroupLayerName = csvLayout.LayerName;
+                        csvLayout.LayerName = string.Empty;
+                    }
+
+                    //Utiliy Network Layer
+                    else if (layer is UtilityNetworkLayer utilityNetworkLayer)
+                    {
+                        csvLayout.GroupLayerName = csvLayout.LayerName;
+
+                        //Trace Configuration introduced in Utility Network version 5.
+                        string sharedTraceConfiguation = "";
+                        if (utilityNetworkLayer.UNVersion >= 5)
+                        {
+                            CIMUtilityNetworkLayer cimUtilityNetworkLayer = layer.GetDefinition() as CIMUtilityNetworkLayer;
+                            CIMNetworkTraceConfiguration[] cimNetworkTraceConfigurations = cimUtilityNetworkLayer.ActiveTraceConfigurations;
+                            if (cimNetworkTraceConfigurations != null)
+                            {
+                                sharedTraceConfiguation = cimNetworkTraceConfigurations.Length.ToString();
+
+                                for (int j = 0; j < cimNetworkTraceConfigurations.Length; j++)
+                                {
+                                    SharedTraceConfigurationLayout traceConfig = new SharedTraceConfigurationLayout()
+                                    {
+                                        LayerPos = csvLayout.LayerPos,
+                                        LayerType = csvLayout.LayerType,
+                                        LayerName = csvLayout.LayerName,
+                                        GroupLayerName = csvLayout.GroupLayerName,
+                                        TraceConfiguration = Common.EncloseStringInDoubleQuotes(cimNetworkTraceConfigurations[j].Name)
+                                    };
+                                    sharedTraceConfigurationLayout.Add(traceConfig);
+                                }
+                            }
+                        }
+
+                        if (sharedTraceConfigurationLayout.Count == 1)
+                        {
+                            SharedTraceConfigurationLayout shared = sharedTraceConfigurationLayout.LastOrDefault();
+                            sharedTraceConfiguation = shared.TraceConfiguration;
+                        }
+                        else if (sharedTraceConfigurationLayout.Count >= 2)
+                            sharedTraceConfiguation = "see LayerInfo_SharedTraceConfiguration.csv";
+
+                        csvLayout.SharedTraceConfigurationCount = sharedTraceConfigurationLayout.Count.ToString();
+                        csvLayout.SharedTraceConfiguration = sharedTraceConfiguation;
+                    }
+
+                    //Tile Service Layer
+                    else if (layer is TiledServiceLayer tiledServiceLayer)
+                    {
+                        csvLayout.LayerSource = tiledServiceLayer.URL;
+                    }
+
+                    //Vector Tile Layer
+                    else if (layer is VectorTileLayer vectorTileLayer)
+                    {
+                        CIMVectorTileDataConnection cimVectorTileDataConn = layer.GetDataConnection() as CIMVectorTileDataConnection;
+                        csvLayout.LayerSource = cimVectorTileDataConn.URI;
+                    }
+
+                    //Graphics Layer
+                    else if (layer is GraphicsLayer graphicsLayer)
+                    {
+                        CIMGraphicsLayer cimGraphicsLayer = layer.GetDefinition() as CIMGraphicsLayer;
+                        csvLayout.IsSelectable = cimGraphicsLayer.Selectable.ToString();
+                        csvLayout.RefreshRate = cimGraphicsLayer.RefreshRate.ToString();
+                    }
                 }
+                catch (Exception ex)
+                {
+                    csvLayout.LayerType = "Extract Error";
+                    csvLayout.LayerSource = ex.Message;
+                }
+
+                //Assign record to the list
+                csvLayoutList.Add(csvLayout);
+
+                //increment counter by 1
+                layerPos += 1;
             }
+
+            //Standalone Tables
+            IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+            layerPos = InterrogateStandaloneTables(standaloneTableList, layerPos, string.Empty, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+
+            //Tables in Group Layers
+            //  Will show up at the bottom of the CSV.  This isn't quite right.
+            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+            foreach (GroupLayer groupLayer in groupLayerList)
+            {
+                if (groupLayer.StandaloneTables.Count > 0)
+                    layerPos = InterrogateStandaloneTables(groupLayer.StandaloneTables, layerPos, groupLayer.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+            }
+        }
+
+        private static int InterrogateStandaloneTables(IReadOnlyList<StandaloneTable> standaloneTableList, int layerPos, string groupLayerName, ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DefinitionQueryLayout> definitionQueryLayout)
+        {
+            int popupExpressionCount;
+            string popupName = string.Empty;
+            string popupExpression = string.Empty;
+            foreach (StandaloneTable standaloneTable in standaloneTableList)
+            {
+                CSVLayout csvLayout = new CSVLayout()
+                {
+                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
+                    ClassName = standaloneTable.GetTable().GetName(),
+                    GroupLayerName = Common.EncloseStringInDoubleQuotes(groupLayerName),
+                    LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
+                    LayerPos = layerPos.ToString(),
+                    LayerSource = standaloneTable.GetTable().GetPath().ToString(),
+                };
+
+                if (string.IsNullOrEmpty(groupLayerName))
+                    csvLayout.LayerType = "Standalone Table";
+                else
+                    csvLayout.LayerType = "Table in Group Layer";
+
+                //Primary Display Field            
+                CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
+                CIMExpressionInfo cimExpressionInfo = cimStandaloneTable.DisplayExpressionInfo;
+                string displayField = cimStandaloneTable.DisplayField;
+                if (cimExpressionInfo != null)
+                    displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
+
+                //Pop-ups
+                popupExpressionCount = AddPopupInfoToList(csvLayout, cimStandaloneTable.PopupInfo, ref popupLayoutList);
+                GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
+
+                //Definition Queries
+                string additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, standaloneTable.GetDefinitionFilters(), standaloneTable.DefinitionFilter.Name, ref definitionQueryLayout);
+
+                //assign values
+                csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
+                csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
+                csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
+                csvLayout.PopupExpressionName = popupName;
+                csvLayout.PopupExpressionArcade = popupExpression;
+
+                //Add record to list
+                csvLayoutList.Add(csvLayout);
+
+                layerPos += 1;
+            }
+
+            return layerPos; // need to identify next layer position for "table in group layers"
         }
 
         private static void WriteDisplayFilterCSV(List<DisplayFilterLayout> displayFilterList, string outputFile)
@@ -152,12 +469,45 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
+        private static void WriteLayerInfoCSV(List<CSVLayout> csvLayoutList, string outputFile)
+        {
+            using (StreamWriter sw = new StreamWriter(outputFile))
+            {
+                //Header information
+                sw.WriteLine(DateTime.Now + "," + "Layer Info");
+                sw.WriteLine();
+                sw.WriteLine("Project," + Project.Current.Path);
+                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
+                sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
+                int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();
+                if (tablesInGroupLayers > 0)
+                    sw.WriteLine("Tables in Group Layers," + Common.GetCountOfTablesInGroupLayers());
+
+                sw.WriteLine();
+
+                //Get all properties defined in the class.  This will be used to generate the CSV file
+                CSVLayout emptyRec = new CSVLayout();
+                PropertyInfo[] csvProperties = Common.GetPropertiesOfClass(emptyRec);
+
+                //Write column headers based on properties in the class
+                string columnHeader = Common.ExtractClassPropertyNamesToString(csvProperties);
+                sw.WriteLine(columnHeader);
+
+                foreach (CSVLayout row in csvLayoutList)
+                {
+                    string output = Common.ExtractClassValuesToString(row, csvProperties);
+                    sw.WriteLine(output);
+                }
+            }
+        }
+
         private static void WritePopupCSV(List<PopupLayout> popupLayoutList, string outputFile)
         {
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Popups");
+                sw.WriteLine(DateTime.Now + "," + "Layer Info - Popup Expressions");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
                 sw.WriteLine("Map," + MapView.Active.Map.Name);
@@ -233,550 +583,6 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout, ref List<DefinitionQueryLayout> definitionQueryLayout)
-        {
-            int popupExpressionCount = 0;
-            int displayFilterCount;
-            int layerPos = 1;
-            bool increaseLayerPos;
-            string layerType;
-            string prevGroupLayerName = string.Empty;
-            string layerContainer = string.Empty;
-            string popupName = string.Empty;
-            string popupExpression = string.Empty;
-            string displayFilterExpression = string.Empty;
-            string displayFilterName = string.Empty;
-            string additionalDefQueriesText;
-
-            List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
-            foreach (Layer layer in layerList)
-            {
-                try
-                {
-                    popupExpressionCount = 0;
-                    popupName = string.Empty;
-                    popupExpression = string.Empty;
-                    displayFilterCount = 0;
-                    displayFilterExpression = string.Empty;
-                    displayFilterName = string.Empty;
-
-                    layerContainer = layer.Parent.ToString();
-                    if (layerContainer != MapView.Active.Map.Name) // Group layer
-                    {
-                        if (layerContainer != prevGroupLayerName)
-                            prevGroupLayerName = layerContainer;
-                    }
-                    else
-                        layerContainer = string.Empty;
-
-                    if (layer is FeatureLayer featureLayer)
-                    {
-                        layerType = "Feature Layer";
-                        CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
-                        CIMFeatureTable cimFeatureTable = cimFeatureLayerDef.FeatureTable;
-                        CIMExpressionInfo cimExpressionInfo = cimFeatureTable.DisplayExpressionInfo; ;
-
-                        //Primary Display Field
-                        string displayField = cimFeatureTable.DisplayField;
-                        if (cimExpressionInfo != null)
-                            displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-
-                        //Labeling
-                        string labelExpression = string.Empty;
-                        string labelMinScale = string.Empty;
-                        string labelMaxScale = string.Empty;
-                        if (cimFeatureLayerDef.LabelClasses != null)
-                        {
-                            if (cimFeatureLayerDef.LabelClasses.Length != 0)
-                            {
-                                List<CIMLabelClass> cimLabelClassList = cimFeatureLayerDef.LabelClasses.ToList();
-                                CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
-                                labelExpression = cimLabelClass.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-                                labelMinScale = GetScaleValue(cimLabelClass.MinimumScale);
-                                labelMaxScale = GetScaleValue(cimLabelClass.MaximumScale);
-                            }
-                        }
-
-                        //symbology
-                        DetermineSymbology(cimFeatureLayerDef, out string primarySymbology, out string field1, out string field2, out string field3);
-
-                        string subtypeValue = string.Empty;
-                        if (featureLayer.IsSubtypeLayer)
-                            subtypeValue = featureLayer.SubtypeValue.ToString();
-
-
-                        //Include Pop-up expressions if exist
-                        if (cimFeatureLayerDef.PopupInfo != null)
-                        {
-                            if (cimFeatureLayerDef.PopupInfo.ExpressionInfos != null)
-                            {
-                                bool popupExprVisibility = false;
-                                for (int i = 0; i < cimFeatureLayerDef.PopupInfo.ExpressionInfos.Length; i++)
-                                {
-                                    //determine if expression is visible in popup
-                                    CIMMediaInfo[] cimMediaInfos = cimFeatureLayerDef.PopupInfo.MediaInfos;
-                                    for (int j = 0; j < cimMediaInfos.Length; j++)
-                                    {
-                                        if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
-                                        {
-                                            string[] fields = cimTableMediaInfo.Fields;
-                                            for (int k = 0; k < fields.Length; k++)
-                                            {
-                                                if (fields[k] == "expression/" + cimFeatureLayerDef.PopupInfo.ExpressionInfos[i].Name)
-                                                {
-                                                    popupExprVisibility = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        //Break out of 2nd loop (j) if already found the expression
-                                        if (popupExprVisibility)
-                                            break;
-                                    }
-
-                                    //Write popup info
-                                    PopupLayout popupRec = new PopupLayout()
-                                    {
-                                        LayerPos = layerPos.ToString(),
-                                        LayerType = layerType,
-                                        GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                                        PopupExpresssionName = cimFeatureLayerDef.PopupInfo.ExpressionInfos[i].Name,
-                                        PopupExpresssionTitle = Common.EncloseStringInDoubleQuotes(cimFeatureLayerDef.PopupInfo.ExpressionInfos[i].Title.Replace("\"", "'")),
-                                        PopupExpresssionVisible = popupExprVisibility.ToString(),
-                                        PopupExpressionArcade = Common.EncloseStringInDoubleQuotes(cimFeatureLayerDef.PopupInfo.ExpressionInfos[i].Expression.Replace("\"", "'"))
-                                    };
-                                    popupLayoutList.Add(popupRec);
-                                    popupExpressionCount += 1;
-                                }
-                            }
-                        }
-
-                        GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
-
-                        if (cimFeatureLayerDef.EnableDisplayFilters)
-                        {
-                            CIMDisplayFilter[] cimDisplayFilterChoices = cimFeatureLayerDef.DisplayFilterChoices;
-                            CIMDisplayFilter[] cimDisplayFilter = cimFeatureLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                        }
-
-                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), featureLayer, ref definitionQueryLayout);
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = layerType,
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                            IsVisible = layer.IsVisible.ToString(),
-                            LayerSource = featureLayer.GetTable().GetPath().ToString(),
-                            ClassName = featureLayer.GetTable().GetName(),
-                            IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString(),
-                            SubtypeValue = subtypeValue,
-                            GeometryType = featureLayer.ShapeType.ToString(),
-                            IsSelectable = featureLayer.IsSelectable.ToString(),
-                            IsSnappable = featureLayer.IsSnappable.ToString(),
-                            IsEditable = featureLayer.IsEditable.ToString(),
-                            RefreshRate = cimFeatureLayerDef.RefreshRate.ToString(),
-                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(featureLayer.DefinitionFilter.DefinitionExpression),
-                            AdditionalDefinitionQueries = additionalDefQueriesText,
-                            DisplayFilterCount = displayFilterCount.ToString(),
-                            DisplayFilterName = displayFilterName,
-                            DisplayFilterExpresssion = displayFilterExpression,
-                            MinScale = GetScaleValue(layer.MinScale),
-                            MaxScale = GetScaleValue(layer.MaxScale),
-                            ShowMapTips = cimFeatureLayerDef.ShowMapTips.ToString(),
-                            PrimarySymbology = primarySymbology,
-                            SymbologyField1 = field1,
-                            SymbologyField2 = field2,
-                            SymbologyField3 = field3,
-                            EditTemplateCount = cimFeatureLayerDef.FeatureTemplates?.Count().ToString(),
-                            DisplayField = Common.EncloseStringInDoubleQuotes(displayField),
-                            IsLabelVisible = featureLayer.IsLabelVisible.ToString(),
-                            LabelExpression = Common.EncloseStringInDoubleQuotes(labelExpression),
-                            LabelMinScale = labelMinScale,
-                            LabelMaxScale = labelMaxScale,
-                            PopupExpresssionCount = popupExpressionCount.ToString(),
-                            PopupExpresssionName = popupName,
-                            PopupExpressionArcade = popupExpression
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is SubtypeGroupLayer subtypeGroupLayer)
-                    {
-                        layerType = "Subtype Group Layer";
-                        CIMSubtypeGroupLayer cimSubtypeGroupLayer = layer.GetDefinition() as CIMSubtypeGroupLayer;
-                        if (cimSubtypeGroupLayer.EnableDisplayFilters)
-                        {
-                            CIMDisplayFilter[] cimDisplayFilterChoices = cimSubtypeGroupLayer.DisplayFilterChoices;
-                            CIMDisplayFilter[] cimDisplayFilter = cimSubtypeGroupLayer.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layer.Name), string.Empty, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                        }
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerType = layerType,
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            IsVisible = layer.IsVisible.ToString(),
-                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression),
-                            DisplayFilterCount = displayFilterCount.ToString(),
-                            DisplayFilterName = displayFilterName,
-                            DisplayFilterExpresssion = displayFilterExpression,
-                            MinScale = GetScaleValue(layer.MinScale),
-                            MaxScale = GetScaleValue(layer.MaxScale)
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is GroupLayer groupLayer)
-                    {
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Group Layer",
-                            IsVisible = layer.IsVisible.ToString(),
-                            MinScale = GetScaleValue(layer.MinScale),
-                            MaxScale = GetScaleValue(layer.MaxScale)
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is AnnotationLayer annotationLayer)
-                    {
-                        layerType = "Annotation";
-                        CIMAnnotationLayer cimAnnotationLayerDef = layer.GetDefinition() as CIMAnnotationLayer;
-                        if (cimAnnotationLayerDef.EnableDisplayFilters)
-                        {
-                            CIMDisplayFilter[] cimDisplayFilterChoices = cimAnnotationLayerDef.DisplayFilterChoices;
-                            CIMDisplayFilter[] cimDisplayFilter = cimAnnotationLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                        }
-
-                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), annotationLayer, ref definitionQueryLayout);
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = layerType,
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                            IsVisible = layer.IsVisible.ToString(),
-                            LayerSource = annotationLayer.GetTable().GetPath().ToString(),
-                            ClassName = annotationLayer.GetTable().GetName(),
-                            IsSubtypeLayer = "FALSE",
-                            GeometryType = annotationLayer.ShapeType.ToString(),
-                            IsSelectable = annotationLayer.IsSelectable.ToString(),
-                            IsEditable = annotationLayer.IsEditable.ToString(),
-                            RefreshRate = cimAnnotationLayerDef.RefreshRate.ToString(),
-                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(annotationLayer.DefinitionFilter.DefinitionExpression),
-                            AdditionalDefinitionQueries = additionalDefQueriesText,
-                            DisplayFilterCount = displayFilterCount.ToString(),
-                            DisplayFilterName = displayFilterName,
-                            DisplayFilterExpresssion = displayFilterExpression,
-                            MinScale = GetScaleValue(annotationLayer.MinScale),
-                            MaxScale = GetScaleValue(annotationLayer.MaxScale)
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is AnnotationSubLayer annotationSubLayer)
-                    {
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Annotation Sub Layer",
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                            IsVisible = layer.IsVisible.ToString(),
-                            MinScale = GetScaleValue(layer.MinScale),
-                            MaxScale = GetScaleValue(layer.MaxScale)
-                        };
-
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is DimensionLayer dimensionLayer)
-                    {
-                        layerType = "Dimension";
-                        CIMDimensionLayer cimDimensionLayerDef = layer.GetDefinition() as CIMDimensionLayer;
-                        if (cimDimensionLayerDef.EnableDisplayFilters)
-                        {
-                            CIMDisplayFilter[] cimDisplayFilterChoices = cimDimensionLayerDef.DisplayFilterChoices;
-                            CIMDisplayFilter[] cimDisplayFilter = cimDimensionLayerDef.DisplayFilters;
-                            displayFilterCount = AddDisplayFiltersToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                        }
-
-                        additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(layer.Name), dimensionLayer, ref definitionQueryLayout);
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = layerType,
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                            IsVisible = layer.IsVisible.ToString(),
-                            LayerSource = dimensionLayer.GetTable().GetPath().ToString(),
-                            ClassName = dimensionLayer.GetTable().GetName(),
-                            IsSubtypeLayer = "FALSE",
-                            GeometryType = dimensionLayer.ShapeType.ToString(),
-                            IsSelectable = dimensionLayer.IsSelectable.ToString(),
-                            IsEditable = dimensionLayer.IsEditable.ToString(),
-                            RefreshRate = cimDimensionLayerDef.RefreshRate.ToString(),
-                            ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(dimensionLayer.DefinitionFilter.DefinitionExpression),
-                            AdditionalDefinitionQueries = additionalDefQueriesText,
-                            DisplayFilterCount = displayFilterCount.ToString(),
-                            DisplayFilterName = displayFilterName,
-                            DisplayFilterExpresssion = displayFilterExpression,
-                            MinScale = GetScaleValue(dimensionLayer.MinScale),
-                            MaxScale = GetScaleValue(dimensionLayer.MaxScale)
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-
-                    }
-                    else if (layer is UtilityNetworkLayer utilityNetworkLayer)
-                    {
-                        layerType = "Utility Network Layer";
-                        string sharedTraceConfiguation = "";
-
-                        //Active Trace Configuration introduced in Utility Network version 5.
-                        if (utilityNetworkLayer.UNVersion >= 5)
-                        {
-                            CIMUtilityNetworkLayer cimUtilityNetworkLayer = layer.GetDefinition() as CIMUtilityNetworkLayer;
-                            CIMNetworkTraceConfiguration[] cimNetworkTraceConfigurations = cimUtilityNetworkLayer.ActiveTraceConfigurations;
-                            if (cimNetworkTraceConfigurations != null)
-                            {
-                                sharedTraceConfiguation = cimNetworkTraceConfigurations.Length.ToString();
-
-                                for (int j = 0; j < cimNetworkTraceConfigurations.Length; j++)
-                                {
-                                    SharedTraceConfigurationLayout traceConfig = new SharedTraceConfigurationLayout()
-                                    {
-                                        LayerPos = layerPos.ToString(),
-                                        LayerType = layerType,
-                                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                                        GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                                        TraceConfiguration = Common.EncloseStringInDoubleQuotes(cimNetworkTraceConfigurations[j].Name)
-                                    };
-                                    sharedTraceConfigurationLayout.Add(traceConfig);
-                                }
-                            }
-                        }
-
-                        if (sharedTraceConfigurationLayout.Count == 1)
-                        {
-                            SharedTraceConfigurationLayout shared = sharedTraceConfigurationLayout.LastOrDefault();
-                            sharedTraceConfiguation = shared.TraceConfiguration;
-                        }
-                        else if (sharedTraceConfigurationLayout.Count >= 2)
-                            sharedTraceConfiguation = "see LayerInfo_SharedTraceConfiguration.csv";
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = layerType,
-                            IsVisible = layer.IsVisible.ToString(),
-                            SharedTraceConfigurationCount = sharedTraceConfigurationLayout.Count.ToString(),
-                            SharedTraceConfiguration = sharedTraceConfiguation
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is TiledServiceLayer tiledServiceLayer)
-                    {
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Tiled Service Layer",
-                            IsVisible = layer.IsVisible.ToString(),
-                            LayerSource = tiledServiceLayer.URL
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is VectorTileLayer vectorTileLayer)
-                    {
-                        CIMVectorTileDataConnection cimVectorTileDataConn = layer.GetDataConnection() as CIMVectorTileDataConnection;
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Vector Tile Layer",
-                            IsVisible = layer.IsVisible.ToString(),
-                            LayerSource = cimVectorTileDataConn.URI
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer is GraphicsLayer graphicsLayer)
-                    {
-                        CIMGraphicsLayer cimGraphicsLayer = layer.GetDefinition() as CIMGraphicsLayer;
-
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            GroupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Graphics Layer",
-                            IsVisible = layer.IsVisible.ToString(),
-                            IsSelectable = cimGraphicsLayer.Selectable.ToString(),
-                            RefreshRate = cimGraphicsLayer.RefreshRate.ToString(),
-                            MinScale = GetScaleValue(layer.MinScale),
-                            MaxScale = GetScaleValue(layer.MaxScale)
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else if (layer.MapLayerType == MapLayerType.BasemapBackground)
-                    {
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Basemap",
-                            IsVisible = layer.IsVisible.ToString()
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                    else
-                    {
-                        CSVLayout rec = new CSVLayout()
-                        {
-                            LayerPos = layerPos.ToString(),
-                            LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerType = "Not Defined in this tool",
-                            IsVisible = layer.IsVisible.ToString()
-                        };
-                        csvLayoutList.Add(rec);
-                        increaseLayerPos = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    CSVLayout rec = new CSVLayout()
-                    {
-                        LayerPos = layerPos.ToString(),
-                        LayerType = "Extract Error",
-                        GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer),
-                        LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                        IsVisible = layer.IsVisible.ToString(),
-                        LayerSource = ex.Message
-                    };
-                    csvLayoutList.Add(rec);
-                    increaseLayerPos = true;
-                }
-
-                //increment counter by 1
-                if (increaseLayerPos)
-                    layerPos += 1;
-
-                increaseLayerPos = false;
-            }
-
-            //Standalone Tables
-            layerType = "Table";
-            IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
-            foreach (StandaloneTable standaloneTable in standaloneTableList)
-            {
-                popupExpressionCount = 0;
-                popupName = string.Empty;
-                popupExpression = string.Empty;
-
-                CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
-                CIMExpressionInfo cimExpressionInfo = cimStandaloneTable.DisplayExpressionInfo;
-
-                //Primary Display Field
-                string displayField = cimStandaloneTable.DisplayField;
-                if (cimExpressionInfo != null)
-                    displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-
-                //Include Pop-up expressions if exist
-                if (cimStandaloneTable.PopupInfo != null)
-                {
-                    if (cimStandaloneTable.PopupInfo.ExpressionInfos != null)
-                    {
-                        bool popupExprVisibility = false;
-                        for (int i = 0; i < cimStandaloneTable.PopupInfo.ExpressionInfos.Length; i++)
-                        {
-                            //determine if expression is visible in popup
-                            CIMMediaInfo[] cimMediaInfos = cimStandaloneTable.PopupInfo.MediaInfos;
-                            for (int j = 0; j < cimMediaInfos.Length; j++)
-                            {
-                                if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
-                                {
-                                    string[] fields = cimTableMediaInfo.Fields;
-                                    for (int k = 0; k < fields.Length; k++)
-                                    {
-                                        if (fields[k] == "expression/" + cimStandaloneTable.PopupInfo.ExpressionInfos[i].Name)
-                                        {
-                                            popupExprVisibility = true;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                //Break out of 2nd loop (j) if already found the expression
-                                if (popupExprVisibility)
-                                    break;
-                            }
-
-                            //Write popup info
-                            PopupLayout popupRec = new PopupLayout()
-                            {
-                                LayerPos = layerPos.ToString(),
-                                LayerType = layerType,
-                                LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
-                                PopupExpresssionName = cimStandaloneTable.PopupInfo.ExpressionInfos[i].Name,
-                                PopupExpresssionTitle = Common.EncloseStringInDoubleQuotes(cimStandaloneTable.PopupInfo.ExpressionInfos[i].Title.Replace("\"", "'")),
-                                PopupExpresssionVisible = popupExprVisibility.ToString(),
-                                PopupExpressionArcade = Common.EncloseStringInDoubleQuotes(cimStandaloneTable.PopupInfo.ExpressionInfos[i].Expression.Replace("\"", "'"))
-                            };
-                            popupLayoutList.Add(popupRec);
-                            popupExpressionCount += 1;
-                        }
-                    }
-                }
-
-                //Popup
-                GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
-
-                //definition queries
-                additionalDefQueriesText = AddDefinitionQueriesToList(layerPos.ToString(), layerType, Common.EncloseStringInDoubleQuotes(layerContainer), Common.EncloseStringInDoubleQuotes(standaloneTable.Name), standaloneTable, ref definitionQueryLayout);
-
-                CSVLayout rec = new CSVLayout()
-                {
-                    LayerPos = layerPos.ToString(),
-                    LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
-                    LayerType = layerType,
-                    LayerSource = standaloneTable.GetTable().GetPath().ToString(),
-                    ClassName = standaloneTable.GetTable().GetName(),
-                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
-                    AdditionalDefinitionQueries = additionalDefQueriesText,
-                    DisplayField = Common.EncloseStringInDoubleQuotes(displayField),
-                    PopupExpresssionCount = popupExpressionCount.ToString(),
-                    PopupExpresssionName = popupName,
-                    PopupExpressionArcade = popupExpression
-                };
-                csvLayoutList.Add(rec);
-
-                layerPos += 1;
-            }
-        }
-
         private static void GetDisplayFilterInfoForCSV(List<DisplayFilterLayout> displayFilterLayoutList, int displayFilterCount, ref string displayFilterExpression, ref string displayFilterName)
         {
             if (displayFilterCount == 1)
@@ -804,58 +610,8 @@ namespace UtilityNetworkPropertiesExtractor
             else if (popupCount >= 2)
             {
                 popupName = string.Empty;
-                popupExpression = "see LayerInfo_Popup.csv";
+                popupExpression = "see LayerInfo_PopupExpr.csv";
             }
-        }
-
-        private static int AddDisplayFiltersToList(string layerPos, string layerType, string groupLayerName, string layerName, CIMDisplayFilter[] cimDisplayFilterChoices, CIMDisplayFilter[] cimDisplayFilter, ref List<DisplayFilterLayout> displayFilterList)
-        {
-            int recsAdded = 0;
-            //In Pro, there are 2 choices to set the Active Display Filters
-            //option 1:  Manually 
-            if (cimDisplayFilterChoices != null)
-            {
-                for (int j = 0; j < cimDisplayFilterChoices.Length; j++)
-                {
-                    DisplayFilterLayout rec = new DisplayFilterLayout()
-                    {
-                        LayerPos = layerPos,
-                        LayerType = layerType,
-                        GroupLayerName = groupLayerName,
-                        LayerName = layerName,
-                        DisplayFilterType = "Manually",
-                        DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].Name),
-                        DisplayFilterExpresssion = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].WhereClause),
-                    };
-                    displayFilterList.Add(rec);
-                    recsAdded += 1;
-                }
-            }
-
-            //option 2:  By Scale
-            if (cimDisplayFilter != null)
-            {
-                for (int k = 0; k < cimDisplayFilter.Length; k++)
-                {
-                    if (cimDisplayFilter[k].Name == "Hide Display")
-                        continue;
-
-                    DisplayFilterLayout rec = new DisplayFilterLayout()
-                    {
-                        LayerPos = layerPos,
-                        LayerType = layerType,
-                        GroupLayerName = groupLayerName,
-                        LayerName = layerName,
-                        DisplayFilterType = "By Scale",
-                        DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilter[k].Name),
-                        MinScale = GetScaleValue(cimDisplayFilter[k].MinScale),
-                        MaxScale = GetScaleValue(cimDisplayFilter[k].MaxScale)
-                    };
-                    displayFilterList.Add(rec);
-                    recsAdded += 1;
-                }
-            }
-            return recsAdded;
         }
 
         private static void DetermineSymbology(CIMFeatureLayer cimFeatureLayerDef, out string primarySymbology, out string field1, out string field2, out string field3)
@@ -912,27 +668,32 @@ namespace UtilityNetworkPropertiesExtractor
                 return scale.ToString();
         }
 
-        private static string AddDefinitionQueriesToList(string layerPos, string layerType, string groupLayerName, string layerName, BasicFeatureLayer basicFeatureLayer, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
+        private static string AddDefinitionQueriesToList(CSVLayout csvLayout, IReadOnlyList<CIMDefinitionFilter> definitionFilters, string activeFilterName, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
         {
             string returnMessage = string.Empty;
             int cnt = 0;
-            IReadOnlyList<CIMDefinitionFilter> definitionFilters = basicFeatureLayer.GetDefinitionFilters();
+
             if (definitionFilters.Count() > 0)
             {
                 bool activeDefQuery;
                 foreach (CIMDefinitionFilter filter in definitionFilters)
                 {
-                    if (basicFeatureLayer.DefinitionFilter.Name == filter.Name)
-                        activeDefQuery = true;
-                    else
+                    if (string.IsNullOrEmpty(activeFilterName))
                         activeDefQuery = false;
+                    else
+                    {
+                        if (activeFilterName == filter.Name)
+                            activeDefQuery = true;
+                        else
+                            activeDefQuery = false;
+                    }
 
                     DefinitionQueryLayout definitionQueryLayout = new DefinitionQueryLayout()
                     {
-                        LayerPos = layerPos,
-                        LayerType = layerType,
-                        GroupLayerName = groupLayerName,
-                        LayerName = layerName,
+                        LayerPos = csvLayout.LayerPos,
+                        LayerType = csvLayout.LayerType,
+                        GroupLayerName = csvLayout.GroupLayerName,
+                        LayerName = csvLayout.LayerName,
                         DefinitionQueryName = filter.Name,
                         DefinitionQuery = filter.DefinitionExpression,
                         Active = activeDefQuery.ToString()
@@ -944,52 +705,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
 
             // if active definition filter is defined, only indicate additional def queries if count is greater than 1.
-            if (!string.IsNullOrEmpty(basicFeatureLayer.DefinitionFilter.DefinitionExpression))
-            {
-                if (cnt > 1) 
-                    returnMessage = _defQueriesMesg;
-            }
-            else  // No active definition query
-            {
-                if (cnt > 0)  // Return Message indicates if additional queries exist.
-                    returnMessage = _defQueriesMesg;
-            }
-            return returnMessage;
-        }
-
-        private static string AddDefinitionQueriesToList(string layerPos, string layerType, string groupLayerName, string layerName, StandaloneTable standaloneTable, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
-        {
-            string returnMessage = string.Empty;
-            int cnt = 0;
-            IReadOnlyList<CIMDefinitionFilter> definitionFilters = standaloneTable.GetDefinitionFilters();
-            if (definitionFilters.Count() > 0)
-            {
-                bool activeDefQuery;
-                foreach (CIMDefinitionFilter filter in definitionFilters)
-                {
-                    if (standaloneTable.DefinitionFilter.Name == filter.Name)
-                        activeDefQuery = true;
-                    else
-                        activeDefQuery = false;
-
-                    DefinitionQueryLayout definitionQueryLayout = new DefinitionQueryLayout()
-                    {
-                        LayerPos = layerPos,
-                        LayerType = layerType,
-                        GroupLayerName = groupLayerName,
-                        LayerName = layerName,
-                        DefinitionQueryName = filter.Name,
-                        DefinitionQuery = filter.DefinitionExpression,
-                        Active = activeDefQuery.ToString()
-                    };
-
-                    definitionQueryLayoutList.Add(definitionQueryLayout);
-                    cnt += 1;
-                }
-            }
-
-            // if active definition filter is defined, only indicate additional def queries if count is greater than 1.
-            if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
+            if (!string.IsNullOrEmpty(activeFilterName))
             {
                 if (cnt > 1)
                     returnMessage = _defQueriesMesg;
@@ -1002,6 +718,112 @@ namespace UtilityNetworkPropertiesExtractor
             return returnMessage;
         }
 
+        private static int AddDisplayFiltersToList(CSVLayout csvLayout, CIMDisplayFilter[] cimDisplayFilterChoices, CIMDisplayFilter[] cimDisplayFilter, ref List<DisplayFilterLayout> displayFilterList)
+        {
+            int recsAdded = 0;
+            //In Pro, there are 2 choices to set the Active Display Filters
+            //option 1:  Manually 
+            if (cimDisplayFilterChoices != null)
+            {
+                for (int j = 0; j < cimDisplayFilterChoices.Length; j++)
+                {
+                    DisplayFilterLayout rec = new DisplayFilterLayout()
+                    {
+                        LayerPos = csvLayout.LayerPos,
+                        LayerType = csvLayout.LayerType,
+                        GroupLayerName = csvLayout.GroupLayerName,
+                        LayerName = csvLayout.LayerName,
+                        DisplayFilterType = "Manually",
+                        DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].Name),
+                        DisplayFilterExpresssion = Common.EncloseStringInDoubleQuotes(cimDisplayFilterChoices[j].WhereClause),
+                    };
+                    displayFilterList.Add(rec);
+                    recsAdded += 1;
+                }
+            }
+
+            //option 2:  By Scale
+            if (cimDisplayFilter != null)
+            {
+                for (int k = 0; k < cimDisplayFilter.Length; k++)
+                {
+                    if (cimDisplayFilter[k].Name == "Hide Display")
+                        continue;
+
+                    DisplayFilterLayout rec = new DisplayFilterLayout()
+                    {
+                        LayerPos = csvLayout.LayerPos,
+                        LayerType = csvLayout.LayerType,
+                        GroupLayerName = csvLayout.GroupLayerName,
+                        LayerName = csvLayout.LayerName,
+                        DisplayFilterType = "By Scale",
+                        DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilter[k].Name),
+                        MinScale = GetScaleValue(cimDisplayFilter[k].MinScale),
+                        MaxScale = GetScaleValue(cimDisplayFilter[k].MaxScale)
+                    };
+                    displayFilterList.Add(rec);
+                    recsAdded += 1;
+                }
+            }
+            return recsAdded;
+        }
+
+        private static int AddPopupInfoToList(CSVLayout csvLayout, CIMPopupInfo cimPopupInfo, ref List<PopupLayout> popupLayoutList)
+        {
+            //Include Pop-up expressions if exist
+            int popupExpressionCount = 0;
+
+            if (cimPopupInfo != null)
+            {
+                if (cimPopupInfo.ExpressionInfos != null)
+                {
+                    bool popupExprVisibility = false;
+                    for (int i = 0; i < cimPopupInfo.ExpressionInfos.Length; i++)
+                    {
+                        //determine if expression is visible in popup
+                        CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
+                        for (int j = 0; j < cimMediaInfos.Length; j++)
+                        {
+                            if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                            {
+                                string[] fields = cimTableMediaInfo.Fields;
+                                for (int k = 0; k < fields.Length; k++)
+                                {
+                                    if (fields[k] == "expression/" + cimPopupInfo.ExpressionInfos[i].Name)
+                                    {
+                                        popupExprVisibility = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            //Break out of 2nd loop (j) if already found the expression
+                            if (popupExprVisibility)
+                                break;
+                        }
+
+                        //Write popup info
+                        PopupLayout popupRec = new PopupLayout()
+                        {
+                            LayerPos = csvLayout.LayerPos,
+                            LayerType = csvLayout.LayerType,
+                            LayerName = csvLayout.LayerName,
+                            GroupLayerName = csvLayout.GroupLayerName,
+                            PopupExpresssionName = cimPopupInfo.ExpressionInfos[i].Name,
+                            PopupExpresssionTitle = Common.EncloseStringInDoubleQuotes(cimPopupInfo.ExpressionInfos[i].Title.Replace("\"", "'")),
+                            PopupExpresssionVisible = popupExprVisibility.ToString(),
+                            PopupExpressionArcade = Common.EncloseStringInDoubleQuotes(cimPopupInfo.ExpressionInfos[i].Expression.Replace("\"", "'"))
+                        };
+
+                        popupLayoutList.Add(popupRec);
+                        popupExpressionCount += 1;
+                    }
+                }
+            }
+
+            return popupExpressionCount;
+        }
+
         private class CSVLayout
         {
             public string LayerPos { get; set; }
@@ -1009,6 +831,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string IsVisible { get; set; }
+            public string IsExpanded { get; set; }
             public string LayerSource { get; set; }
             public string ClassName { get; set; }
             public string IsSubtypeLayer { get; set; }
@@ -1038,8 +861,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string LabelExpression { get; set; }
             public string LabelMinScale { get; set; }
             public string LabelMaxScale { get; set; }
-            public string PopupExpresssionCount { get; set; }
-            public string PopupExpresssionName { get; set; }
+            public string PopupExpressionCount { get; set; }
+            public string PopupExpressionName { get; set; }
             public string PopupExpressionArcade { get; set; }
         }
 
@@ -1065,6 +888,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string DefinitionQueryName { get; set; }
             public string DefinitionQuery { get; set; }
         }
+
         private class DisplayFilterLayout
         {
             public string LayerPos { get; set; }
