@@ -72,6 +72,16 @@ namespace UtilityNetworkPropertiesExtractor
                         return;
                     }
 
+                    //Branch versions are only available in the feature service in which they were created.
+                    //https://pro.arcgis.com/en/pro-app/2.9/help/data/geodatabases/overview/manage-branch-versions.htm
+                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.EnterpriseGDB)
+                    {
+                        if (showErrorPrompt)
+                            throw new Exception("Branch Versions can't be accessed via a database connection");
+
+                        return;
+                    }
+
                     Common.CreateOutputDirectory();
                     string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                     _fileName = string.Format("{0}_{1}_Versions.csv", dateFormatted, reportHeaderInfo.ProProjectName);
