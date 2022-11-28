@@ -90,7 +90,9 @@ namespace UtilityNetworkPropertiesExtractor
                                 ID = i.ToString(),
                                 DomainName = domain.GetName(),
                                 FieldType = domain.GetFieldType().ToString(),
-                                Description = Common.EncloseStringInDoubleQuotes(domain.GetDescription())
+                                Description = Common.EncloseStringInDoubleQuotes(domain.GetDescription()),
+                                SplitPolicy = domain.SplitPolicy.ToString(),
+                                MergePolicy = domain.MergePolicy.ToString()
                             };
 
                             if (domain is RangeDomain rangeDomain)
@@ -140,6 +142,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string Code { get; set; }
             public string Value { get; set; }
             public string Range { get; set; }
+            public string SplitPolicy { get; set; }
+            public string MergePolicy { get; set; }
             public string Description { get; set; }
         }
     }
