@@ -58,7 +58,7 @@ _Directions_
 ## Compilation Directions
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
-3.  **The source code was written against ArcGIS Pro SDK 2.7**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.7.
+3.  **The source code was written against ArcGIS Pro SDK 2.9**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.9.
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
