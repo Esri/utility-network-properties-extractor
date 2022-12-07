@@ -73,7 +73,7 @@ namespace UtilityNetworkPropertiesExtractor
                 using (Geodatabase geodatabase = featureLayerInUn.GetTable().GetDatastore() as Geodatabase)
                 {
                     string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_ExportSubnetworkResultFields.txt", dateFormatted, reportHeaderInfo.ProProjectName);
+                    _fileName = string.Format("{0}_{1}_ExportSubnetworkResultFields.txt", dateFormatted, reportHeaderInfo.MapName);
                     string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                     using (StreamWriter sw = new StreamWriter(outputFile))

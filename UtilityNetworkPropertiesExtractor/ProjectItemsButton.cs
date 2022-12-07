@@ -48,7 +48,7 @@ namespace UtilityNetworkPropertiesExtractor
             Common.CreateOutputDirectory();
 
             string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            _fileName = string.Format("{0}_{1}_ProjectItems.csv", dateFormatted, Common.GetProProjectName());
+            _fileName = string.Format("{0}_{1}_ProjectItems.csv", dateFormatted, Common.GetActiveMapName());
             string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
             using (StreamWriter sw = new StreamWriter(outputFile))

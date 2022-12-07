@@ -57,7 +57,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerInfo.csv", dateFormatted, Common.GetProProjectName());
+                _fileName = string.Format("{0}_{1}_LayerInfo.csv", dateFormatted, Common.GetActiveMapName());
 
                 List<CSVLayout> csvLayoutList = new List<CSVLayout>();
                 List<PopupLayout> popupLayoutList = new List<PopupLayout>();
@@ -450,7 +450,7 @@ namespace UtilityNetworkPropertiesExtractor
                 sw.WriteLine(DateTime.Now + "," + "Layer Info - Display Filters");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
                 sw.WriteLine();
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -477,7 +477,7 @@ namespace UtilityNetworkPropertiesExtractor
                 sw.WriteLine(DateTime.Now + "," + "Layer Info");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
                 sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                 sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
                 int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();
@@ -510,7 +510,7 @@ namespace UtilityNetworkPropertiesExtractor
                 sw.WriteLine(DateTime.Now + "," + "Layer Info - Popup Expressions");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
                 sw.WriteLine();
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -537,7 +537,7 @@ namespace UtilityNetworkPropertiesExtractor
                 sw.WriteLine(DateTime.Now + "," + "Layer Info - Shared Trace Configuration");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
                 sw.WriteLine();
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -564,7 +564,7 @@ namespace UtilityNetworkPropertiesExtractor
                 sw.WriteLine(DateTime.Now + "," + "Layer Info - Definition Queries");
                 sw.WriteLine();
                 sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + MapView.Active.Map.Name);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
                 sw.WriteLine();
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file

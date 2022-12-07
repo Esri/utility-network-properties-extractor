@@ -61,7 +61,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerCounts.csv", dateFormatted, Common.GetProProjectName());
+                _fileName = string.Format("{0}_{1}_LayerCounts.csv", dateFormatted, Common.GetActiveMapName());
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
@@ -70,7 +70,7 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine(DateTime.Now + "," + "Layer and Table Counts");
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
-                    sw.WriteLine("Map," + MapView.Active.Map.Name);
+                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
                     int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();

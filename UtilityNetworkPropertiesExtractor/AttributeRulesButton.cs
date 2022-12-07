@@ -98,7 +98,7 @@ namespace UtilityNetworkPropertiesExtractor
                     if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                         fcName = pair.Key.Substring(pos + 1);
 
-                    attrRuleFileName = string.Format("{0}_{1}_AttributeRules_{2}.csv", dateFormatted, reportHeaderInfo.ProProjectName, fcName);
+                    attrRuleFileName = string.Format("{0}_{1}_AttributeRules_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
                     string attrRuleoutputFile = Path.Combine(Common.ExtractFilePath, attrRuleFileName);
                     string pathToTable = pair.Key;
                     IReadOnlyList<string> attrRuleArgs;

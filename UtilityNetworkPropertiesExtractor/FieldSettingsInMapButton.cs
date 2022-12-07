@@ -53,7 +53,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.ProProjectName);
+                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.MapName);
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
@@ -64,7 +64,7 @@ namespace UtilityNetworkPropertiesExtractor
                         utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
-                    sw.WriteLine("Map," + MapView.Active.Map.Name);
+                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
 

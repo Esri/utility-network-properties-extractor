@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -51,7 +52,8 @@ namespace UtilityNetworkPropertiesExtractor
         {
             ReportHeaderInfo reportHeaderInfo = new ReportHeaderInfo
             {
-                ProProjectName = GetProProjectName()
+                ProProjectName = GetProProjectName(),
+                MapName = GetActiveMapName()
             };
 
             if (utilityNetwork == null && featureLayer == null)
@@ -199,6 +201,14 @@ namespace UtilityNetworkPropertiesExtractor
                 retVal = "Undefined in this Add-In";
 
             return retVal;
+        }
+
+        public static string GetActiveMapName()
+        {
+            //Strip out illegal character for file name
+            //   return Path.GetInvalidFileNameChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
+            string mapName = Path.GetInvalidPathChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
+            return mapName.Replace(",", "").Replace("'", "").Replace("\"", "");
         }
 
         public static string GetProProjectName()
@@ -361,6 +371,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string FullPath { get; set; }
             public string SourceType { get; set; }
             public string ProProjectName { get; set; }
+            public string MapName { get; set; }
             public string UtilityNetworkName { get; set; }
             public string UtiltyNetworkSchemaVersion { get; set; }
         }
