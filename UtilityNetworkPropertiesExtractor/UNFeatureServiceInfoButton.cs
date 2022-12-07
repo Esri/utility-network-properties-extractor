@@ -172,26 +172,6 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-
-        private static string GetUNFeatureServiceURL(UtilityNetworkLayer unLayer, string token)
-        {
-            return Common.GetURLOfUtilityNetworkLayer(unLayer, token);
-
-            //CIMDataConnection dataConn = unLayer.GetDataConnection();
-            //if (dataConn is CIMStandardDataConnection stDataConn)
-            //{
-            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
-            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
-            //    url = stDataConn.WorkspaceConnectionString.Split('=')[1];
-            //    int pos = url.IndexOf(";");
-            //    if (pos > 0)  // if the URL contains VERSION details, strip that off.
-            //        url = url.Substring(0, pos);
-
-            //    url = $"{url}?f=json&token={token}";
-            //}
-            //return url;
-        }
-
         private class CSVLayout
         {
             public string Title { get; set; }
