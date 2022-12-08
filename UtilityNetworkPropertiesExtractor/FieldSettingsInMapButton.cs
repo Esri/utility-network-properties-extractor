@@ -114,7 +114,7 @@ namespace UtilityNetworkPropertiesExtractor
         private static void WriteFieldSettings(StreamWriter sw, string tocName, string className, string subtype, List<FieldDescription> fieldDescList)
         {
             foreach (FieldDescription fieldDesc in fieldDescList)
-                sw.WriteLine(className + "," + tocName + "," + subtype + "," + fieldDesc.Name + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
+                sw.WriteLine(className + "," + Common.EncloseStringInDoubleQuotes(tocName) + "," + subtype + "," + fieldDesc.Name + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
         }
     }
 }

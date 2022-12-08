@@ -136,7 +136,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (table == null)  // broken datasource
                             continue;
 
-                        if (table.GetName() == firstRecord.ClassName && basicFeatureLayer.Name == firstRecord.LayerName)
+                        if (table.GetName() == firstRecord.ClassName && Common.EncloseStringInDoubleQuotes(basicFeatureLayer.Name) == firstRecord.LayerName)
                         {
                             //Found the layer to update
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
@@ -158,7 +158,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (table == null)  // broken datasource
                             continue;
 
-                        if (table.GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
+                        if (table.GetName() == firstRecord.ClassName && Common.EncloseStringInDoubleQuotes(standaloneTable.Name) == firstRecord.LayerName)
                         {
                             //Found the table to update
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
@@ -227,7 +227,7 @@ namespace UtilityNetworkPropertiesExtractor
                             CSVLayout rec = new CSVLayout
                             {
                                 ClassName = parts[0],
-                                LayerName = parts[1],
+                                LayerName = Common.EncloseStringInDoubleQuotes(parts[1]),
                                 SubtypeValue = parts[2],
                                 FieldName = parts[3],
                                 Visible = Convert.ToBoolean(parts[4]),
