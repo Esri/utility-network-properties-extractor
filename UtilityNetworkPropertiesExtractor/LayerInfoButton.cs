@@ -695,7 +695,7 @@ namespace UtilityNetworkPropertiesExtractor
                         GroupLayerName = csvLayout.GroupLayerName,
                         LayerName = csvLayout.LayerName,
                         DefinitionQueryName = filter.Name,
-                        DefinitionQuery = filter.DefinitionExpression,
+                        DefinitionQuery = Common.EncloseStringInDoubleQuotes(filter.DefinitionExpression),
                         Active = activeDefQuery.ToString()
                     };
 
