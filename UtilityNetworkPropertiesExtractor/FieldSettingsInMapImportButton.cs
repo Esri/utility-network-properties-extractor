@@ -136,7 +136,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (table == null)  // broken datasource
                             continue;
 
-                        if (table.GetName() == firstRecord.ClassName && Common.EncloseStringInDoubleQuotes(basicFeatureLayer.Name) == firstRecord.LayerName)
+                        if (table.GetName() == firstRecord.ClassName && basicFeatureLayer.Name == firstRecord.LayerName)
                         {
                             //Found the layer to update
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
@@ -158,7 +158,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (table == null)  // broken datasource
                             continue;
 
-                        if (table.GetName() == firstRecord.ClassName && Common.EncloseStringInDoubleQuotes(standaloneTable.Name) == firstRecord.LayerName)
+                        if (table.GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
                         {
                             //Found the table to update
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
@@ -227,7 +227,7 @@ namespace UtilityNetworkPropertiesExtractor
                             CSVLayout rec = new CSVLayout
                             {
                                 ClassName = parts[0],
-                                LayerName = Common.EncloseStringInDoubleQuotes(parts[1]),
+                                LayerName = parts[1],
                                 SubtypeValue = parts[2],
                                 FieldName = parts[3],
                                 Visible = Convert.ToBoolean(parts[4]),
@@ -236,8 +236,13 @@ namespace UtilityNetworkPropertiesExtractor
                                 FieldAlias = parts[7]
                             };
 
-                            //Some field alias descriptions will have double quotes around them because they contain commas.  The quotes need to be stripped out
-                            //  Ex:  StructureJunction,Unknown,height,TRUE,FALSE,TRUE,"height: Height, Marker Height, Platform Height, Pole Height"
+                            //Some layer names will have double quotes around them because they contain commas.  The quotes need to be stripped out.
+                            //  Ex:  "ElectricJunction - De-Energized, Traceable"
+                            if (rec.LayerName.Contains("\""))
+                                rec.LayerName = rec.LayerName.Substring(1, rec.LayerName.Length - 2);
+
+                            //Some field alias descriptions will have double quotes around them because they contain commas.  The quotes need to be stripped out.
+                            //  Ex:  "height: Height, Marker Height, Platform Height, Pole Height"
                             if (rec.FieldAlias.Contains("\""))
                                 rec.FieldAlias = rec.FieldAlias.Substring(1, rec.FieldAlias.Length - 2);
 
