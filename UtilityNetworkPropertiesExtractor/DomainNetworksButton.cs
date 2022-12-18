@@ -65,7 +65,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 Common.CreateOutputDirectory();
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_DomainNetworks.csv", dateFormatted, reportHeaderInfo.ProProjectName);
+                _fileName = string.Format("{0}_{1}_DomainNetworks.csv", dateFormatted, reportHeaderInfo.MapName);
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
@@ -199,6 +199,8 @@ namespace UtilityNetworkPropertiesExtractor
                         SubnetworkFieldName = tier.SubnetworkFieldName,
                         TopologyType = tier.TopologyType.ToString(),
                         SupportDisjointSubnetworks = tier.IsDisjointSubnetworkSupported.ToString(),
+                        EditModeInDefault = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.DefaultVersion).ToString(),
+                        EditModeInNamedVersion = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.NamedVersion).ToString(),
                         UpdateSubnetworkContainers = updPolicyForContainers,
                         UpdateSubnetworkStructures = updPolicyForStructures
                     };
@@ -503,6 +505,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string SupportDisjointSubnetworks { get; set; }
             public string UpdateSubnetworkContainers { get; set; }
             public string UpdateSubnetworkStructures { get; set; }
+            public string EditModeInDefault { get; set; }
+            public string EditModeInNamedVersion { get; set; }
         }
 
         private class CSVLayoutTierInfo

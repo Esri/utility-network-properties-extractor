@@ -53,7 +53,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.ProProjectName);
+                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.MapName);
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
@@ -64,20 +64,30 @@ namespace UtilityNetworkPropertiesExtractor
                         utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
-                    sw.WriteLine("Map," + MapView.Active.Map.Name);
+                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
 
-                    sw.WriteLine(Common.FieldSettingsClassNameHeader + ",Layer Name,Field Name,Visible*,Read-Only*,Highlight*,Field Alias*");
+                    sw.WriteLine(Common.FieldSettingsClassNameHeader + ",Layer Name,Subtype Value,Field Name,Visible*,Read-Only*,Highlight*,Field Alias*");
 
                     //Basic Feature Layers in the map
+                    string subtypeValue = string.Empty;
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
                     foreach (BasicFeatureLayer basicFeatureLayer in basicFeatureLayerList)
                     {
                         using (Table table = basicFeatureLayer.GetTable())
                         {
+                            if (table == null) // broken datasource.  Don't add to the csv
+                                continue;
+
+                            subtypeValue = string.Empty;
+                            if (basicFeatureLayer is FeatureLayer fLayer)
+                            {
+                                if (fLayer.IsSubtypeLayer)
+                                    subtypeValue = fLayer.SubtypeValue.ToString();
+                            }
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
-                            WriteFieldSettings(sw, basicFeatureLayer.Name, table.GetName(), fieldDescList);
+                            WriteFieldSettings(sw, basicFeatureLayer.Name, table.GetName(), subtypeValue, fieldDescList);
                         }
                     }
 
@@ -85,8 +95,14 @@ namespace UtilityNetworkPropertiesExtractor
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                        WriteFieldSettings(sw, standaloneTable.Name, standaloneTable.GetTable().GetName(), fieldDescList);
+                        using (Table table = standaloneTable.GetTable())
+                        {
+                            if (table == null) // broken datasource.  Don't add to the csv
+                                continue;
+
+                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                            WriteFieldSettings(sw, standaloneTable.Name, table.GetName(), string.Empty, fieldDescList);
+                        }
                     }
 
                     sw.Flush();
@@ -95,10 +111,10 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-        private static void WriteFieldSettings(StreamWriter sw, string tocName, string className, List<FieldDescription> fieldDescList)
+        private static void WriteFieldSettings(StreamWriter sw, string tocName, string className, string subtype, List<FieldDescription> fieldDescList)
         {
             foreach (FieldDescription fieldDesc in fieldDescList)
-                sw.WriteLine(className + "," + tocName + "," + fieldDesc.Name + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
+                sw.WriteLine(className + "," + Common.EncloseStringInDoubleQuotes(tocName) + "," + subtype + "," + fieldDesc.Name + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
         }
     }
 }

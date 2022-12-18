@@ -21,22 +21,23 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace UtilityNetworkPropertiesExtractor
 {
     public static class Common
     {
+        private const string Delimiter = ",";
         public static string ExtractFilePath;
-        private const string _extractFileRootPath = @"C:\temp\ProSdk_CSV\";
+        private const string ExtractFileRootPath = @"C:\temp\ProSdk_CSV\";
 
         //Two Field Setting buttons are writing/reading the same files.  Constants used to ensure that a code change to 1 button doesn't break the other
-        public const string FieldSettingsClassNameHeader = "Class Name";
+        public const string FieldSettingsClassNameHeader = "Class Name";      
 
-        public const string Delimiter = ",";
-
-        public static string GetExtractFilePath()
+        public static DateTime ConvertEpochTimeToReadableDate(long epoch)
         {
-            return _extractFileRootPath + GetProProjectName();
+            DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeMilliseconds(epoch);
+            return dateTimeOffSet.DateTime;
         }
 
         public static void CreateOutputDirectory()
@@ -47,25 +48,12 @@ namespace UtilityNetworkPropertiesExtractor
                 Directory.CreateDirectory(ExtractFilePath);
         }
 
-        public static DateTime ConvertEpochTimeToReadableDate(long epoch)
-        {
-            DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeMilliseconds(epoch);
-            return dateTimeOffSet.DateTime;
-        }
-
-        public static class DatastoreTypeDescriptions
-        {
-            public const string FeatureService = "FeatureService";
-            public const string FileGDB = "File Geodatabase";
-            public const string EnterpriseGDB = "Enterprise Geodatabase";
-            public const string MobileGDB = "Mobile Geodatabase";
-        }
-
         public static ReportHeaderInfo DetermineReportHeaderProperties(UtilityNetwork utilityNetwork, FeatureLayer featureLayer)
         {
             ReportHeaderInfo reportHeaderInfo = new ReportHeaderInfo
             {
-                ProProjectName = GetProProjectName()
+                ProProjectName = GetProProjectName(),
+                MapName = GetActiveMapName()
             };
 
             if (utilityNetwork == null && featureLayer == null)
@@ -118,17 +106,6 @@ namespace UtilityNetworkPropertiesExtractor
             return string.Format("{0}:{1}:{2}", traceTime.Hours, traceTime.Minutes, traceTime.Seconds);
         }
 
-        public static string GetProProjectName()
-        {
-            Project currProject = Project.Current;
-            return currProject.Name.Substring(0, currProject.Name.IndexOf("."));
-        }
-
-        public static PropertyInfo[] GetPropertiesOfClass<T>(T cls)
-        {
-            return typeof(T).GetProperties();
-        }
-
         public static string ExtractClassValuesToString<T>(T rec, PropertyInfo[] properties)
         {
             return properties.Select(n => n.GetValue(rec, null)).Select(n => n == null ? string.Empty : n.ToString()).Aggregate((a, b) => a + Delimiter + b);
@@ -176,6 +153,91 @@ namespace UtilityNetworkPropertiesExtractor
             return retVal;
         }
 
+        public static int GetCountOfTablesInGroupLayers()
+        {
+            int cnt = 0;
+            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+            foreach (GroupLayer groupLayer in groupLayerList)
+            {
+                if (groupLayer.StandaloneTables.Count > 0)
+                    cnt += groupLayer.StandaloneTables.Count;
+            }
+
+            return cnt;
+        }
+
+        public static string GetExtractFilePath()
+        {
+            return ExtractFileRootPath + GetProProjectName();
+        }
+
+        public static string GetLayerTypeDescription(Layer layer)
+        {
+            string retVal;
+
+            if (layer is FeatureLayer)
+                retVal = "Feature Layer";
+            else if (layer is GroupLayer)
+                retVal = "Group Layer";
+            else if (layer is SubtypeGroupLayer)
+                retVal = "Subtype Group Layer";
+            else if (layer is AnnotationLayer)
+                retVal = "Annotation Layer";
+            else if (layer is AnnotationSubLayer)
+                retVal = "Annotation Sub Layer";
+            else if (layer is DimensionLayer)
+                retVal = "Dimension Layer";
+            else if (layer is UtilityNetworkLayer)
+                retVal = "Utility Network Layer";
+            else if (layer is TiledServiceLayer)
+                retVal = "Tiled Service Layer";
+            else if (layer is VectorTileLayer)
+                retVal = "Vector Tile Layer";
+            else if (layer is GraphicsLayer)
+                retVal = "Graphics Layer";
+            else if (layer.MapLayerType == MapLayerType.BasemapBackground)
+                retVal = "Basemap";
+            else
+                retVal = "Undefined in this Add-In";
+
+            return retVal;
+        }
+
+        public static string GetActiveMapName()
+        {
+            //Strip out illegal character for file name
+            //   return Path.GetInvalidFileNameChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
+            string mapName = Path.GetInvalidPathChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
+            return mapName.Replace(",", "").Replace("'", "").Replace("\"", "");
+        }
+
+        public static string GetProProjectName()
+        {
+            Project currProject = Project.Current;
+            return currProject.Name.Substring(0, currProject.Name.IndexOf("."));
+        }
+
+        private static string GetProVersion()
+        {
+            Assembly assembly = Assembly.GetEntryAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return $"{fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";
+        }
+
+        public static PropertyInfo[] GetPropertiesOfClass<T>(T cls)
+        {
+            return typeof(T).GetProperties();
+        }
+
+        public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
+        {
+            Table table = featureLayer.GetTable();
+            if (table is FeatureClass)
+                return table;
+
+            return null;
+        }
+
         public static string GetURLOfUtilityNetworkLayer(UtilityNetworkLayer unLayer)
         {
             string url = string.Empty;
@@ -198,22 +260,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             string url = GetURLOfUtilityNetworkLayer(unLayer);
             return $"{url}?f=json&token={token}";
-        }
-
-        private static string GetProVersion()
-        {
-            Assembly assembly = Assembly.GetEntryAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return $"{fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";
-        }
-
-        public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
-        {
-            Table table = featureLayer.GetTable();
-            if (table is FeatureClass)
-                return table;
-
-            return null;
         }
 
         public static UtilityNetwork GetUtilityNetwork(out FeatureLayer featureLayer)
@@ -258,16 +304,19 @@ namespace UtilityNetworkPropertiesExtractor
                 featureLayer = layer as FeatureLayer;
                 using (FeatureClass featureClass = featureLayer.GetFeatureClass())
                 {
-                    if (featureClass.IsControllerDatasetSupported())
+                    if (featureClass != null) // invalid layers won't have a featureclass value
                     {
-                        IReadOnlyList<Dataset> controllerDatasets = new List<Dataset>();
-                        controllerDatasets = featureClass.GetControllerDatasets();
-                        foreach (Dataset controllerDataset in controllerDatasets)
+                        if (featureClass.IsControllerDatasetSupported())
                         {
-                            if (controllerDataset is UtilityNetwork)
-                                utilityNetwork = controllerDataset as UtilityNetwork;
-                            else
-                                controllerDataset.Dispose();
+                            IReadOnlyList<Dataset> controllerDatasets = new List<Dataset>();
+                            controllerDatasets = featureClass.GetControllerDatasets();
+                            foreach (Dataset controllerDataset in controllerDatasets)
+                            {
+                                if (controllerDataset is UtilityNetwork)
+                                    utilityNetwork = controllerDataset as UtilityNetwork;
+                                else
+                                    controllerDataset.Dispose();
+                            }
                         }
                     }
                 }
@@ -309,11 +358,20 @@ namespace UtilityNetworkPropertiesExtractor
             sw.WriteLine("Utility Network Release," + utilityNetworkDefinition.GetSchemaVersion());
         }
 
+        public static class DatastoreTypeDescriptions
+        {
+            public const string FeatureService = "FeatureService";
+            public const string FileGDB = "File Geodatabase";
+            public const string EnterpriseGDB = "Enterprise Geodatabase";
+            public const string MobileGDB = "Mobile Geodatabase";
+        }
+
         public class ReportHeaderInfo
         {
             public string FullPath { get; set; }
             public string SourceType { get; set; }
             public string ProProjectName { get; set; }
+            public string MapName { get; set; }
             public string UtilityNetworkName { get; set; }
             public string UtiltyNetworkSchemaVersion { get; set; }
         }

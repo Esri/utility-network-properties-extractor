@@ -49,7 +49,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerScales.csv", dateFormatted, Common.GetProProjectName());
+                _fileName = string.Format("{0}_{1}_LayerScales.csv", dateFormatted, Common.GetActiveMapName());
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
@@ -58,8 +58,8 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine(DateTime.Now + "," + "Layer Scales");
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
-                    sw.WriteLine("Map," + MapView.Active.Map.Name);
-                    sw.WriteLine("Layer Count," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
+                    sw.WriteLine("Map," + Common.GetActiveMapName());
+                    sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine();
 
                     //Since you can't name a C#.NET property with numeric values, I spelled them out.
@@ -109,7 +109,7 @@ namespace UtilityNetworkPropertiesExtractor
                         else
                             layerContainer = string.Empty;
 
-                        layerType = GetLayerType(layer);
+                        layerType = Common.GetLayerTypeDescription(layer);
                         switch (layerType) {
                             case "Feature Layer":
                             case "Annotation":
@@ -171,36 +171,6 @@ namespace UtilityNetworkPropertiesExtractor
                 if (layer.MinScale >= scale && layer.MaxScale <= scale)
                     retVal = true;
             }
-            return retVal;
-        }
-
-        private static string GetLayerType(Layer layer)
-        {
-            string retVal;
-
-            if (layer is FeatureLayer)
-                retVal = "Feature Layer";
-            else if (layer is GroupLayer)
-                retVal = "Group Layer";
-            else if (layer is SubtypeGroupLayer)
-                retVal = "Subtype Group Layer";
-            else if (layer is AnnotationLayer)
-                retVal = "Annotation";
-            else if (layer is AnnotationSubLayer)
-                retVal = "Annotation Sub Layer";
-            else if (layer is DimensionLayer)
-                retVal = "Dimension";
-            else if (layer is UtilityNetworkLayer)
-                retVal = "Utility Network Layer";
-            else if (layer is TiledServiceLayer)
-                retVal = "Tiled Service Layer";
-            else if (layer is VectorTileLayer)
-                retVal = "Vector Tile Layer";
-            else if (layer is GraphicsLayer)
-                retVal = "Graphics Layer";
-            else
-                retVal = "Layer";
-
             return retVal;
         }
 

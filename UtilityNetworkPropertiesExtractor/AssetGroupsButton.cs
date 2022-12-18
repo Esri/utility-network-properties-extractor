@@ -63,7 +63,7 @@ namespace UtilityNetworkPropertiesExtractor
                 Common.CreateOutputDirectory();
 
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_AssetGroups.csv", dateFormatted, reportHeaderInfo.ProProjectName);
+                _fileName = string.Format("{0}_{1}_AssetGroups.csv", dateFormatted, reportHeaderInfo.MapName);
                 string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
 
                 using (StreamWriter sw = new StreamWriter(outputFile))

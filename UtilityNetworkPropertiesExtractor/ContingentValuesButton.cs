@@ -95,10 +95,10 @@ namespace UtilityNetworkPropertiesExtractor
                     if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                         fcName = pair.Key.Substring(pos + 1);
 
-                    string cvGroupFileName = string.Format("{0}_{1}_ContingentValuesGroups_{2}.csv", dateFormatted, reportHeaderInfo.ProProjectName, fcName);
+                    string cvGroupFileName = string.Format("{0}_{1}_ContingentValuesGroups_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
                     string cvGroupOutputFile = Path.Combine(Common.ExtractFilePath, cvGroupFileName);
 
-                    string cvFileName = string.Format("{0}_{1}_ContingentValues_{2}.csv", dateFormatted, reportHeaderInfo.ProProjectName, fcName);
+                    string cvFileName = string.Format("{0}_{1}_ContingentValues_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
                     string cvOutputFile = Path.Combine(Common.ExtractFilePath, cvFileName);
 
                     string pathToTable = pair.Key;

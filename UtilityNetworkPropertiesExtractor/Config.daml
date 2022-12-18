@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll" defaultNamespace="UtilityNetworkPropertiesExtractor" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-  <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="2.8" desktopVersion="2.8.0.29751">
+  <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="2.8" desktopVersion="2.9">
     <Name>UtilityNetworkPropertiesExtractor</Name>
     <Description>Add-in for extracting Utility Network, GDB and Map properties to CSV files</Description>
     <Image>Images\AddinDesktop32.png</Image>
@@ -64,6 +64,7 @@ limitations under the License.
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
           <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
@@ -153,7 +154,7 @@ limitations under the License.
         <button id="UtilityNetworkPropertiesExtractor_VersionInfoButton" caption="Versioning Info" className="VersionInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/VersionRefresh32.png" keytip="ZE" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Versioning Info <disabledText /></tooltip>
         </button>
-        <button id="UtilityNetworkPropertiesExtractor_LayerScalesButton" caption="Layer Scales" className="LayerScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" keytip="ZD"  condition="esri_mapping_MapCondition">
+        <button id="UtilityNetworkPropertiesExtractor_LayerScalesButton" caption="Layer Scales" className="LayerScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/LayerScaleMax16.png" keytip="ZD" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Layer Scale Info<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_MachineNameButton" caption="Get Machine Info" className="MachineInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerWMTSNew16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerWMTSNew16.png" keytip="ZC">
@@ -162,8 +163,12 @@ limitations under the License.
         <button id="UtilityNetworkPropertiesExtractor_UNFeatureServiceInfoButton" caption="UN FeatureService" className="UNFeatureServiceInfoButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/ServerArcGISNew16.png" keytip="YY" condition="esri_mapping_utilityNetworkCondition">
           <tooltip heading="Tooltip Heading">Extract Utility Network FeatureService Info<disabledText /></tooltip>
         </button>
-        <button id="UtilityNetworkPropertiesExtractor_LayerCountsButton" caption="Layer Counts" className="LayerCountsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Statistics16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Statistics16.png" keytip="YZ" condition="esri_mapping_MapCondition"> 
+        <button id="UtilityNetworkPropertiesExtractor_LayerCountsButton" caption="Layer Counts" className="LayerCountsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Statistics16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/Statistics16.png" keytip="YZ" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Record Counts for each Layer and Table<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" caption="Export Subnetwork Result Fields" className="ExportSubnetworkResultFieldsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericOnlineSync16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericOnlineSync16.png" keytip="YX" condition="esri_mapping_utilityNetworkCondition">
+          <tooltip heading="Tooltip Heading">
+          Generates the "results_fields" parameter values used by GP Tool: Export Subnetwork.  All attribute fields from the Utility Network featureclasses and tables will be written to a text file.  Copy the contents of the file to an ArcPy script that exports the subnetworks.<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

@@ -133,6 +133,9 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     using (Table table = basicFeatureLayer.GetTable())
                     {
+                        if (table == null)  // broken datasource
+                            continue;
+
                         if (table.GetName() == firstRecord.ClassName && basicFeatureLayer.Name == firstRecord.LayerName)
                         {
                             //Found the layer to update
@@ -150,16 +153,22 @@ namespace UtilityNetworkPropertiesExtractor
                 //if made it here, the CSV entry is either a table or isn't in the map
                 foreach (StandaloneTable standaloneTable in standaloneTablesList)
                 {
-                    if (standaloneTable.GetTable().GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
+                    using (Table table = standaloneTable.GetTable())
                     {
-                        //Found the table to update
-                        List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                        applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
+                        if (table == null)  // broken datasource
+                            continue;
 
-                        if (applyChanges)
-                            standaloneTable.SetFieldDescriptions(fieldDescList);
+                        if (table.GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
+                        {
+                            //Found the table to update
+                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                            applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
 
-                        return;
+                            if (applyChanges)
+                                standaloneTable.SetFieldDescriptions(fieldDescList);
+
+                            return;
+                        }
                     }
                 }
             }
@@ -219,15 +228,21 @@ namespace UtilityNetworkPropertiesExtractor
                             {
                                 ClassName = parts[0],
                                 LayerName = parts[1],
-                                FieldName = parts[2],
-                                Visible = Convert.ToBoolean(parts[3]),
-                                ReadOnly = Convert.ToBoolean(parts[4]),
-                                Highlighted = Convert.ToBoolean(parts[5]),
-                                FieldAlias = parts[6]
+                                SubtypeValue = parts[2],
+                                FieldName = parts[3],
+                                Visible = Convert.ToBoolean(parts[4]),
+                                ReadOnly = Convert.ToBoolean(parts[5]),
+                                Highlighted = Convert.ToBoolean(parts[6]),
+                                FieldAlias = parts[7]
                             };
 
-                            //Some field alias descriptions will have double quotes around them because they contain commas.  The quotes need to be stripped out
-                            //  Ex:  StructureJunction,Unknown,height,TRUE,FALSE,TRUE,"height: Height, Marker Height, Platform Height, Pole Height"
+                            //Some layer names will have double quotes around them because they contain commas.  The quotes need to be stripped out.
+                            //  Ex:  "ElectricJunction - De-Energized, Traceable"
+                            if (rec.LayerName.Contains("\""))
+                                rec.LayerName = rec.LayerName.Substring(1, rec.LayerName.Length - 2);
+
+                            //Some field alias descriptions will have double quotes around them because they contain commas.  The quotes need to be stripped out.
+                            //  Ex:  "height: Height, Marker Height, Platform Height, Pole Height"
                             if (rec.FieldAlias.Contains("\""))
                                 rec.FieldAlias = rec.FieldAlias.Substring(1, rec.FieldAlias.Length - 2);
 
@@ -273,6 +288,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             public string ClassName { get; set; }
             public string LayerName { get; set; }
+            public string SubtypeValue { get; set; }
             public string FieldName { get; set; }
             public string FieldAlias { get; set; }
             public bool Visible { get; set; }
