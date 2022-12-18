@@ -26,7 +26,7 @@ Visual Studio:         2019
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Relationship Classes, Versioning Info, Attribute Rules, Contingent Values, GDB Object Names
 * **Map**:  Layer Info, Layer Scales, Layer Counts, Map Field Settings
 
-* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\ Pro Project Name\
+* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\Pro Project Name\
                         
 ### 2.  Efficiency tools to help with map configuration.
 
