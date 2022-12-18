@@ -1,5 +1,5 @@
 # utility-network-properties-extractor
-This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 4 efficiency tools to help set up your map and get your machine info.  
+This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
 
 The Add-in works against layers from feature services, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
 
@@ -12,7 +12,7 @@ Subject:               Utility Network
 Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
 Date:                  5/01/2021
-ArcGIS Pro:            2.7
+ArcGIS Pro:            2.9
 Visual Studio:         2019
 .NET Target Framework: .NET Framework 4.8
 ```
@@ -26,7 +26,7 @@ Visual Studio:         2019
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Relationship Classes, Versioning Info, Attribute Rules, Contingent Values, GDB Object Names
 * **Map**:  Layer Info, Layer Scales, Layer Counts, Map Field Settings
 
-* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\ Pro Project Name\
+* **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\Pro Project Name\
                         
 ### 2.  Efficiency tools to help with map configuration.
 
