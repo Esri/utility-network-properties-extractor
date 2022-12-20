@@ -202,7 +202,14 @@ namespace UtilityNetworkPropertiesExtractor
                             }
 
                             //Definition Queries
-                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.GetDefinitionFilters(), featureLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                            if (! featureLayer.IsSubtypeLayer)
+                                additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.GetDefinitionFilters(), featureLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                            else
+                            {
+                                //When the featurelayer is part of a subtype group layer, the definition query can only be set at the SGL level
+                                additionalDefQueriesText = string.Empty;
+                                csvLayout.ActiveDefinitionQuery = string.Empty;  
+                            }
 
                             //Assign Featurelayer values
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
@@ -288,6 +295,11 @@ namespace UtilityNetworkPropertiesExtractor
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
                         }
 
+                        //Definition Queries
+                        additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, subtypeGroupLayer.GetDefinitionFilters(), subtypeGroupLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+
+                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression);
+                        csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                         csvLayout.DisplayFilterCount = displayFilterCount.ToString();
                         csvLayout.DisplayFilterExpresssion = displayFilterExpression;
                         csvLayout.DisplayFilterName = displayFilterName;
