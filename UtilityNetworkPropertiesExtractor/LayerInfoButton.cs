@@ -150,7 +150,21 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.IsSelectable = basicFeatureLayer.IsSelectable.ToString();
                         csvLayout.LayerSource = basicFeatureLayer.GetTable().GetPath().ToString();
 
-                        // FeatureLayer
+                        //Display Filters
+                        CIMBasicFeatureLayer cimBasicFeatureLayer = layer.GetDefinition() as CIMBasicFeatureLayer;
+                        if (cimBasicFeatureLayer.EnableDisplayFilters)
+                        {
+                            CIMDisplayFilter[] cimDisplayFilterChoices = cimBasicFeatureLayer.DisplayFilterChoices;
+                            CIMDisplayFilter[] cimDisplayFilter = cimBasicFeatureLayer.DisplayFilters;
+                            displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
+                            GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
+                            
+                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
+                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
+                            csvLayout.DisplayFilterName = displayFilterName;
+                        }
+
+                        //FeatureLayer
                         if (basicFeatureLayer is FeatureLayer featureLayer)
                         {
                             CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
@@ -192,15 +206,6 @@ namespace UtilityNetworkPropertiesExtractor
                             popupExpressionCount = AddPopupInfoToList(csvLayout, cimFeatureLayer.PopupInfo, ref popupLayoutList);
                             GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
 
-                            //Display Filters
-                            if (cimFeatureLayer.EnableDisplayFilters)
-                            {
-                                CIMDisplayFilter[] cimDisplayFilterChoices = cimFeatureLayer.DisplayFilterChoices;
-                                CIMDisplayFilter[] cimDisplayFilter = cimFeatureLayer.DisplayFilters;
-                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                            }
-
                             //Definition Queries
                             if (! featureLayer.IsSubtypeLayer)
                                 additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.GetDefinitionFilters(), featureLayer.DefinitionFilter.Name, ref definitionQueryLayout);
@@ -214,9 +219,6 @@ namespace UtilityNetworkPropertiesExtractor
                             //Assign Featurelayer values
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                             csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
-                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
-                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
-                            csvLayout.DisplayFilterName = displayFilterName;
                             csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Count().ToString();
                             csvLayout.IsSnappable = featureLayer.IsSnappable.ToString();
                             csvLayout.IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString();
@@ -236,47 +238,21 @@ namespace UtilityNetworkPropertiesExtractor
                             csvLayout.SubtypeValue = subtypeValue;
                         }
 
-                        // Annotation Layer
+                        //Annotation Layer
                         else if (basicFeatureLayer is AnnotationLayer annotationLayer)
                         {
-                            CIMAnnotationLayer cimAnnotationLayer = layer.GetDefinition() as CIMAnnotationLayer;
-                            if (cimAnnotationLayer.EnableDisplayFilters)
-                            {
-                                CIMDisplayFilter[] cimDisplayFilterChoices = cimAnnotationLayer.DisplayFilterChoices;
-                                CIMDisplayFilter[] cimDisplayFilter = cimAnnotationLayer.DisplayFilters;
-                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                            }
-
                             //Definition Queries
                             additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, annotationLayer.GetDefinitionFilters(), annotationLayer.DefinitionFilter.Name, ref definitionQueryLayout);
-
                             csvLayout.GroupLayerName = csvLayout.LayerName;
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
-                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
-                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
-                            csvLayout.DisplayFilterName = displayFilterName;
                         }
 
                         //Dimension Layer
                         else if (basicFeatureLayer is DimensionLayer dimensionLayer)
                         {
-                            CIMDimensionLayer cimDimensionLayerDef = layer.GetDefinition() as CIMDimensionLayer;
-                            if (cimDimensionLayerDef.EnableDisplayFilters)
-                            {
-                                CIMDisplayFilter[] cimDisplayFilterChoices = cimDimensionLayerDef.DisplayFilterChoices;
-                                CIMDisplayFilter[] cimDisplayFilter = cimDimensionLayerDef.DisplayFilters;
-                                displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
-                                GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                            }
-
                             //Definition Queries
                             additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, dimensionLayer.GetDefinitionFilters(), dimensionLayer.DefinitionFilter.Name, ref definitionQueryLayout);
-
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
-                            csvLayout.DisplayFilterCount = displayFilterCount.ToString();
-                            csvLayout.DisplayFilterExpresssion = displayFilterExpression;
-                            csvLayout.DisplayFilterName = displayFilterName;
                         }
                     }
 
