@@ -157,7 +157,7 @@ namespace UtilityNetworkPropertiesExtractor
             csvLayoutNetworkTopoList.Add(rec);
         }
 
-        private static int GetErrorCount(UtilityNetwork utilityNetwork, SystemTableType systemTableType)
+        private static long GetErrorCount(UtilityNetwork utilityNetwork, SystemTableType systemTableType)
         {
             Table table = utilityNetwork.GetSystemTable(systemTableType);
             return table.GetCount();
@@ -246,7 +246,7 @@ namespace UtilityNetworkPropertiesExtractor
                     {
                         TierName = tier.Name,
                         Descriptor = "Condition Barriers",
-                        Value = tier.TraceConfiguration.Traversability.Barriers?.ToString(),
+                        Value = tier.GetTraceConfiguration().Traversability.Barriers?.ToString(),
                     };
                     tierInfoCSVList.Add(rec);
 
@@ -254,7 +254,7 @@ namespace UtilityNetworkPropertiesExtractor
                     {
                         TierName = tier.Name,
                         Descriptor = "Apply Traversibiilty To",
-                        Value = tier.TraceConfiguration.Traversability.Scope.ToString()
+                        Value = tier.GetTraceConfiguration().Traversability.Scope.ToString()
                     };
                     tierInfoCSVList.Add(rec);
 
@@ -265,7 +265,7 @@ namespace UtilityNetworkPropertiesExtractor
                     };
                     tierInfoCSVList.Add(rec);
 
-                    IReadOnlyList<Propagator> propagatorList = tier.TraceConfiguration.Propagators;
+                    IReadOnlyList<Propagator> propagatorList = tier.GetTraceConfiguration().Propagators;
                     foreach (Propagator propagator in propagatorList)
                     {
                         CodedValueDomain cvd = propagator.NetworkAttribute.Domain as CodedValueDomain;
@@ -285,12 +285,12 @@ namespace UtilityNetworkPropertiesExtractor
                     };
                     tierInfoCSVList.Add(rec);
 
-                    for (int i = 0; i < tier.TraceConfiguration.Functions.Count; i++)
+                    for (int i = 0; i < tier.GetTraceConfiguration().Functions.Count; i++)
                     {
                         rec = new CSVLayoutTierInfo()
                         {
                             TierName = tier.Name,
-                            Value = tier.TraceConfiguration.Functions[i].ToString() + " " + tier.TraceConfiguration.Functions[i].Condition?.ToString() + " " + tier.TraceConfiguration.Functions[i].PersistedField?.Name
+                            Value = tier.GetTraceConfiguration().Functions[i].ToString() + " " + tier.GetTraceConfiguration().Functions[i].Condition?.ToString() + " " + tier.GetTraceConfiguration().Functions[i].PersistedField?.Name
                         };
                         tierInfoCSVList.Add(rec);
                     }
