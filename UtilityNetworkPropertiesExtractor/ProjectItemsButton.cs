@@ -11,7 +11,6 @@
    limitations under the License.
 */
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.GeoProcessing;
 using System;
 using System.Collections.Generic;
 using System.IO;

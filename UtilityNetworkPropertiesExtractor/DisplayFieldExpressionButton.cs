@@ -12,7 +12,6 @@
 */
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data.UtilityNetwork;
-using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using System;
