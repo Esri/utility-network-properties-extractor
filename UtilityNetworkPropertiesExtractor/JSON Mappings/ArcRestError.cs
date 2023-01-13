@@ -35,4 +35,4 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public string message { get; set; }
         public object[] details { get; set; }
     }
-}
+} 

@@ -109,4 +109,4 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public bool combineUsingOr { get; set; }
         public bool isSpecificValue { get; set; }
     }
-}
+} 

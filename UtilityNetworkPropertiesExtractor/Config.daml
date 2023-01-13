@@ -55,16 +55,12 @@
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
-          <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
       </groups>
       <controls>
         <!-- add your controls here -->
         <button id="UtilityNetworkPropertiesExtractor_AssetGroupsButton" caption="Asset Groups" className="AssetGroupsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericNewSparkleLarge16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericNewSparkleLarge16.png" keytip="ZZ" condition="esri_mapping_utilityNetworkCondition">
           <tooltip heading="Tooltip Heading">Extract Asset Groups<disabledText /></tooltip>
-        </button>
-        <button id="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" caption="Create AssetType Edit Templates" className="AssetTypeEditTemplatesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingNewTemplatesForLayer16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingNewTemplatesForLayer16.png" keytip="ZH" condition="esri_mapping_utilityNetworkCondition">
-          <tooltip heading="Tooltip Heading">Creates edit templates for Utility Network's Asset Types.  Supports subtype group layers and standard layers<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_AttributeRulesButton" caption="Attribute Rules" className="AttributeRulesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingExplode32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingExplode32.png" keytip="ZL" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Attribute Rules<disabledText /></tooltip>

@@ -205,4 +205,4 @@ namespace UtilityNetworkPropertiesExtractor
             public string ViaTerminal { get; set; }
         }
     }
-}
+} 

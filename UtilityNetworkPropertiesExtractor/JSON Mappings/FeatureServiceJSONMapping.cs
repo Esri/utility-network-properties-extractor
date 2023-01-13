@@ -210,4 +210,3 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public string name { get; set; }
     }
 }
-

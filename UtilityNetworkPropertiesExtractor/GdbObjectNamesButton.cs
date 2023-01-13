@@ -145,7 +145,7 @@ namespace UtilityNetworkPropertiesExtractor
                                             featureDatasetName = featureDataset.GetName();
                                     }
                                 }
-                                
+
                                 //Determine the feature dataset name for the Utility Network object
                                 else if (datasetType == DatasetType.UtilityNetwork)
                                 {

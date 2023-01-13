@@ -123,4 +123,4 @@ namespace UtilityNetworkPropertiesExtractor
             public string IsComposite { get; set; }
         }
     }
-}
+} 

@@ -130,4 +130,4 @@ namespace UtilityNetworkPropertiesExtractor
             public string UpstreamTerminal { get; set; }
         }
     }
-}
+} 
