@@ -174,6 +174,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     DomainNetworkID = domainNetwork.ID.ToString(),
                     DomainName = domainNetwork.Name,
+                    Alias = domainNetwork.Alias,
                     TierDefinition = domainNetwork.TierDefinition.ToString(),
                     SubnetworkControllerType = domainNetwork.SubnetworkControllerType.ToString()
                 };
@@ -201,7 +202,7 @@ namespace UtilityNetworkPropertiesExtractor
                         EditModeInDefault = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.DefaultVersion).ToString(),
                         EditModeInNamedVersion = tier.GetEditModeForUpdateSubnetwork(VersionSpecification.NamedVersion).ToString(),
                         UpdateSubnetworkContainers = updPolicyForContainers,
-                        UpdateSubnetworkStructures = updPolicyForStructures
+                        UpdateSubnetworkStructures = updPolicyForStructures,
                     };
 
                     myDomainNetworksCSVList.Add(networkRec);
@@ -494,6 +495,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             public string DomainNetworkID { get; set; }
             public string DomainName { get; set; }
+            public string Alias { get; set; }
             public string TierDefinition { get; set; }
             public string SubnetworkControllerType { get; set; }
             public string TierRank { get; set; }
