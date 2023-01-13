@@ -1,10 +1,10 @@
 ## January 13, 2023 update
 
-In prepration for the next [Network Management Release](https://www.esri.com/arcgis-blog/products/utility-network/announcements/whats-new-with-the-network-management-release-plan/), a 3.0 compliant version of this add-in is being worked on.
+In prepration for the next [Network Management Release](https://www.esri.com/arcgis-blog/products/utility-network/announcements/whats-new-with-the-network-management-release-plan/), a 3.1 compliant version of this add-in is being worked on.
 
-Currently, Main and the 2.9 branch are exactly the same.
+Currently, Master and the 2.9 branch are exactly the same.
 
-Once the 3.0 code is ready, this section of the readme will be updated and an announcement will be made thru Esri Community and LinkedIn.
+Once the 3.1 code is ready, this section of the readme will be updated and an announcement will be made thru Esri Community and LinkedIn.
 
 # utility-network-properties-extractor
 This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
