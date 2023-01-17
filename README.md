@@ -1,11 +1,3 @@
-## January 13, 2023 update
-
-In prepration for the next [Network Management Release](https://www.esri.com/arcgis-blog/products/utility-network/announcements/whats-new-with-the-network-management-release-plan/), a 3.0 compliant version of this add-in is being worked on.
-
-Currently, Main and the 2.9 branch are exactly the same.
-
-Once the 3.0 code is ready, this section of the readme will be updated and an announcement will be made thru Esri Community and LinkedIn.
-
 # utility-network-properties-extractor
 This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
 
@@ -19,10 +11,10 @@ Language:              C#
 Subject:               Utility Network
 Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
-Date:                  5/01/2021
-ArcGIS Pro:            2.9
-Visual Studio:         2019
-.NET Target Framework: .NET Framework 4.8
+Date:                  1/16/2023
+ArcGIS Pro:            3.0
+Visual Studio:         2022
+.NET Target Framework: .NET 6
 ```
 
 
@@ -66,7 +58,7 @@ _Directions_
 ## Compilation Directions
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
-3.  **The source code was written against ArcGIS Pro SDK 2.9**. If using an earlier release, you may have to comment out some sections of code that were introduced at Pro SDK 2.9.
+3.  **The source code was written against ArcGIS Pro SDK 3.0 and it won't compile cleanly against a 2.x version.  Please switch to the 2.9 branch to get the latest code for that release.
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 
