@@ -108,7 +108,15 @@ namespace UtilityNetworkPropertiesExtractor
                             try
                             {
                                 IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
-                                BuildDomainAssignments(tableDefinition, null, listOfFields, ref csvLayoutList);
+                                IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
+
+                                if (subtypes.Count != 0)
+                                {
+                                    foreach (Subtype subtype in subtypes)
+                                        BuildDomainAssignments(tableDefinition, subtype, listOfFields, ref csvLayoutList);
+                                }
+                                else
+                                    BuildDomainAssignments(tableDefinition, null, listOfFields, ref csvLayoutList);
                             }
                             catch (Exception ex)
                             {
