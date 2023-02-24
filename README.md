@@ -55,6 +55,10 @@ _Directions_
  7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
  8.  You MUST save the Pro project for settings to persist
 
+## Third party assemblies
+1.  Newtonsoft.JSON v13.0.1.25517
+2.  Microsoft.Windows.Compatibility v7.0.0
+
 ## Compilation Directions
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
