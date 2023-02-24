@@ -202,4 +202,4 @@ namespace UtilityNetworkPropertiesExtractor
             public string Categories { get; set; }
         }
     }
-}
+} 

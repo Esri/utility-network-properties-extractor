@@ -11,7 +11,7 @@
    limitations under the License.
 */
 using ArcGIS.Core.Data.UtilityNetwork;
-using ArcGIS.Core.Data.UtilityNetwork.NetworkDiagrams;
+using ArcGIS.Core.Data.NetworkDiagrams;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;

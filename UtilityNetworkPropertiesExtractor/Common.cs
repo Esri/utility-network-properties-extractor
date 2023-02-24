@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -50,7 +49,7 @@ namespace UtilityNetworkPropertiesExtractor
 
         public static ReportHeaderInfo DetermineReportHeaderProperties(UtilityNetwork utilityNetwork, FeatureLayer featureLayer)
         {
-            ReportHeaderInfo reportHeaderInfo = new ReportHeaderInfo
+            ReportHeaderInfo reportHeaderInfo = new()
             {
                 ProProjectName = GetProProjectName(),
                 MapName = GetActiveMapName()
@@ -326,16 +325,16 @@ namespace UtilityNetworkPropertiesExtractor
 
         public static EsriHttpResponseMessage QueryRestPointUsingGet(string url)
         {
-            EsriHttpClient esriHttpClient = new EsriHttpClient();
+            EsriHttpClient esriHttpClient = new();
             EsriHttpResponseMessage response;
             try
             {
                 response = esriHttpClient.Get(url);
                 response.EnsureSuccessStatusCode();
             }
-            catch (Exception e)
-            {
-                throw e;
+            catch (Exception)
+            { 
+                throw;
             }
 
             return response;

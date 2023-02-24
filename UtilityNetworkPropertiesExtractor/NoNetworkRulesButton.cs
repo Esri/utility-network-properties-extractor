@@ -150,4 +150,4 @@ namespace UtilityNetworkPropertiesExtractor
             public string AssetType { get; set; }
         }
     }
-}
+} 

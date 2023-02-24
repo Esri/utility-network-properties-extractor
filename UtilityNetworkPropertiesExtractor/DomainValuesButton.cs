@@ -113,7 +113,8 @@ namespace UtilityNetworkPropertiesExtractor
                                     {
                                         DomainName = domain.GetName(),
                                         Code = pair.Key.ToString(),
-                                        Value = Common.EncloseStringInDoubleQuotes(pair.Value)
+                                        // Value = Common.EncloseStringInDoubleQuotes(pair.Value)
+                                        Value = Common.EncloseStringInDoubleQuotes(pair.Value.Replace("\"", "\"\""))
                                     };
                                     csvLayoutList.Add(rec);
                                 }

@@ -10,7 +10,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;

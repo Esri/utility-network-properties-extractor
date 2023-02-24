@@ -143,7 +143,7 @@ namespace UtilityNetworkPropertiesExtractor
                     //BasicFeatureLayer (Layers that inherit from BasicFeatureLayer are FeatureLayer, AnnotationLayer and DimensionLayer)
                     if (layer is BasicFeatureLayer basicFeatureLayer)
                     {
-                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(basicFeatureLayer.DefinitionFilter.DefinitionExpression);
+                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(basicFeatureLayer.DefinitionQuery);
                         csvLayout.ClassName = basicFeatureLayer.GetTable().GetName();
                         csvLayout.GeometryType = basicFeatureLayer.ShapeType.ToString();
                         csvLayout.IsEditable = basicFeatureLayer.IsEditable.ToString();
@@ -208,7 +208,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                             //Definition Queries
                             if (! featureLayer.IsSubtypeLayer)
-                                additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.GetDefinitionFilters(), featureLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                                additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.DefinitionQueries, featureLayer.DefinitionQuery, ref definitionQueryLayout);
                             else
                             {
                                 //When the featurelayer is part of a subtype group layer, the definition query can only be set at the SGL level
@@ -242,7 +242,7 @@ namespace UtilityNetworkPropertiesExtractor
                         else if (basicFeatureLayer is AnnotationLayer annotationLayer)
                         {
                             //Definition Queries
-                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, annotationLayer.GetDefinitionFilters(), annotationLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, annotationLayer.DefinitionQueries, annotationLayer.DefinitionQuery, ref definitionQueryLayout);
                             csvLayout.GroupLayerName = csvLayout.LayerName;
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                         }
@@ -251,7 +251,7 @@ namespace UtilityNetworkPropertiesExtractor
                         else if (basicFeatureLayer is DimensionLayer dimensionLayer)
                         {
                             //Definition Queries
-                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, dimensionLayer.GetDefinitionFilters(), dimensionLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                            additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, dimensionLayer.DefinitionQueries, dimensionLayer.DefinitionQuery, ref definitionQueryLayout);
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                         }
                     }
@@ -272,9 +272,9 @@ namespace UtilityNetworkPropertiesExtractor
                         }
 
                         //Definition Queries
-                        additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, subtypeGroupLayer.GetDefinitionFilters(), subtypeGroupLayer.DefinitionFilter.Name, ref definitionQueryLayout);
+                        additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, subtypeGroupLayer.DefinitionQueries, subtypeGroupLayer.DefinitionQuery, ref definitionQueryLayout);
 
-                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionFilter.DefinitionExpression);
+                        csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(subtypeGroupLayer.DefinitionQuery);
                         csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                         csvLayout.DisplayFilterCount = displayFilterCount.ToString();
                         csvLayout.DisplayFilterExpresssion = displayFilterExpression;
@@ -387,7 +387,7 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 CSVLayout csvLayout = new CSVLayout()
                 {
-                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionFilter.DefinitionExpression),
+                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionQuery),
                     ClassName = standaloneTable.GetTable().GetName(),
                     GroupLayerName = Common.EncloseStringInDoubleQuotes(groupLayerName),
                     LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
@@ -412,7 +412,7 @@ namespace UtilityNetworkPropertiesExtractor
                 GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
 
                 //Definition Queries
-                string additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, standaloneTable.GetDefinitionFilters(), standaloneTable.DefinitionFilter.Name, ref definitionQueryLayout);
+                string additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, standaloneTable.DefinitionQueries, standaloneTable.DefinitionQuery, ref definitionQueryLayout);
 
                 //assign values
                 csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
@@ -656,15 +656,15 @@ namespace UtilityNetworkPropertiesExtractor
                 return scale.ToString();
         }
 
-        private static string AddDefinitionQueriesToList(CSVLayout csvLayout, IReadOnlyList<CIMDefinitionFilter> definitionFilters, string activeFilterName, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
+        private static string AddDefinitionQueriesToList(CSVLayout csvLayout, IReadOnlyList<DefinitionQuery> definitionQuery, string activeFilterName, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
         {
             string returnMessage = string.Empty;
             int cnt = 0;
 
-            if (definitionFilters.Count() > 0)
+            if (definitionQuery.Count() > 0)
             {
                 bool activeDefQuery;
-                foreach (CIMDefinitionFilter filter in definitionFilters)
+                foreach (DefinitionQuery filter in definitionQuery)
                 {
                     if (string.IsNullOrEmpty(activeFilterName))
                         activeDefQuery = false;
@@ -683,7 +683,7 @@ namespace UtilityNetworkPropertiesExtractor
                         GroupLayerName = csvLayout.GroupLayerName,
                         LayerName = csvLayout.LayerName,
                         DefinitionQueryName = filter.Name,
-                        DefinitionQuery = Common.EncloseStringInDoubleQuotes(filter.DefinitionExpression),
+                        DefinitionQuery = Common.EncloseStringInDoubleQuotes(filter.Name),
                         Active = activeDefQuery.ToString()
                     };
 
@@ -802,6 +802,10 @@ namespace UtilityNetworkPropertiesExtractor
                             PopupExpresssionVisible = popupExprVisibility.ToString(),
                             PopupExpressionArcade = Common.EncloseStringInDoubleQuotes(cimPopupInfo.ExpressionInfos[i].Expression.Replace("\"", "'"))
                         };
+
+                        //Microsoft Excel has a character limit of 32,767 characters in each cell
+                        if (popupRec.PopupExpressionArcade.Length > 32767)
+                            popupRec.PopupExpressionArcade = "Expression length is greater than a single cell in Excel can handle";
 
                         popupLayoutList.Add(popupRec);
                         popupExpressionCount += 1;

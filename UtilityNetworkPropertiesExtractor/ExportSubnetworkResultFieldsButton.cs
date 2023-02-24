@@ -12,7 +12,6 @@
 */
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
-using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;

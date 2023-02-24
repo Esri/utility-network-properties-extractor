@@ -10,7 +10,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using System;
 using System.Diagnostics;

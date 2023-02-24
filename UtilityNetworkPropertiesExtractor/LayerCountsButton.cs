@@ -91,8 +91,8 @@ namespace UtilityNetworkPropertiesExtractor
                     int layerPos = 1;
                     string prevGroupLayerName = string.Empty;
                     string layerContainer = string.Empty;
-                    int recordCount = 0;
-                    int sum = 0;
+                    long recordCount = 0;
+                    long sum = 0;
                     string definitionQuery = string.Empty;
 
                     List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
@@ -134,9 +134,9 @@ namespace UtilityNetworkPropertiesExtractor
                                 }
                                 else
                                 {
-                                    if (!string.IsNullOrEmpty(featureLayer.DefinitionFilter.DefinitionExpression))
+                                    if (!string.IsNullOrEmpty(featureLayer.DefinitionQuery))
                                     {
-                                        queryFilter.WhereClause = featureLayer.DefinitionFilter.DefinitionExpression;
+                                        queryFilter.WhereClause = featureLayer.DefinitionQuery;
                                         definitionQuery = queryFilter.WhereClause;
                                     }
                                 }
@@ -218,21 +218,21 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-        private static void InterrogateStandaloneTables(IReadOnlyList<StandaloneTable> standaloneTableList, string groupLayerName, ref List<CSVLayout> CSVLayoutList, ref int layerPos, ref int sum)
+        private static void InterrogateStandaloneTables(IReadOnlyList<StandaloneTable> standaloneTableList, string groupLayerName, ref List<CSVLayout> CSVLayoutList, ref int layerPos, ref long sum)
         {
             string layerType = "Standalone Table";
             if (! string.IsNullOrEmpty(groupLayerName))
                 layerType = "Table in Group Layer";
 
-            int recordCount;
+            long recordCount;
             string definitionQuery;
             foreach (StandaloneTable standaloneTable in standaloneTableList)
             {
                 recordCount = 0;
                 definitionQuery = string.Empty;
-                if (!string.IsNullOrEmpty(standaloneTable.DefinitionFilter.DefinitionExpression))
+                if (!string.IsNullOrEmpty(standaloneTable.DefinitionQuery))
                 {
-                    QueryFilter queryFilter = new QueryFilter() { WhereClause = standaloneTable.DefinitionFilter.DefinitionExpression };
+                    QueryFilter queryFilter = new QueryFilter() { WhereClause = standaloneTable.DefinitionQuery };
                     recordCount = standaloneTable.GetTable().GetCount(queryFilter);
                     definitionQuery = queryFilter.WhereClause;
                 }

@@ -11,7 +11,6 @@
    limitations under the License.
 */
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.GeoProcessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -78,12 +77,6 @@ namespace UtilityNetworkPropertiesExtractor
                         Description = Common.EncloseStringInDoubleQuotes(item.Description)
 
                     };
-
-                    if (item is HistoryProjectItem hpi)
-                    {
-                        rec.ItemType += " History"; //In the CSV, split out GP History from GP (tools)
-                        rec.TimeStamp = hpi.TimeStamp.ToString();  // Although obsolete, the timestamp value is still there and accurate.
-                    }
 
                     csvLayoutList.Add(rec);
                 }

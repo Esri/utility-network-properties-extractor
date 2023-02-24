@@ -43,6 +43,5 @@ namespace UtilityNetworkPropertiesExtractor
         }
 
         #endregion Overrides
-
     }
 }
