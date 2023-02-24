@@ -101,7 +101,15 @@ namespace UtilityNetworkPropertiesExtractor
                             try
                             {
                                 IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
-                                PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
+                                IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
+
+                                if (subtypes.Count != 0)
+                                {
+                                    foreach (Subtype subtype in subtypes)
+                                        PopulateAssignedDomainList(assignedDomainsList, listOfFields, subtype);
+                                }
+                                else
+                                    PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
                             }
                             catch (Exception ex)
                             {

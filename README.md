@@ -1,4 +1,7 @@
 # utility-network-properties-extractor
+
+For use with ArcGIS Pro 2.9
+
 This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
 
 The Add-in works against layers from feature services, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
