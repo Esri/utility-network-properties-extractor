@@ -59,7 +59,7 @@ _Directions_
  8.  You MUST save the Pro project for settings to persist
 
 ## Third party assemblies
-1.  Newtonsoft.JSON v13.0.1.25517
+1.  Newtonsoft.JSON v13.0.2
 2.  Microsoft.Windows.Compatibility v7.0.0
 
 ## Compilation Directions
