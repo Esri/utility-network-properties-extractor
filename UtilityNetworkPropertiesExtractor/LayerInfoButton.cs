@@ -803,6 +803,10 @@ namespace UtilityNetworkPropertiesExtractor
                             PopupExpressionArcade = Common.EncloseStringInDoubleQuotes(cimPopupInfo.ExpressionInfos[i].Expression.Replace("\"", "'"))
                         };
 
+                        //Microsoft Excel has a character limit of 32,767 characters in each cell
+                        if (popupRec.PopupExpressionArcade.Length > 32767)
+                            popupRec.PopupExpressionArcade = "Expression length is greater than a single cell in Excel can handle";
+
                         popupLayoutList.Add(popupRec);
                         popupExpressionCount += 1;
                     }
