@@ -11,8 +11,8 @@ Language:              C#
 Subject:               Utility Network
 Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
-Date:                  1/16/2023
-ArcGIS Pro:            3.0
+Date:                  2/23/2023
+ArcGIS Pro:            3.0 / 3.1
 Visual Studio:         2022
 .NET Target Framework: .NET 6
 ```
