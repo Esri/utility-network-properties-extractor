@@ -268,12 +268,24 @@ namespace UtilityNetworkPropertiesExtractor
                     IReadOnlyList<Propagator> propagatorList = tier.GetTraceConfiguration().Propagators;
                     foreach (Propagator propagator in propagatorList)
                     {
+                        //Propagator examples
+                        //1.  Phases Current[phasessub] BitwiseAndIncludesAny ABCN phasesenergized
+                        //2.  Phases Current BitwiseAndIncludesAny ABCN 
+                        //3.  nomvoltage MaxLessThanEqual 250000 curvoltage
+
+                        string propagatorValue = propagator.Value.ToString();
                         CodedValueDomain cvd = propagator.NetworkAttribute.Domain as CodedValueDomain;
-                        string value = Common.GetCodedValueDomainValue(cvd, propagator.Value.ToString());
+                        if (cvd != null)
+                            propagatorValue = Common.GetCodedValueDomainValue(cvd, propagatorValue);
+
+                        string substitutionAttribute = " ";
+                        if (propagator.SubstitutionAttribute != null)
+                            substitutionAttribute = "[" + propagator.SubstitutionAttribute.Name + "] ";
+
                         rec = new CSVLayoutTierInfo()
                         {
                             TierName = tier.Name,
-                            Value = propagator.NetworkAttribute.Name + "[" + propagator.SubstitutionAttribute.Name + "] " + propagator.PropagatorFunction + propagator.Operator + " " + value + " " + propagator.PersistedField.Name
+                            Value = Common.EncloseStringInDoubleQuotes(propagator.NetworkAttribute.Name + substitutionAttribute + propagator.PropagatorFunction + propagator.Operator + " " + propagatorValue + " " + propagator.PersistedField?.Name)
                         };
                         tierInfoCSVList.Add(rec);
                     }
