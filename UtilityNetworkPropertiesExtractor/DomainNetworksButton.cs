@@ -175,6 +175,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     DomainNetworkID = domainNetwork.ID.ToString(),
                     DomainName = domainNetwork.Name,
+                    Alias = domainNetwork.Alias,
                     TierDefinition = domainNetwork.TierDefinition.ToString(),
                     SubnetworkControllerType = domainNetwork.SubnetworkControllerType.ToString()
                 };
@@ -268,12 +269,24 @@ namespace UtilityNetworkPropertiesExtractor
                     IReadOnlyList<Propagator> propagatorList = tier.TraceConfiguration.Propagators;
                     foreach (Propagator propagator in propagatorList)
                     {
+                        //Propagator details examples
+                        //1.  Phases Current[phasessub] BitwiseAndIncludesAny ABCN phasesenergized
+                        //2.  Phases Current BitwiseAndIncludesAny ABCN 
+                        //3.  nomvoltage MaxLessThanEqual 250000 curvoltage
+
+                        string propagatorValue = propagator.Value.ToString();
                         CodedValueDomain cvd = propagator.NetworkAttribute.Domain as CodedValueDomain;
-                        string value = Common.GetCodedValueDomainValue(cvd, propagator.Value.ToString());
+                        if (cvd != null)
+                            propagatorValue = Common.GetCodedValueDomainValue(cvd, propagatorValue);
+
+                        string substitutionAttribute = " ";
+                        if (propagator.SubstitutionAttribute != null)
+                            substitutionAttribute = "[" + propagator.SubstitutionAttribute.Name + "] ";
+
                         rec = new CSVLayoutTierInfo()
                         {
                             TierName = tier.Name,
-                            Value = propagator.NetworkAttribute.Name + "[" + propagator.SubstitutionAttribute.Name + "] " + propagator.PropagatorFunction + propagator.Operator + " " + value + " " + propagator.PersistedField.Name
+                            Value = propagator.NetworkAttribute.Name + substitutionAttribute + propagator.PropagatorFunction + propagator.Operator + " " + propagatorValue + " " + propagator.PersistedField?.Name
                         };
                         tierInfoCSVList.Add(rec);
                     }
@@ -495,6 +508,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             public string DomainNetworkID { get; set; }
             public string DomainName { get; set; }
+            public string Alias { get; set; }
             public string TierDefinition { get; set; }
             public string SubnetworkControllerType { get; set; }
             public string TierRank { get; set; }
