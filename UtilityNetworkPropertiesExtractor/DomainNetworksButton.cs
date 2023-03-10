@@ -285,7 +285,7 @@ namespace UtilityNetworkPropertiesExtractor
                         rec = new CSVLayoutTierInfo()
                         {
                             TierName = tier.Name,
-                            Value = propagator.NetworkAttribute.Name + substitutionAttribute + propagator.PropagatorFunction + propagator.Operator + " " + propagatorValue + " " + propagator.PersistedField?.Name
+                            Value = Common.EncloseStringInDoubleQuotes(propagator.NetworkAttribute.Name + substitutionAttribute + propagator.PropagatorFunction + propagator.Operator + " " + propagatorValue + " " + propagator.PersistedField?.Name)
                         };
                         tierInfoCSVList.Add(rec);
                     }
