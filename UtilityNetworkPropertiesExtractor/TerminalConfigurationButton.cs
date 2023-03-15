@@ -81,12 +81,13 @@ namespace UtilityNetworkPropertiesExtractor
                     string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
-                    IEnumerable<TerminalConfiguration> terminalConfigList = utilityNetworkDefinition.GetTerminalConfigurations().OrderBy(x => x.Name);
+                    IEnumerable<TerminalConfiguration> terminalConfigList = utilityNetworkDefinition.GetTerminalConfigurations().OrderBy(x => x.ID);
                     foreach (TerminalConfiguration terminalConfig in terminalConfigList)
                     {
                         CSVLayout rec = new CSVLayout()
                         {
-                            Name = terminalConfig.Name,
+                            TerminalConfigID = terminalConfig.ID.ToString(),
+                            TerminalConfigName = terminalConfig.Name,
                             DirectionalityModel = terminalConfig.Directionality.ToString()
                         };
                         csvLayoutList.Add(rec);
@@ -96,7 +97,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             rec = new CSVLayout()
                             {
-                                ID = terminal.ID.ToString(),
+                                TerminalID = terminal.ID.ToString(),
                                 TerminalName = terminal.Name,
                                 UpstreamTerminal = terminal.IsUpstreamTerminal.ToString()
                             };
@@ -123,9 +124,10 @@ namespace UtilityNetworkPropertiesExtractor
 
         private class CSVLayout
         {
-            public string Name { get; set; }
+            public string TerminalConfigID { get; set; }
+            public string TerminalConfigName { get; set; }
             public string DirectionalityModel { get; set; }
-            public string ID { get; set; }
+            public string TerminalID { get; set; }
             public string TerminalName { get; set; }
             public string UpstreamTerminal { get; set; }
         }
