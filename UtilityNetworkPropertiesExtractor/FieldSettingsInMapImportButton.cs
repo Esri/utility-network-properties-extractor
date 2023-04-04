@@ -27,6 +27,15 @@ using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace UtilityNetworkPropertiesExtractor
 {
+    /// <summary>
+    /// Reads in a CSV file and updates these field settings in the Web Map.
+    /// 1.  Visible
+    //  2.  ReadOnly
+    //  3.  Highlighted 
+    //  4.  Alias
+    //  5.  Field Order
+    ///// </summary>
+    
     internal class FieldSettingsInMapImportButton : Button
     {
         protected override void OnClick()
@@ -127,7 +136,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             try
             {
-                bool applyChanges = false;
                 CSVLayout firstRecord = layerFieldSettingsInCSVList.FirstOrDefault();
                 foreach (BasicFeatureLayer basicFeatureLayer in featureLayerList)
                 {
@@ -140,10 +148,10 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             //Found the layer to update
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
-                            applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
 
-                            if (applyChanges)
-                                basicFeatureLayer.SetFieldDescriptions(fieldDescList);
+                            List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
+                            if (newFieldOrderList.Count > 0)
+                                basicFeatureLayer.SetFieldDescriptions(newFieldOrderList);
 
                             return;
                         }
@@ -162,10 +170,10 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             //Found the table to update
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
 
-                            if (applyChanges)
-                                standaloneTable.SetFieldDescriptions(fieldDescList);
+                            List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
+                            if (newFieldOrderList.Count > 0)
+                                standaloneTable.SetFieldDescriptions(newFieldOrderList);
 
                             return;
                         }
@@ -179,7 +187,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static bool SetFieldDescriptions(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
+        private static bool SetFieldDescriptionsOld(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
         {
             bool applyChanges = false;
 
@@ -198,6 +206,31 @@ namespace UtilityNetworkPropertiesExtractor
             }
 
             return applyChanges;
+        }
+
+        private static List<FieldDescription> SetFieldDescriptions(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
+        {
+            //Field order is set via a list<FieldDesciption>.
+            //Since the CSV allow for field re-ordering, we need to create a new list<FieldDesciption> to overwrite the existing order.
+            //This approach uses the row order in the CSV to determine field order
+            
+            List<FieldDescription> newFieldOrderList = new List<FieldDescription>();
+
+            foreach(CSVLayout csvRecord in layerFieldSettingsInCSVList)
+            {
+                FieldDescription fieldDescription = fieldDescList.Where(x => x.Name == csvRecord.FieldName).FirstOrDefault();
+                if (fieldDescription != null)
+                {
+                    fieldDescription.IsVisible = csvRecord.Visible;
+                    fieldDescription.IsReadOnly = csvRecord.ReadOnly;
+                    fieldDescription.IsHighlighted = csvRecord.Highlighted;
+                    fieldDescription.Alias = csvRecord.FieldAlias;
+
+                    newFieldOrderList.Add(fieldDescription);  // found at least 1 field in this layer to be updated from the CSV.
+                }
+            }
+
+            return newFieldOrderList;
         }
 
         private static List<CSVLayout> ReadCSV(string csvToProcess)
