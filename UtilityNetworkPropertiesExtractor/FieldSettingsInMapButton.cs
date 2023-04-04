@@ -64,15 +64,21 @@ namespace UtilityNetworkPropertiesExtractor
                         utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
+
+                    IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+
                     sw.WriteLine("Map," + Common.GetActiveMapName());
+                    sw.WriteLine("Layers," + basicFeatureLayerList.Count());
+                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
+                    sw.WriteLine("");
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
-
                     sw.WriteLine(Common.FieldSettingsClassNameHeader + ",Layer Name,Subtype Value,Field Name,Field Order*,Visible*,Read-Only*,Highlight*,Field Alias*");
 
                     //Basic Feature Layers in the map
                     string subtypeValue = string.Empty;
-                    IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
+                    
                     foreach (BasicFeatureLayer basicFeatureLayer in basicFeatureLayerList)
                     {
                         using (Table table = basicFeatureLayer.GetTable())
@@ -92,7 +98,6 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Standalone Tables in the map
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
                         using (Table table = standaloneTable.GetTable())

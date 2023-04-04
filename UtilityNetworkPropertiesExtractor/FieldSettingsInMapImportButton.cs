@@ -30,11 +30,11 @@ namespace UtilityNetworkPropertiesExtractor
     /// <summary>
     /// Reads in a CSV file and updates these field settings in the Web Map.
     /// 1.  Visible
-    //  2.  ReadOnly
-    //  3.  Highlighted 
-    //  4.  Alias
-    //  5.  Field Order
-    ///// </summary>
+    /// 2.  ReadOnly
+    /// 3.  Highlighted 
+    /// 4.  Alias
+    /// 5.  Field Order
+    /// </summary>
     
     internal class FieldSettingsInMapImportButton : Button
     {
@@ -187,34 +187,10 @@ namespace UtilityNetworkPropertiesExtractor
                 MessageBox.Show(ex.Message, "UpdateFieldSettings");
             }
         }
-
-        private static bool SetFieldDescriptionsOld(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
-        {
-            bool applyChanges = false;
-
-            foreach (FieldDescription fieldDesc in fieldDescList)
-            {
-                CSVLayout csvRecord = layerFieldSettingsInCSVList.Where(x => x.FieldName == fieldDesc.Name).FirstOrDefault();
-                if (csvRecord != null)
-                {
-                    fieldDesc.IsVisible = csvRecord.Visible;
-                    fieldDesc.IsReadOnly = csvRecord.ReadOnly;
-                    fieldDesc.IsHighlighted = csvRecord.Highlighted;
-                    fieldDesc.Alias = csvRecord.FieldAlias;
-
-                    applyChanges = true;  // found at least 1 field in this layer to be updated from the CSV.
-                }
-            }
-
-            return applyChanges;
-        }
-
+                
         private static List<FieldDescription> SetFieldDescriptions(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
         {
-            //Field order is set via a list<FieldDesciption>.
-            //Since the CSV allow for field re-ordering, we need to create a new list<FieldDesciption> to overwrite the existing order.
-            //This approach uses the row order in the CSV to determine field order
-            
+            //To update the layer's field order, you need to create a new list of FieldDescriptions
             List<FieldDescription> newFieldOrderList = new List<FieldDescription>();
 
             foreach(CSVLayout csvRecord in layerFieldSettingsInCSVList)
@@ -227,7 +203,7 @@ namespace UtilityNetworkPropertiesExtractor
                     fieldDescription.IsHighlighted = csvRecord.Highlighted;
                     fieldDescription.Alias = csvRecord.FieldAlias;
 
-                    newFieldOrderList.Add(fieldDescription);  // found at least 1 field in this layer to be updated from the CSV.
+                    newFieldOrderList.Add(fieldDescription);
                 }
             }
 
@@ -240,7 +216,6 @@ namespace UtilityNetworkPropertiesExtractor
 
             try
             {
-                int fieldOrder;
                 string line;
                 bool startHere = false;
                 Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
@@ -259,7 +234,10 @@ namespace UtilityNetworkPropertiesExtractor
                         }
                         else
                         {
-                            int.TryParse(parts[4], out fieldOrder);
+                            //Check if Field Order in CSV is an integer value.
+                            //If can't be parsed, the fieldOrder value is set to 0 which will put it at the top of the attribute list.
+                            //This will make easy to identify it's field order value is bad.
+                            int.TryParse(parts[4], out int fieldOrder);
                             
                             CSVLayout rec = new CSVLayout
                             {
