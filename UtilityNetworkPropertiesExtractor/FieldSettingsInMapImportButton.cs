@@ -113,7 +113,8 @@ namespace UtilityNetworkPropertiesExtractor
                             cps.Progressor.Status = (cps.Progressor.Value * 100 / cps.Progressor.Max) + @"% Completed";
                             cps.Progressor.Message = progressMessage;
 
-                            IEnumerable<CSVLayout> layerFieldSettingsInCSVList = allFieldSettingsInCSVList.Where(x => x.ClassName == grouping.ClassName && x.LayerName == grouping.LayerName);
+                            //For each layer, order the fields based the attribute:  Field Order
+                            IEnumerable<CSVLayout> layerFieldSettingsInCSVList = allFieldSettingsInCSVList.Where(x => x.ClassName == grouping.ClassName && x.LayerName == grouping.LayerName).OrderBy(x => x.FieldOrder);
                             UpdateFieldSettings(layerFieldSettingsInCSVList, basicFeatureLayerList, standaloneTablesList);
                         }
                     }, cps.Progressor);
@@ -239,6 +240,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             try
             {
+                int fieldOrder;
                 string line;
                 bool startHere = false;
                 Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
@@ -257,18 +259,21 @@ namespace UtilityNetworkPropertiesExtractor
                         }
                         else
                         {
+                            int.TryParse(parts[4], out fieldOrder);
+                            
                             CSVLayout rec = new CSVLayout
                             {
                                 ClassName = parts[0],
                                 LayerName = parts[1],
                                 SubtypeValue = parts[2],
                                 FieldName = parts[3],
-                                Visible = Convert.ToBoolean(parts[4]),
-                                ReadOnly = Convert.ToBoolean(parts[5]),
-                                Highlighted = Convert.ToBoolean(parts[6]),
-                                FieldAlias = parts[7]
+                                FieldOrder = fieldOrder,
+                                Visible = Convert.ToBoolean(parts[5]),
+                                ReadOnly = Convert.ToBoolean(parts[6]),
+                                Highlighted = Convert.ToBoolean(parts[7]),
+                                FieldAlias = parts[8]
                             };
-
+                            
                             //Some layer names will have double quotes around them because they contain commas.  The quotes need to be stripped out.
                             //  Ex:  "ElectricJunction - De-Energized, Traceable"
                             if (rec.LayerName.Contains("\""))
@@ -323,6 +328,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string LayerName { get; set; }
             public string SubtypeValue { get; set; }
             public string FieldName { get; set; }
+            public int FieldOrder { get; set; }
             public string FieldAlias { get; set; }
             public bool Visible { get; set; }
             public bool ReadOnly { get; set; }
