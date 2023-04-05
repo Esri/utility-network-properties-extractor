@@ -167,7 +167,7 @@ namespace UtilityNetworkPropertiesExtractor
 
         public static string GetExtractFilePath()
         {
-            return ExtractFileRootPath + GetProProjectName();
+            return ExtractFileRootPath + GetProProjectName() + "\\" + GetActiveMapName();
         }
 
         public static string GetLayerTypeDescription(Layer layer)

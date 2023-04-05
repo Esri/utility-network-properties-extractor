@@ -27,6 +27,15 @@ using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace UtilityNetworkPropertiesExtractor
 {
+    /// <summary>
+    /// Reads in a CSV file and updates these field settings in the Web Map.
+    /// 1.  Visible
+    /// 2.  ReadOnly
+    /// 3.  Highlighted 
+    /// 4.  Alias
+    /// 5.  Field Order
+    /// </summary>
+
     internal class FieldSettingsInMapImportButton : Button
     {
         protected override void OnClick()
@@ -104,7 +113,8 @@ namespace UtilityNetworkPropertiesExtractor
                             cps.Progressor.Status = (cps.Progressor.Value * 100 / cps.Progressor.Max) + @"% Completed";
                             cps.Progressor.Message = progressMessage;
 
-                            IEnumerable<CSVLayout> layerFieldSettingsInCSVList = allFieldSettingsInCSVList.Where(x => x.ClassName == grouping.ClassName && x.LayerName == grouping.LayerName);
+                            //For each layer, order the fields based the attribute:  Field Order
+                            IEnumerable<CSVLayout> layerFieldSettingsInCSVList = allFieldSettingsInCSVList.Where(x => x.ClassName == grouping.ClassName && x.LayerName == grouping.LayerName).OrderBy(x => x.FieldOrder);
                             UpdateFieldSettings(layerFieldSettingsInCSVList, basicFeatureLayerList, standaloneTablesList);
                         }
                     }, cps.Progressor);
@@ -127,7 +137,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             try
             {
-                bool applyChanges = false;
                 CSVLayout firstRecord = layerFieldSettingsInCSVList.FirstOrDefault();
                 foreach (BasicFeatureLayer basicFeatureLayer in featureLayerList)
                 {
@@ -138,12 +147,13 @@ namespace UtilityNetworkPropertiesExtractor
 
                         if (table.GetName() == firstRecord.ClassName && basicFeatureLayer.Name == firstRecord.LayerName)
                         {
-                            //Found the layer to update
+                            //Found the layer to update;  get list of existing field descriptions
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
-                            applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
 
-                            if (applyChanges)
-                                basicFeatureLayer.SetFieldDescriptions(fieldDescList);
+                            //Update field descriptions with values from CSV
+                            List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
+                            if (newFieldOrderList.Count > 0)
+                                basicFeatureLayer.SetFieldDescriptions(newFieldOrderList);
 
                             return;
                         }
@@ -160,12 +170,13 @@ namespace UtilityNetworkPropertiesExtractor
 
                         if (table.GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
                         {
-                            //Found the table to update
+                            //Found the table to update; get list of existing field descriptions
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            applyChanges = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
 
-                            if (applyChanges)
-                                standaloneTable.SetFieldDescriptions(fieldDescList);
+                            //Update field descriptions with values from CSV
+                            List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
+                            if (newFieldOrderList.Count > 0)
+                                standaloneTable.SetFieldDescriptions(newFieldOrderList);
 
                             return;
                         }
@@ -179,25 +190,26 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static bool SetFieldDescriptions(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
+        private static List<FieldDescription> SetFieldDescriptions(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, List<FieldDescription> fieldDescList)
         {
-            bool applyChanges = false;
+            //To update the layer's field order, you need to create a new list of FieldDescriptions
+            List<FieldDescription> newFieldOrderList = new List<FieldDescription>();
 
-            foreach (FieldDescription fieldDesc in fieldDescList)
+            foreach (CSVLayout csvRecord in layerFieldSettingsInCSVList)
             {
-                CSVLayout csvRecord = layerFieldSettingsInCSVList.Where(x => x.FieldName == fieldDesc.Name).FirstOrDefault();
-                if (csvRecord != null)
+                FieldDescription fieldDescription = fieldDescList.Where(x => x.Name == csvRecord.FieldName).FirstOrDefault();
+                if (fieldDescription != null)
                 {
-                    fieldDesc.IsVisible = csvRecord.Visible;
-                    fieldDesc.IsReadOnly = csvRecord.ReadOnly;
-                    fieldDesc.IsHighlighted = csvRecord.Highlighted;
-                    fieldDesc.Alias = csvRecord.FieldAlias;
+                    fieldDescription.IsVisible = csvRecord.Visible;
+                    fieldDescription.IsReadOnly = csvRecord.ReadOnly;
+                    fieldDescription.IsHighlighted = csvRecord.Highlighted;
+                    fieldDescription.Alias = csvRecord.FieldAlias;
 
-                    applyChanges = true;  // found at least 1 field in this layer to be updated from the CSV.
+                    newFieldOrderList.Add(fieldDescription);
                 }
             }
 
-            return applyChanges;
+            return newFieldOrderList;
         }
 
         private static List<CSVLayout> ReadCSV(string csvToProcess)
@@ -224,16 +236,22 @@ namespace UtilityNetworkPropertiesExtractor
                         }
                         else
                         {
+                            //Check if Field Order in CSV is an integer value.
+                            //If can't be parsed, the fieldOrder value is set to 0 which will put it at the top of the attribute list.
+                            //This will make easy to identify it's field order value is bad.
+                            int.TryParse(parts[4], out int fieldOrder);
+
                             CSVLayout rec = new CSVLayout
                             {
                                 ClassName = parts[0],
                                 LayerName = parts[1],
                                 SubtypeValue = parts[2],
                                 FieldName = parts[3],
-                                Visible = Convert.ToBoolean(parts[4]),
-                                ReadOnly = Convert.ToBoolean(parts[5]),
-                                Highlighted = Convert.ToBoolean(parts[6]),
-                                FieldAlias = parts[7]
+                                FieldOrder = fieldOrder,
+                                Visible = Convert.ToBoolean(parts[5]),
+                                ReadOnly = Convert.ToBoolean(parts[6]),
+                                Highlighted = Convert.ToBoolean(parts[7]),
+                                FieldAlias = parts[8]
                             };
 
                             //Some layer names will have double quotes around them because they contain commas.  The quotes need to be stripped out.
@@ -290,6 +308,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string LayerName { get; set; }
             public string SubtypeValue { get; set; }
             public string FieldName { get; set; }
+            public int FieldOrder { get; set; }
             public string FieldAlias { get; set; }
             public bool Visible { get; set; }
             public bool ReadOnly { get; set; }
