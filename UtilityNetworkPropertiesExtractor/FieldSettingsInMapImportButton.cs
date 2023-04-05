@@ -147,9 +147,10 @@ namespace UtilityNetworkPropertiesExtractor
 
                         if (table.GetName() == firstRecord.ClassName && basicFeatureLayer.Name == firstRecord.LayerName)
                         {
-                            //Found the layer to update
+                            //Found the layer to update;  get list of existing field descriptions
                             List<FieldDescription> fieldDescList = basicFeatureLayer.GetFieldDescriptions();
 
+                            //Update field descriptions with values from CSV
                             List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
                             if (newFieldOrderList.Count > 0)
                                 basicFeatureLayer.SetFieldDescriptions(newFieldOrderList);
@@ -169,9 +170,10 @@ namespace UtilityNetworkPropertiesExtractor
 
                         if (table.GetName() == firstRecord.ClassName && standaloneTable.Name == firstRecord.LayerName)
                         {
-                            //Found the table to update
+                            //Found the table to update; get list of existing field descriptions
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
 
+                            //Update field descriptions with values from CSV
                             List<FieldDescription> newFieldOrderList = SetFieldDescriptions(layerFieldSettingsInCSVList, fieldDescList);
                             if (newFieldOrderList.Count > 0)
                                 standaloneTable.SetFieldDescriptions(newFieldOrderList);
