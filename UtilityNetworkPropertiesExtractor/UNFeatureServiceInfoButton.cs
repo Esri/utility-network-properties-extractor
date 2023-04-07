@@ -10,7 +10,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
@@ -100,62 +99,90 @@ namespace UtilityNetworkPropertiesExtractor
 
                     CSVLayout emptyRec = new CSVLayout();
                     List<CSVLayout> csvLayoutList = new List<CSVLayout>
-                    {
-                        new CSVLayout() { Title = "Has Versioned Data", Value = parsedJson.hasVersionedData.ToString() },
-                        new CSVLayout() { Title = "Max Record Count", Value = parsedJson.maxRecordCount.ToString() },
-                        new CSVLayout() { Title = "Supported Query Formats", Value = parsedJson.supportedQueryFormats.ToString() },
-                        new CSVLayout() { Title = "Supports Query Data Elements", Value = parsedJson.supportsQueryDataElements.ToString() }
-                    };
+                {
+                    new CSVLayout() { ColumnA = "Has Versioned Data", ColumnB = parsedJson.hasVersionedData.ToString() },
+                    new CSVLayout() { ColumnA = "Max Record Count", ColumnB = parsedJson.maxRecordCount.ToString() },
+                    new CSVLayout() { ColumnA = "Supported Query Formats", ColumnB = parsedJson.supportedQueryFormats.ToString() },
+                    new CSVLayout() { ColumnA = "Supports Query Data Elements", ColumnB = parsedJson.supportsQueryDataElements.ToString() },
+                    new CSVLayout() { ColumnA = "Capabilities", ColumnB = Common.EncloseStringInDoubleQuotes(parsedJson.capabilities.ToString()) }
+                };
 
                     if (parsedJson.layers.Length > 0)
                     {
                         csvLayoutList.Add(emptyRec);
-                        csvLayoutList.Add(new CSVLayout() { Title = "Layers" });
-                    }
+                        csvLayoutList.Add(new CSVLayout() { ColumnA = "Layers", ColumnB  = "Layer Name", ColumnC = "Layer ID" });
 
-                    for (int i = 0; i < parsedJson.layers.Length; i++)
-                    {
-                        CSVLayout rec = new CSVLayout() { Value = $"{parsedJson.layers[i].name} ( {parsedJson.layers[i].id} )" };
-                        csvLayoutList.Add(rec);
+                        for (int i = 0; i < parsedJson.layers.Length; i++)
+                        {
+                            CSVLayout rec = new CSVLayout() { ColumnB = parsedJson.layers[i].name, ColumnC = parsedJson.layers[i].id.ToString() };
+                            csvLayoutList.Add(rec);
+                        }
                     }
 
                     if (parsedJson.tables.Length > 0)
                     {
                         csvLayoutList.Add(emptyRec);
-                        csvLayoutList.Add(new CSVLayout() { Title = "Tables" });
+                        csvLayoutList.Add(new CSVLayout() { ColumnA = "Tables", ColumnB = "Table Name", ColumnC = "Table ID" });
+
+                        for (int i = 0; i < parsedJson.tables.Length; i++)
+                        {
+                            CSVLayout rec = new CSVLayout() { ColumnB = parsedJson.tables[i].name, ColumnC = parsedJson.tables[i].id.ToString() };
+                            csvLayoutList.Add(rec);
+                        }
                     }
 
-                    for (int i = 0; i < parsedJson.tables.Length; i++)
+                    csvLayoutList.Add(emptyRec);
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Service Item ID", ColumnB = parsedJson.serviceItemId });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Spatial Reference", ColumnB = $"{parsedJson.spatialReference.wkid} ({parsedJson.spatialReference.latestWkid})" });
+                    csvLayoutList.Add(emptyRec);
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Initial Extent" });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMin", ColumnC = parsedJson.initialExtent.xmin.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "YMin", ColumnC = parsedJson.initialExtent.ymin.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMax", ColumnC = parsedJson.initialExtent.xmax.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMax", ColumnC = parsedJson.initialExtent.ymax.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "Spatial Reference", ColumnC = $"{parsedJson.initialExtent.spatialReference.wkid} ({parsedJson.initialExtent.spatialReference.latestWkid})" });
+                    csvLayoutList.Add(emptyRec);
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Full Extent" });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMin", ColumnC = parsedJson.fullExtent.xmin.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "YMin", ColumnC = parsedJson.fullExtent.ymin.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMax", ColumnC = parsedJson.fullExtent.xmax.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "XMax", ColumnC = parsedJson.fullExtent.ymax.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "Spatial Reference", ColumnC = $"{parsedJson.fullExtent.spatialReference.wkid} ({parsedJson.fullExtent.spatialReference.latestWkid})" });
+                    csvLayoutList.Add(emptyRec);
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Units", ColumnB = parsedJson.units });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Enable Z Defaults", ColumnB = parsedJson.enableZDefaults.ToString() });
+                    csvLayoutList.Add(emptyRec);
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Sync Capabilities" });
+                    csvLayoutList.Add(new CSVLayout() { ColumnB = "Sync Enabled", ColumnC = parsedJson.syncEnabled.ToString() });
+                    if (parsedJson.syncEnabled)
                     {
-                        CSVLayout rec = new CSVLayout() { Value = $"{parsedJson.tables[i].name} ( {parsedJson.tables[i].id} )" };
-                        csvLayoutList.Add(rec);
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Registering Existing Data", ColumnC = parsedJson.syncCapabilities.supportsRegisteringExistingData.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports SyncDirection Control", ColumnC = parsedJson.syncCapabilities.supportsSyncDirectionControl.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Per Layer Sync", ColumnC = parsedJson.syncCapabilities.supportsPerLayerSync.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Per Replica Sync", ColumnC = parsedJson.syncCapabilities.supportsPerReplicaSync.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Rollback On Failure", ColumnC = parsedJson.syncCapabilities.supportsRollbackOnFailure.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Async", ColumnC = parsedJson.syncCapabilities.supportsAsync.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Attachments Sync Direction", ColumnC = parsedJson.syncCapabilities.supportsAttachmentsSyncDirection.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Sync Model None", ColumnC = parsedJson.syncCapabilities.supportsSyncModelNone.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Version Creation Rule", ColumnC = parsedJson.syncCapabilities.versionCreationRule.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supported Sync Data Options", ColumnC = parsedJson.syncCapabilities.supportedSyncDataOptions.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Bi Directional Sync For Server", ColumnC = parsedJson.syncCapabilities.supportsBiDirectionalSyncForServer.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Version", ColumnC = parsedJson.syncCapabilities.advancedReplicasResourceCapabilities.supportsVersion.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Return Version", ColumnC = parsedJson.syncCapabilities.advancedReplicasResourceCapabilities.supportsReturnVersion.ToString() });
+                        csvLayoutList.Add(new CSVLayout() { ColumnB = "Supports Return Last Sync Date", ColumnC = parsedJson.syncCapabilities.advancedReplicasResourceCapabilities.supportsReturnLastSyncDate.ToString() });
                     }
 
                     csvLayoutList.Add(emptyRec);
-                    csvLayoutList.Add(new CSVLayout() { Title = "Service Item ID", Value = parsedJson.serviceItemId });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Spatial Reference", Value = $"{parsedJson.spatialReference.wkid} ({parsedJson.spatialReference.latestWkid})" });
-                    csvLayoutList.Add(emptyRec);
-                    csvLayoutList.Add(new CSVLayout() { Title = "Initial Extent" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMin: {parsedJson.initialExtent.xmin}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"YMin: {parsedJson.initialExtent.ymin}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMax: {parsedJson.initialExtent.xmax}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMax: {parsedJson.initialExtent.ymax}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"Spatial Reference: {parsedJson.initialExtent.spatialReference.wkid} ({parsedJson.initialExtent.spatialReference.latestWkid})" });
-                    csvLayoutList.Add(emptyRec);
-                    csvLayoutList.Add(new CSVLayout() { Title = "Full Extent" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMin: {parsedJson.fullExtent.xmin}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"YMin: {parsedJson.fullExtent.ymin}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMax: {parsedJson.fullExtent.xmax}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"XMax: {parsedJson.fullExtent.ymax}" });
-                    csvLayoutList.Add(new CSVLayout() { Value = $"Spatial Reference: {parsedJson.fullExtent.spatialReference.wkid} ({parsedJson.fullExtent.spatialReference.latestWkid})" });
-                    csvLayoutList.Add(emptyRec);
-                    csvLayoutList.Add(new CSVLayout() { Title = "Units", Value = parsedJson.units });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Enable Z Defaults", Value = parsedJson.enableZDefaults.ToString() });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Supports ApplyEdits With Global Ids", Value = parsedJson.supportsApplyEditsWithGlobalIds.ToString() });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Support True Curves ", Value = parsedJson.supportsTrueCurve.ToString() });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Only Allow TrueCurve Updates By TrueCurveClients", Value = parsedJson.onlyAllowTrueCurveUpdatesByTrueCurveClients.ToString() });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Supports Return Service Edits Option", Value = parsedJson.supportsReturnServiceEditsOption.ToString() });
-                    csvLayoutList.Add(new CSVLayout() { Title = "Supports Dynamic Layers", Value = parsedJson.supportsDynamicLayers.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Supports ApplyEdits With Global Ids", ColumnB = parsedJson.supportsApplyEditsWithGlobalIds.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Support True Curves ", ColumnB = parsedJson.supportsTrueCurve.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Only Allow TrueCurve Updates By TrueCurveClients", ColumnB = parsedJson.onlyAllowTrueCurveUpdatesByTrueCurveClients.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Supports Return Service Edits Option", ColumnB = parsedJson.supportsReturnServiceEditsOption.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Supports Dynamic Layers", ColumnB = parsedJson.supportsDynamicLayers.ToString() });
+
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Enable Z Defaults", ColumnB = parsedJson.enableZDefaults.ToString() });
+                    if (parsedJson.enableZDefaults)
+                        csvLayoutList.Add(new CSVLayout() { ColumnA = "Z Default", ColumnB = parsedJson.zDefault.ToString() });
+                    csvLayoutList.Add(new CSVLayout() { ColumnA = "Allow Update Without M Values", ColumnB = parsedJson.allowUpdateWithoutMValues.ToString() });
 
                     //Write body of CSV
                     PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
@@ -174,8 +201,9 @@ namespace UtilityNetworkPropertiesExtractor
 
         private class CSVLayout
         {
-            public string Title { get; set; }
-            public string Value { get; set; }
+            public string ColumnA { get; set; }
+            public string ColumnB { get; set; }
+            public string ColumnC { get; set; }
         }
     }
 }
