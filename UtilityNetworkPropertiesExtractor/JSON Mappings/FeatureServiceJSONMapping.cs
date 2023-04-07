@@ -27,6 +27,8 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public bool supportsQueryDataElements { get; set; }
         public bool supportsRelationshipsResource { get; set; }
         public bool syncEnabled { get; set; }
+
+        public Synccapabilities syncCapabilities { get; set; }
         public Extractchangescapabilities extractChangesCapabilities { get; set; }
         public string supportedQueryFormats { get; set; }
         public int maxRecordCount { get; set; }
@@ -61,6 +63,29 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public Datumtransformation[] datumTransformations { get; set; }
         public int referenceScale { get; set; }
         public string serviceItemId { get; set; }
+    }
+
+    public class Synccapabilities
+    {
+        public bool supportsRegisteringExistingData { get; set; }
+        public bool supportsSyncDirectionControl { get; set; }
+        public bool supportsPerLayerSync { get; set; }
+        public bool supportsPerReplicaSync { get; set; }
+        public bool supportsRollbackOnFailure { get; set; }
+        public bool supportsAsync { get; set; }
+        public bool supportsAttachmentsSyncDirection { get; set; }
+        public bool supportsSyncModelNone { get; set; }
+        public string versionCreationRule { get; set; }
+        public int supportedSyncDataOptions { get; set; }
+        public bool supportsBiDirectionalSyncForServer { get; set; }
+        public Advancedreplicasresourcecapabilities advancedReplicasResourceCapabilities { get; set; }
+    }
+
+    public class Advancedreplicasresourcecapabilities
+    {
+        public bool supportsVersion { get; set; }
+        public bool supportsReturnVersion { get; set; }
+        public bool supportsReturnLastSyncDate { get; set; }
     }
     public class Extractchangescapabilities
     {
