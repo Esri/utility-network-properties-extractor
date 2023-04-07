@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <ArcGIS defaultAssembly="UtilityNetworkPropertiesExtractor.dll" defaultNamespace="UtilityNetworkPropertiesExtractor" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-  <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="2.8" desktopVersion="2.9">
+  <AddInInfo id="{6aa85a02-e8ed-4abd-bb53-a38424c747bc}" version="2.9" desktopVersion="2.9">
     <Name>UtilityNetworkPropertiesExtractor</Name>
     <Description>Add-in for extracting Utility Network, GDB and Map properties to CSV files</Description>
     <Image>Images\AddinDesktop32.png</Image>
