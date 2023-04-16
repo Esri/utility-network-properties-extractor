@@ -194,6 +194,8 @@ namespace UtilityNetworkPropertiesExtractor
                 retVal = "Vector Tile Layer";
             else if (layer is GraphicsLayer)
                 retVal = "Graphics Layer";
+            else if (layer is ImageServiceLayer)
+                retVal = "Image Service Layer";
             else if (layer.MapLayerType == MapLayerType.BasemapBackground)
                 retVal = "Basemap";
             else
