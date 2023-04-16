@@ -94,6 +94,9 @@ namespace UtilityNetworkPropertiesExtractor
                     long recordCount = 0;
                     long sum = 0;
                     string definitionQuery = string.Empty;
+                    string groupLayerName = string.Empty;
+                    string layerType = string.Empty;
+
 
                     List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
                     foreach (Layer layer in layerList)
@@ -111,8 +114,22 @@ namespace UtilityNetworkPropertiesExtractor
                         else
                             layerContainer = string.Empty;
 
+                        layerType = Common.GetLayerTypeDescription(layer);
+                        switch (layerType)
+                        {   //In the TOC, these 4 layers will have child layers
+                            case "Annotation Layer":
+                            case "Group Layer":
+                            case "Subtype Group Layer":
+                            case "Utility Network Layer":
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                                break;
+                            default:
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
+                                break;
+                        }
+
                         csvLayout.LayerPos = layerPos.ToString();
-                        csvLayout.LayerType = Common.GetLayerTypeDescription(layer);
+                        csvLayout.LayerType = layerType;
                         csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
                         csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
 
