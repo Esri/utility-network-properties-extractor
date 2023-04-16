@@ -10,6 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
@@ -30,14 +31,22 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Layer Scales to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
+
                 await ExtractLayerScalesAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Extract Layer Info");
+                MessageBox.Show(ex.Message, "Extract Layer Scales");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -69,7 +78,8 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerType = "LayerType",
                         GroupLayerName = "GroupLayerName",
                         LayerName = "LayerName",
-                        ScaleRange = "ScaleRange",
+                        LayerRange = "LayerRange",
+                        LabelingRange = "LabelingRange",
                         Zero = "0",
                         FiveHundred = "500",
                         TwelveHundred = "1200",
@@ -109,15 +119,16 @@ namespace UtilityNetworkPropertiesExtractor
                             layerContainer = string.Empty;
 
                         layerType = Common.GetLayerTypeDescription(layer);
-                        switch (layerType) {
-                            case "Feature Layer":
-                            case "Annotation":
-                            case "Annotation Sub Layer":
-                            case "Dimension":
-                                groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
+                        switch (layerType)
+                        {
+                            case "Annotation Layer":
+                            case "Group Layer":
+                            case "Subtype Group Layer":
+                            case "Utility Network Layer":
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
                                 break;
                             default:
-                                groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
                                 break;
                         }
 
@@ -128,7 +139,7 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerType = layerType,
                             GroupLayerName = groupLayerName,
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            ScaleRange = Common.EncloseStringInDoubleQuotes(layer.MaxScale + " -- " + layer.MinScale),
+                            LayerRange = Common.EncloseStringInDoubleQuotes(layer.MaxScale + " -- " + layer.MinScale),
                             Zero = IsLayerRenderedAtThisScale(header.Zero, layer).ToString(),
                             FiveHundred = IsLayerRenderedAtThisScale(header.FiveHundred, layer).ToString(),
                             TwelveHundred = IsLayerRenderedAtThisScale(header.TwelveHundred, layer).ToString(),
@@ -141,6 +152,24 @@ namespace UtilityNetworkPropertiesExtractor
                             OneMillion = IsLayerRenderedAtThisScale(header.OneMillion, layer).ToString(),
                             TenMillion = IsLayerRenderedAtThisScale(header.TenMillion, layer).ToString()
                         };
+
+                        if (layerType == "Feature Layer")
+                        {
+                            CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
+                            if (cimFeatureLayer.LabelClasses != null)
+                            {
+                                if (cimFeatureLayer.LabelClasses.Length != 0)
+                                {
+                                    List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
+                                    CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
+                                    scaleRec.LabelingRange = Common.EncloseStringInDoubleQuotes(cimLabelClass.MaximumScale + " -- " + cimLabelClass.MinimumScale);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            scaleRec.LabelingRange = "N/A";
+                        }
 
                         CSVLayoutList.Add(scaleRec);
                         layerPos += 1;
@@ -179,7 +208,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
-            public string ScaleRange { get; set; }
+            public string LayerRange { get; set; }
+            public string LabelingRange { get; set; }
             public string Zero { get; set; }
             public string FiveHundred { get; set; }
             public string TwelveHundred { get; set; }
