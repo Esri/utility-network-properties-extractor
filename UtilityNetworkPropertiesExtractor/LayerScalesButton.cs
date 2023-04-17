@@ -119,7 +119,6 @@ namespace UtilityNetworkPropertiesExtractor
                             layerContainer = string.Empty;
 
                         layerType = Common.GetLayerTypeDescription(layer);
-
                         switch(layerType)
                         {   //In the TOC, these 4 layers will have child layers
                             case "Annotation Layer":
@@ -154,6 +153,11 @@ namespace UtilityNetworkPropertiesExtractor
                             TenMillion = IsLayerRenderedAtThisScale(header.TenMillion, layer).ToString()
                         };
 
+                        //Clear our layerName for these types of layers
+                        if (layerType == "Group Layer" || layerType == "Subtype Group Layer")
+                            scaleRec.LayerName = string.Empty;
+
+                        //Get labeling min & max scales
                         if (layerType == "Feature Layer")
                         {
                             CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
