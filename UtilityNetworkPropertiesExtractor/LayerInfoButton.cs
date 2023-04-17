@@ -301,8 +301,6 @@ namespace UtilityNetworkPropertiesExtractor
                             CIMNetworkTraceConfiguration[] cimNetworkTraceConfigurations = cimUtilityNetworkLayer.ActiveTraceConfigurations;
                             if (cimNetworkTraceConfigurations != null)
                             {
-                                sharedTraceConfiguation = cimNetworkTraceConfigurations.Length.ToString();
-
                                 for (int j = 0; j < cimNetworkTraceConfigurations.Length; j++)
                                 {
                                     SharedTraceConfigurationLayout traceConfig = new SharedTraceConfigurationLayout()
@@ -336,17 +334,24 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.LayerSource = tiledServiceLayer.URL;
                     }
 
+                    //Image Service Layer
+                    else if (layer is ImageServiceLayer imageServiceLayer)
+                    {
+                        CIMAGSServiceConnection cimAGSServiceConnection = imageServiceLayer.GetDataConnection() as CIMAGSServiceConnection;
+                        csvLayout.LayerSource = cimAGSServiceConnection.URL;
+                    }
+
                     //Vector Tile Layer
                     else if (layer is VectorTileLayer vectorTileLayer)
                     {
-                        CIMVectorTileDataConnection cimVectorTileDataConn = layer.GetDataConnection() as CIMVectorTileDataConnection;
+                        CIMVectorTileDataConnection cimVectorTileDataConn = vectorTileLayer.GetDataConnection() as CIMVectorTileDataConnection;
                         csvLayout.LayerSource = cimVectorTileDataConn.URI;
                     }
 
                     //Graphics Layer
                     else if (layer is GraphicsLayer graphicsLayer)
                     {
-                        CIMGraphicsLayer cimGraphicsLayer = layer.GetDefinition() as CIMGraphicsLayer;
+                        CIMGraphicsLayer cimGraphicsLayer = graphicsLayer.GetDefinition() as CIMGraphicsLayer;
                         csvLayout.IsSelectable = cimGraphicsLayer.Selectable.ToString();
                         csvLayout.RefreshRate = cimGraphicsLayer.RefreshRate.ToString();
                     }
