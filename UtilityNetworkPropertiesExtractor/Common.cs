@@ -231,6 +231,14 @@ namespace UtilityNetworkPropertiesExtractor
             return typeof(T).GetProperties();
         }
 
+        public static string GetScaleValueText(double scale)
+        {
+            if (scale == 0)
+                return "None";  // In Pro, when there is no scale set, the value is <None>.  Thru the SDK, it is 0.
+            else
+                return scale.ToString();
+        }
+
         public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
         {
             Table table = featureLayer.GetTable();
