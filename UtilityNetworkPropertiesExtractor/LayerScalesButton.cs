@@ -139,7 +139,6 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerType = layerType,
                             GroupLayerName = groupLayerName,
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            LayerRange = Common.EncloseStringInDoubleQuotes(layer.MaxScale + " -- " + layer.MinScale),
                             Zero = IsLayerRenderedAtThisScale(header.Zero, layer).ToString(),
                             FiveHundred = IsLayerRenderedAtThisScale(header.FiveHundred, layer).ToString(),
                             TwelveHundred = IsLayerRenderedAtThisScale(header.TwelveHundred, layer).ToString(),
@@ -152,6 +151,13 @@ namespace UtilityNetworkPropertiesExtractor
                             OneMillion = IsLayerRenderedAtThisScale(header.OneMillion, layer).ToString(),
                             TenMillion = IsLayerRenderedAtThisScale(header.TenMillion, layer).ToString()
                         };
+
+                        //Get layer min and max scales for all layers
+                        if (layer.MaxScale == 0 && layer.MinScale == 0)
+                            scaleRec.LayerRange = "Not Set";
+                        else
+                            scaleRec.LayerRange = GetScaleValue(layer.MaxScale) + " - " + GetScaleValue(layer.MinScale);
+
 
                         //Clear our layerName for these types of layers
                         if (layerType == "Group Layer" || layerType == "Subtype Group Layer")
@@ -167,7 +173,11 @@ namespace UtilityNetworkPropertiesExtractor
                                 {
                                     List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
                                     CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
-                                    scaleRec.LabelingRange = Common.EncloseStringInDoubleQuotes(cimLabelClass.MaximumScale + " -- " + cimLabelClass.MinimumScale);
+
+                                    if (cimLabelClass.MaximumScale == 0 && cimLabelClass.MinimumScale == 0)
+                                        scaleRec.LabelingRange = "Not Set";
+                                    else
+                                        scaleRec.LabelingRange = GetScaleValue(cimLabelClass.MaximumScale) + " - " + GetScaleValue(cimLabelClass.MinimumScale);
                                 }
                             }
                         }
@@ -201,10 +211,29 @@ namespace UtilityNetworkPropertiesExtractor
             else
             {
                 double scale = Convert.ToDouble(scaleText);
-                if (layer.MinScale >= scale && layer.MaxScale <= scale)
-                    retVal = true;
+
+                if (layer.MinScale == 0 && layer.MaxScale != 0)  // handles where scale is:  35,000 to <None>
+                {
+                    if (layer.MaxScale <= scale)
+                        retVal = true;
+                }
+                else
+                {
+                    //ex1:  35,000 to 50,000
+                    //ex2:  0 to 10,000
+                    if (layer.MinScale >= scale && layer.MaxScale <= scale)
+                        retVal = true;
+                }
             }
             return retVal;
+        }
+
+        private static string GetScaleValue(double scale)
+        {
+            if (scale == 0)
+                return "None";  // In Pro, when there is no scale set, the value is null.  Thru the SDK, it was showing 0.
+            else
+                return scale.ToString();
         }
 
         private class CSVLayout
