@@ -153,6 +153,11 @@ namespace UtilityNetworkPropertiesExtractor
                             TenMillion = IsLayerRenderedAtThisScale(header.TenMillion, layer).ToString()
                         };
 
+                        //Clear our layerName for these types of layers
+                        if (layerType == "Group Layer" || layerType == "Subtype Group Layer")
+                            scaleRec.LayerName = string.Empty;
+
+                        //Get labeling min & max scales
                         if (layerType == "Feature Layer")
                         {
                             CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
