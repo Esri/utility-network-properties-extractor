@@ -137,8 +137,8 @@ namespace UtilityNetworkPropertiesExtractor
                     csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
                     csvLayout.IsExpanded = layer.IsExpanded.ToString();
                     csvLayout.IsVisible = layer.IsVisible.ToString();
-                    csvLayout.MaxScale = GetScaleValue(layer.MaxScale);
-                    csvLayout.MinScale = GetScaleValue(layer.MinScale);
+                    csvLayout.MaxScale = Common.GetScaleValueText(layer.MaxScale);
+                    csvLayout.MinScale = Common.GetScaleValueText(layer.MinScale);
 
                     //BasicFeatureLayer (Layers that inherit from BasicFeatureLayer are FeatureLayer, AnnotationLayer and DimensionLayer)
                     if (layer is BasicFeatureLayer basicFeatureLayer)
@@ -189,8 +189,8 @@ namespace UtilityNetworkPropertiesExtractor
                                     List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
                                     CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
                                     labelExpression = cimLabelClass.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-                                    labelMinScale = GetScaleValue(cimLabelClass.MinimumScale);
-                                    labelMaxScale = GetScaleValue(cimLabelClass.MaximumScale);
+                                    labelMinScale = Common.GetScaleValueText(cimLabelClass.MinimumScale);
+                                    labelMaxScale = Common.GetScaleValueText(cimLabelClass.MaximumScale);
                                 }
                             }
 
@@ -301,8 +301,6 @@ namespace UtilityNetworkPropertiesExtractor
                             CIMNetworkTraceConfiguration[] cimNetworkTraceConfigurations = cimUtilityNetworkLayer.ActiveTraceConfigurations;
                             if (cimNetworkTraceConfigurations != null)
                             {
-                                sharedTraceConfiguation = cimNetworkTraceConfigurations.Length.ToString();
-
                                 for (int j = 0; j < cimNetworkTraceConfigurations.Length; j++)
                                 {
                                     SharedTraceConfigurationLayout traceConfig = new SharedTraceConfigurationLayout()
@@ -336,17 +334,24 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.LayerSource = tiledServiceLayer.URL;
                     }
 
+                    //Image Service Layer
+                    else if (layer is ImageServiceLayer imageServiceLayer)
+                    {
+                        CIMAGSServiceConnection cimAGSServiceConnection = imageServiceLayer.GetDataConnection() as CIMAGSServiceConnection;
+                        csvLayout.LayerSource = cimAGSServiceConnection.URL;
+                    }
+
                     //Vector Tile Layer
                     else if (layer is VectorTileLayer vectorTileLayer)
                     {
-                        CIMVectorTileDataConnection cimVectorTileDataConn = layer.GetDataConnection() as CIMVectorTileDataConnection;
+                        CIMVectorTileDataConnection cimVectorTileDataConn = vectorTileLayer.GetDataConnection() as CIMVectorTileDataConnection;
                         csvLayout.LayerSource = cimVectorTileDataConn.URI;
                     }
 
                     //Graphics Layer
                     else if (layer is GraphicsLayer graphicsLayer)
                     {
-                        CIMGraphicsLayer cimGraphicsLayer = layer.GetDefinition() as CIMGraphicsLayer;
+                        CIMGraphicsLayer cimGraphicsLayer = graphicsLayer.GetDefinition() as CIMGraphicsLayer;
                         csvLayout.IsSelectable = cimGraphicsLayer.Selectable.ToString();
                         csvLayout.RefreshRate = cimGraphicsLayer.RefreshRate.ToString();
                     }
@@ -647,15 +652,7 @@ namespace UtilityNetworkPropertiesExtractor
             else if (cimFeatureLayerDef.Renderer is CIMRepresentationRenderer)
                 primarySymbology = "Representation";
         }
-
-        private static string GetScaleValue(double scale)
-        {
-            if (scale == 0)
-                return "<None>";  // In Pro, when there is no scale set, the value is null.  Thru the SDK, it was showing 0.
-            else
-                return scale.ToString();
-        }
-
+            
         private static string AddDefinitionQueriesToList(CSVLayout csvLayout, IReadOnlyList<CIMDefinitionFilter> definitionFilters, string activeFilterName, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
         {
             string returnMessage = string.Empty;
@@ -746,8 +743,8 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerName = csvLayout.LayerName,
                         DisplayFilterType = "By Scale",
                         DisplayFilterName = Common.EncloseStringInDoubleQuotes(cimDisplayFilter[k].Name),
-                        MinScale = GetScaleValue(cimDisplayFilter[k].MinScale),
-                        MaxScale = GetScaleValue(cimDisplayFilter[k].MaxScale)
+                        MinScale = Common.GetScaleValueText(cimDisplayFilter[k].MinScale),
+                        MaxScale = Common.GetScaleValueText(cimDisplayFilter[k].MaxScale)
                     };
                     displayFilterList.Add(rec);
                     recsAdded += 1;
@@ -840,8 +837,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string DisplayFilterCount { get; set; }
             public string DisplayFilterName { get; set; }
             public string DisplayFilterExpresssion { get; set; }
-            public string MinScale { get; set; }
             public string MaxScale { get; set; }
+            public string MinScale { get; set; }
             public string ShowMapTips { get; set; }
             public string PrimarySymbology { get; set; }
             public string SymbologyField1 { get; set; }
@@ -851,8 +848,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string DisplayField { get; set; }
             public string IsLabelVisible { get; set; }
             public string LabelExpression { get; set; }
-            public string LabelMinScale { get; set; }
             public string LabelMaxScale { get; set; }
+            public string LabelMinScale { get; set; }
             public string PopupExpressionCount { get; set; }
             public string PopupExpressionName { get; set; }
             public string PopupExpressionArcade { get; set; }
@@ -890,8 +887,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string DisplayFilterType { get; set; }
             public string DisplayFilterName { get; set; }
             public string DisplayFilterExpresssion { get; set; }
-            public string MinScale { get; set; }
             public string MaxScale { get; set; }
+            public string MinScale { get; set; }
         }
 
         private class SharedTraceConfigurationLayout

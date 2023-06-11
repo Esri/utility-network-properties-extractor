@@ -51,7 +51,7 @@ Visual Studio:         2019
 _Directions_
  1.  Open any map
  2.  Generate a CSV by clicking the Map Field Settings button
- 3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
+ 3.  Open the CSV in Excel and edit the necessary Field Order, Visibility, Read-Only, Highlighted and Field Alias settings
  4.  Once done, make sure to save the file in CSV format and then close the file
  5.  In Pro, click on the 'Import Map Field Settings' button
  6.  Choose the CSV file to import

@@ -168,7 +168,7 @@ namespace UtilityNetworkPropertiesExtractor
 
         public static string GetExtractFilePath()
         {
-            return ExtractFileRootPath + GetProProjectName();
+            return ExtractFileRootPath + GetProProjectName() + "\\" + GetActiveMapName();
         }
 
         public static string GetLayerTypeDescription(Layer layer)
@@ -195,6 +195,8 @@ namespace UtilityNetworkPropertiesExtractor
                 retVal = "Vector Tile Layer";
             else if (layer is GraphicsLayer)
                 retVal = "Graphics Layer";
+            else if (layer is ImageServiceLayer)
+                retVal = "Image Service Layer";
             else if (layer.MapLayerType == MapLayerType.BasemapBackground)
                 retVal = "Basemap";
             else
@@ -227,6 +229,14 @@ namespace UtilityNetworkPropertiesExtractor
         public static PropertyInfo[] GetPropertiesOfClass<T>(T cls)
         {
             return typeof(T).GetProperties();
+        }
+
+        public static string GetScaleValueText(double scale)
+        {
+            if (scale == 0)
+                return "None";  // In Pro, when there is no scale set, the value is <None>.  Thru the SDK, it is 0.
+            else
+                return scale.ToString();
         }
 
         public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
