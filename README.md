@@ -1,6 +1,6 @@
 # utility-network-properties-extractor 
 
-For use with ArcGIS Pro 3.x
+For use with ArcGIS Pro 3.1
 
 This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
 
@@ -15,7 +15,7 @@ Subject:               Utility Network
 Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
 Date:                  2/23/2023
-ArcGIS Pro:            3.x
+ArcGIS Pro:            3.1
 Visual Studio:         2022
 .NET Target Framework: .NET 6
 ```
@@ -51,7 +51,7 @@ Visual Studio:         2022
 _Directions_
  1.  Open any map
  2.  Generate a CSV by clicking the Map Field Settings button
- 3.  Open the CSV in Excel and edit the necessary Visibility, Read-Only, Highlighted and Field Alias settings
+ 3.  Open the CSV in Excel and edit the necessary Field Order, Visibility, Read-Only, Highlighted and Field Alias settings
  4.  Once done, make sure to save the file in CSV format and then close the file
  5.  In Pro, click on the 'Import Map Field Settings' button
  6.  Choose the CSV file to import
@@ -65,7 +65,7 @@ _Directions_
 ## Compilation Directions
 1.  Download the source code
 2.  In Visual studio .NET compile the solution
-3.  **The source code was written against ArcGIS Pro SDK 3.0 and it won't compile cleanly against a 2.x version.  Please switch to the 2.9 branch to get the latest code for that release.
+3.  **The source code was written against ArcGIS Pro SDK 3.1 and it won't compile cleanly against a 2.x version.  Please switch to the 2.9 branch to get the latest code for that release.
 4.  Start up ArcGIS Pro
 5.  Open a project and confirm that the "Utility Network Add-in" toolbar is present
 

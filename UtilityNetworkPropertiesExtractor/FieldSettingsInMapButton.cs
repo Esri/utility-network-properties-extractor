@@ -64,15 +64,20 @@ namespace UtilityNetworkPropertiesExtractor
                         utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
+                    
+                    IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+
                     sw.WriteLine("Map," + Common.GetActiveMapName());
+                    sw.WriteLine("Layers," + basicFeatureLayerList.Count());
+                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
+                    sw.WriteLine("");
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
-
-                    sw.WriteLine(Common.FieldSettingsClassNameHeader + ",Layer Name,Subtype Value,Field Name,Visible*,Read-Only*,Highlight*,Field Alias*");
+                    sw.WriteLine(Common.FieldSettingsClassNameHeader + ",Layer Name,Subtype Value,Field Name,Field Order*,Visible*,Read-Only*,Highlight*,Field Alias*");
 
                     //Basic Feature Layers in the map
-                    string subtypeValue = string.Empty;
-                    IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
+                    string subtypeValue = string.Empty;                   
                     foreach (BasicFeatureLayer basicFeatureLayer in basicFeatureLayerList)
                     {
                         using (Table table = basicFeatureLayer.GetTable())
@@ -92,7 +97,6 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Standalone Tables in the map
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
                         using (Table table = standaloneTable.GetTable())
@@ -113,8 +117,12 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static void WriteFieldSettings(StreamWriter sw, string tocName, string className, string subtype, List<FieldDescription> fieldDescList)
         {
+            int fieldOrder = 0;
             foreach (FieldDescription fieldDesc in fieldDescList)
-                sw.WriteLine(className + "," + Common.EncloseStringInDoubleQuotes(tocName) + "," + subtype + "," + fieldDesc.Name + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
+            {
+                fieldOrder += 1;
+                sw.WriteLine(className + "," + Common.EncloseStringInDoubleQuotes(tocName) + "," + subtype + "," + fieldDesc.Name + "," + fieldOrder + "," + fieldDesc.IsVisible + "," + fieldDesc.IsReadOnly + "," + fieldDesc.IsHighlighted + "," + Common.EncloseStringInDoubleQuotes(fieldDesc.Alias));
+            }
         }
     }
 }

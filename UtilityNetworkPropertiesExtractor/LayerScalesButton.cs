@@ -10,6 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
@@ -30,14 +31,22 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Layer Scales to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
+
                 await ExtractLayerScalesAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Extract Layer Info");
+                MessageBox.Show(ex.Message, "Extract Layer Scales");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -69,7 +78,8 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerType = "LayerType",
                         GroupLayerName = "GroupLayerName",
                         LayerName = "LayerName",
-                        ScaleRange = "ScaleRange",
+                        LayerRange = "LayerRange",
+                        LabelingRange = "LabelingRange",
                         Zero = "0",
                         FiveHundred = "500",
                         TwelveHundred = "1200",
@@ -109,15 +119,16 @@ namespace UtilityNetworkPropertiesExtractor
                             layerContainer = string.Empty;
 
                         layerType = Common.GetLayerTypeDescription(layer);
-                        switch (layerType) {
-                            case "Feature Layer":
-                            case "Annotation":
-                            case "Annotation Sub Layer":
-                            case "Dimension":
-                                groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
+                        switch (layerType)
+                        {
+                            case "Annotation Layer":
+                            case "Group Layer":
+                            case "Subtype Group Layer":
+                            case "Utility Network Layer":
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
                                 break;
                             default:
-                                groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                                groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
                                 break;
                         }
 
@@ -128,7 +139,6 @@ namespace UtilityNetworkPropertiesExtractor
                             LayerType = layerType,
                             GroupLayerName = groupLayerName,
                             LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                            ScaleRange = Common.EncloseStringInDoubleQuotes(layer.MaxScale + " -- " + layer.MinScale),
                             Zero = IsLayerRenderedAtThisScale(header.Zero, layer).ToString(),
                             FiveHundred = IsLayerRenderedAtThisScale(header.FiveHundred, layer).ToString(),
                             TwelveHundred = IsLayerRenderedAtThisScale(header.TwelveHundred, layer).ToString(),
@@ -141,6 +151,40 @@ namespace UtilityNetworkPropertiesExtractor
                             OneMillion = IsLayerRenderedAtThisScale(header.OneMillion, layer).ToString(),
                             TenMillion = IsLayerRenderedAtThisScale(header.TenMillion, layer).ToString()
                         };
+
+                        //Get layer min and max scales for all layers
+                        if (layer.MaxScale == 0 && layer.MinScale == 0)
+                            scaleRec.LayerRange = "Not Set";
+                        else
+                            scaleRec.LayerRange = GetScaleValue(layer.MaxScale) + " - " + GetScaleValue(layer.MinScale);
+
+
+                        //Clear our layerName for these types of layers
+                        if (layerType == "Group Layer" || layerType == "Subtype Group Layer")
+                            scaleRec.LayerName = string.Empty;
+
+                        //Get labeling min & max scales
+                        if (layerType == "Feature Layer")
+                        {
+                            CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
+                            if (cimFeatureLayer.LabelClasses != null)
+                            {
+                                if (cimFeatureLayer.LabelClasses.Length != 0)
+                                {
+                                    List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
+                                    CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
+
+                                    if (cimLabelClass.MaximumScale == 0 && cimLabelClass.MinimumScale == 0)
+                                        scaleRec.LabelingRange = "Not Set";
+                                    else
+                                        scaleRec.LabelingRange = GetScaleValue(cimLabelClass.MaximumScale) + " - " + GetScaleValue(cimLabelClass.MinimumScale);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            scaleRec.LabelingRange = "N/A";
+                        }
 
                         CSVLayoutList.Add(scaleRec);
                         layerPos += 1;
@@ -167,10 +211,29 @@ namespace UtilityNetworkPropertiesExtractor
             else
             {
                 double scale = Convert.ToDouble(scaleText);
-                if (layer.MinScale >= scale && layer.MaxScale <= scale)
-                    retVal = true;
+
+                if (layer.MinScale == 0 && layer.MaxScale != 0)  // handles where scale is:  35,000 to <None>
+                {
+                    if (layer.MaxScale <= scale)
+                        retVal = true;
+                }
+                else
+                {
+                    //ex1:  35,000 to 50,000
+                    //ex2:  0 to 10,000
+                    if (layer.MinScale >= scale && layer.MaxScale <= scale)
+                        retVal = true;
+                }
             }
             return retVal;
+        }
+
+        private static string GetScaleValue(double scale)
+        {
+            if (scale == 0)
+                return "None";  // In Pro, when there is no scale set, the value is null.  Thru the SDK, it was showing 0.
+            else
+                return scale.ToString();
         }
 
         private class CSVLayout
@@ -179,7 +242,8 @@ namespace UtilityNetworkPropertiesExtractor
             public string LayerType { get; set; }
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
-            public string ScaleRange { get; set; }
+            public string LayerRange { get; set; }
+            public string LabelingRange { get; set; }
             public string Zero { get; set; }
             public string FiveHundred { get; set; }
             public string TwelveHundred { get; set; }
