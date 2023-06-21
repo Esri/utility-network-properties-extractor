@@ -60,7 +60,7 @@ _Directions_
 
 ## Third party assemblies
 1.  Newtonsoft.JSON v13.0.2
-2.  Microsoft.Windows.Compatibility v7.0.0
+2.  Microsoft.Windows.Compatibility v7.0.3
 
 ## Compilation Directions
 1.  Download the source code
