@@ -378,7 +378,7 @@ namespace UtilityNetworkPropertiesExtractor
             public const string FileGDB = "File Geodatabase";
             public const string EnterpriseGDB = "Enterprise Geodatabase";
             public const string MobileGDB = "Mobile Geodatabase";
-            public const string Folder = "Folder"
+            public const string Folder = "Folder";
         }
 
         public class ReportHeaderInfo
