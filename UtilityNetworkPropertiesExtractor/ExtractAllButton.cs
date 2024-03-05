@@ -49,6 +49,7 @@ namespace UtilityNetworkPropertiesExtractor
                 await GdbObjectNamesButton.ExtractGdbObjectNamesAsync();
                 await RelationshipClassButton.ExtractRelationshipClassesAsync();
                 await LayerCountsButton.ExtractLayerCountAsync();
+                await PopupFieldsButton.ExtractPopupFieldsAsync();
                 await AttributeRulesButton.ExtractAttributeRulesAsync();
                 await ContingentValuesButton.ExtractContingentValuesAsync();
                 ProjectItemsButton.ExtractProjectItem();
