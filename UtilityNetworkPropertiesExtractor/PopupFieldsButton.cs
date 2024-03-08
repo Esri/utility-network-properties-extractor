@@ -223,7 +223,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (string.IsNullOrEmpty(result))  // not in Popup Fields List.   If want to add more fields to the popup, those fields need to be in the CSV.
                         {
                             popupOrder += 1;
-                            CSVLayout rec = buildRec(tableDefinition, layerName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, fieldDescription.IsVisible);
+                            CSVLayout rec = buildRec(tableDefinition, layerName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, false);
                             csvLayoutList.Add(rec);
                         }
                     }
