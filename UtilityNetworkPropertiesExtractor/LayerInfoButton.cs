@@ -203,6 +203,7 @@ namespace UtilityNetworkPropertiesExtractor
                                 subtypeValue = featureLayer.SubtypeValue.ToString();
 
                             //Popups
+                            string popupUseLayerFields = GetPopupUseLayerFieldsVal(cimFeatureLayer.PopupInfo);
                             popupExpressionCount = AddPopupInfoToList(csvLayout, cimFeatureLayer.PopupInfo, ref popupLayoutList);
                             GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
 
@@ -229,6 +230,7 @@ namespace UtilityNetworkPropertiesExtractor
                             csvLayout.PopupExpressionArcade = popupExpression;
                             csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
                             csvLayout.PopupExpressionName = popupName;
+                            csvLayout.PopupUseLayerFields = popupUseLayerFields.ToString();
                             csvLayout.PrimarySymbology = primarySymbology;
                             csvLayout.SymbologyField1 = field1;
                             csvLayout.SymbologyField2 = field2;
@@ -413,6 +415,7 @@ namespace UtilityNetworkPropertiesExtractor
                     displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
 
                 //Pop-ups
+                string popupUseLayerFields = GetPopupUseLayerFieldsVal(cimStandaloneTable.PopupInfo);
                 popupExpressionCount = AddPopupInfoToList(csvLayout, cimStandaloneTable.PopupInfo, ref popupLayoutList);
                 GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
 
@@ -425,6 +428,7 @@ namespace UtilityNetworkPropertiesExtractor
                 csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
                 csvLayout.PopupExpressionName = popupName;
                 csvLayout.PopupExpressionArcade = popupExpression;
+                csvLayout.PopupUseLayerFields = popupUseLayerFields.ToString();
 
                 //Add record to list
                 csvLayoutList.Add(csvLayout);
@@ -815,6 +819,25 @@ namespace UtilityNetworkPropertiesExtractor
             return popupExpressionCount;
         }
 
+
+        private static string GetPopupUseLayerFieldsVal(CIMPopupInfo cimPopupInfo)
+        {
+            if (cimPopupInfo != null)
+            {
+                CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
+                for (int j = 0; j < cimMediaInfos.Length; j++)
+                {
+                    if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                        return cimTableMediaInfo.UseLayerFields.ToString();
+                }
+                return string.Empty;
+            }
+            else
+            {
+                return "Popup Info not in the CIM";
+            }
+        }
+
         private class CSVLayout
         {
             public string LayerPos { get; set; }
@@ -852,6 +875,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string LabelExpression { get; set; }
             public string LabelMaxScale { get; set; }
             public string LabelMinScale { get; set; }
+            public string PopupUseLayerFields { get; set; }
             public string PopupExpressionCount { get; set; }
             public string PopupExpressionName { get; set; }
             public string PopupExpressionArcade { get; set; }
