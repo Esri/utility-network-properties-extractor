@@ -29,7 +29,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 namespace UtilityNetworkPropertiesExtractor
 {
     /// <summary>
-    /// Reads in a CSV file and updates these Popup settings in the Web Map.
+    /// Reads in a CSV file and updates these Popup settings in the map.
     /// 1.  Popup Order
     /// 2.  Visible
     /// </summary>
@@ -149,7 +149,7 @@ namespace UtilityNetworkPropertiesExtractor
                             CIMFeatureLayer cimFeatureLayerDef = basicFeatureLayer.GetDefinition() as CIMFeatureLayer;
 
                             //Update popup field order with values from CSV
-                            CIMPopupInfo newPopupInfo = setPopupFieldSettings(popupFieldSettingsInCSVList, cimFeatureLayerDef.PopupInfo);
+                            CIMPopupInfo newPopupInfo = SetPopupFieldSettings(popupFieldSettingsInCSVList, cimFeatureLayerDef.PopupInfo, cimFeatureLayerDef.FeatureTable.DisplayField);
                             if (newPopupInfo != null)
                             {
                                 cimFeatureLayerDef.PopupInfo = newPopupInfo;
@@ -174,7 +174,7 @@ namespace UtilityNetworkPropertiesExtractor
                             CIMStandaloneTable cimStandaloneDef = standaloneTable.GetDefinition();
 
                             //Update popup field order with values from CSV
-                            CIMPopupInfo newPopupInfo = setPopupFieldSettings(popupFieldSettingsInCSVList, cimStandaloneDef.PopupInfo);
+                            CIMPopupInfo newPopupInfo = SetPopupFieldSettings(popupFieldSettingsInCSVList, cimStandaloneDef.PopupInfo, cimStandaloneDef.DisplayField);
                             if (newPopupInfo != null)
                             {
                                 cimStandaloneDef.PopupInfo = newPopupInfo;
@@ -192,29 +192,46 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static CIMPopupInfo setPopupFieldSettings(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, CIMPopupInfo cimPopupInfo)
+        private static CIMPopupInfo SetPopupFieldSettings(IEnumerable<CSVLayout> layerFieldSettingsInCSVList, CIMPopupInfo cimPopupInfo, string primaryDisplayField)
         {
-            if (cimPopupInfo != null)
-            {
-                List<string> popupOrderList = new List<string>();
-                foreach (CSVLayout rec in layerFieldSettingsInCSVList.Where(x => x.Visible is true))
-                    popupOrderList.Add(rec.FieldName);
+            List<string> popupOrderList = new List<string>();
+            foreach (CSVLayout rec in layerFieldSettingsInCSVList.Where(x => x.Visible is true))
+                popupOrderList.Add(rec.FieldName);
 
+            // If the CIM doesn't contain entries for the Popup, create it.
+            //  Set the fileds to be those defined in the CSV as visible.
+            if (cimPopupInfo == null)
+            {
+                CustomPopupDefinition popup = new CustomPopupDefinition()
+                {
+                    Title = CustomPopupDefinition.FormatTitle(CustomPopupDefinition.FormatFieldName(primaryDisplayField)),
+                    TableMediaInfo = new TableMediaInfo(popupOrderList),
+                    //OtherMediaInfos = {new AttachmentsMediaInfo()
+                    //    {
+                    //        AttachmentDisplayType = AttachmentDisplayType.PreviewFirst,
+                    //        Title = "Attachment(s)"
+                    //    } 
+                    //}
+                };
+
+                return popup.CreatePopupInfo();
+            }
+            else  // Popup info found in the CIM.   Set the fileds to be those defined in the CSV as visible.
+            { 
                 CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
                 for (int j = 0; j < cimMediaInfos.Length; j++)
                 {
                     if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
                     {
                         cimTableMediaInfo.Fields = popupOrderList.ToArray();
+                        cimTableMediaInfo.UseLayerFields = false;
                         break;
                     }
                 }
                 return cimPopupInfo;
             }
-
-            return null;
         }
-
+                
         private static List<CSVLayout> ReadCSV(string csvToProcess)
         {
             List<CSVLayout> csvList = new List<CSVLayout>();
