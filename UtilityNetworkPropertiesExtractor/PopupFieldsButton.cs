@@ -72,7 +72,7 @@ namespace UtilityNetworkPropertiesExtractor
                     if (utilityNetwork != null)
                         utilityNetworkDefinition = utilityNetwork.GetDefinition();
 
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Popup Fields Visibility");
+                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Popup Fields");
 
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
@@ -81,6 +81,8 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
                     sw.WriteLine("");
+                    sw.WriteLine("Note,Column headers with __ are the editable popup field settings");
+                    sw.WriteLine();
 
                     //Get all properties defined in the class.  This will be used to generate the CSV file
                     CSVLayout emptyRec = new CSVLayout();
@@ -120,7 +122,7 @@ namespace UtilityNetworkPropertiesExtractor
                                 fieldsInPopup = GetFieldsInPopup(cimFeatureLayer.PopupInfo, ref useLayerFields);
 
                             //Build the CSV file
-                            BuildPopupFieldsList(table.GetDefinition(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList );
+                            BuildPopupFieldsList(table.GetName(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList );
                         }
                     }
 
@@ -143,7 +145,7 @@ namespace UtilityNetworkPropertiesExtractor
                             fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
 
                             //Build the CSV file
-                            BuildPopupFieldsList(table.GetDefinition(), table.GetName(), subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
+                            BuildPopupFieldsList(table.GetName(), standaloneTable.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
                         }
                     }
 
@@ -161,7 +163,7 @@ namespace UtilityNetworkPropertiesExtractor
         }
 
 
-        private static void BuildPopupFieldsList(TableDefinition tableDefinition, string layerName, string subtype, bool useLayerFields, List<FieldDescription> fieldsList, string[] fieldsInPopup, ref List<CSVLayout> csvLayoutList)
+        private static void BuildPopupFieldsList(string className, string tocName, string subtype, bool useLayerFields, List<FieldDescription> fieldsList, string[] fieldsInPopup, ref List<CSVLayout> csvLayoutList)
         {
             int popupOrder = 0;
 
@@ -175,7 +177,7 @@ namespace UtilityNetworkPropertiesExtractor
                         continue;
 
                     popupOrder += 1;
-                    CSVLayout rec = buildRec(tableDefinition, layerName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, fieldDescription.IsVisible);
+                    CSVLayout rec = buildRec(className, tocName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, fieldDescription.IsVisible);
                     csvLayoutList.Add(rec);
                 }
             }
@@ -208,7 +210,7 @@ namespace UtilityNetworkPropertiesExtractor
                                 }
 
                                 popupOrder += 1;
-                                CSVLayout rec = buildRec(tableDefinition, layerName, subtype, popupOrder, fieldInPopup, fieldAlias, fieldVisibility);
+                                CSVLayout rec = buildRec(className, tocName, subtype, popupOrder, fieldInPopup, fieldAlias, fieldVisibility);
                                 csvLayoutList.Add(rec);
                             }
                         }
@@ -223,7 +225,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (string.IsNullOrEmpty(result))  // not in Popup Fields List.   If want to add more fields to the popup, those fields need to be in the CSV.
                         {
                             popupOrder += 1;
-                            CSVLayout rec = buildRec(tableDefinition, layerName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, false);
+                            CSVLayout rec = buildRec(className, tocName, subtype, popupOrder, fieldDescription.Name, fieldDescription.Alias, false);
                             csvLayoutList.Add(rec);
                         }
                     }
@@ -231,17 +233,17 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        private static CSVLayout buildRec(TableDefinition tableDefinition, string layerName, string subtype, int popupOrder, string fieldName, string fieldAlias, bool visible)
+        private static CSVLayout buildRec(string className, string tocName, string subtype, int popupOrder, string fieldName, string fieldAlias, bool visible)
         {
             return new CSVLayout()
             {
-                ClassName = tableDefinition.GetName(),
-                LayerName = Common.EncloseStringInDoubleQuotes(layerName),
-                Subtype = subtype,
-                PopupOrder = popupOrder.ToString(),
+                ClassName = className,
+                LayerName = Common.EncloseStringInDoubleQuotes(tocName),
+                SubtypeValue = subtype,
+                PopupOrder__ = popupOrder.ToString(),
                 FieldName = fieldName,
                 FieldAlias = Common.EncloseStringInDoubleQuotes(fieldAlias),
-                Visibile = visible.ToString()
+                Visible__ = visible.ToString()
             };
         }
 
@@ -272,11 +274,11 @@ namespace UtilityNetworkPropertiesExtractor
         {
             public string ClassName { get; set; }
             public string LayerName { get; set; }
-            public string Subtype { get; set; }
+            public string SubtypeValue { get; set; }
             public string FieldName { get; set; }
             public string FieldAlias { get; set; }
-            public string PopupOrder { get; set; }
-            public string Visibile { get; set; }
+            public string PopupOrder__ { get; set; }
+            public string Visible__ { get; set; }
         }
     }
 }

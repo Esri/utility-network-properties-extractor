@@ -42,7 +42,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_LayerInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerScalesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerCountsButton" size="middle" />
-		  <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsButton" size="middle" />			
+          <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_AttributeRulesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ContingentValuesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />
@@ -54,6 +54,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" size="middle" />
+		  <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
         </group>
       </groups>
@@ -157,6 +158,9 @@
         </button>
         <button id="UtilityNetworkPropertiesExtractor_PopupFieldsButton" caption="Pop-up Fields" className="PopupFieldsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/CatalogPopUp32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/CatalogPopUp32.png" keytip="YY" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Pop-up Fields and Visibility <disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" caption="Import Pop-up Fields Settings" className="PopupFieldsImportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" keytip="YX" condition="esri_mapping_MapCondition">
+          <tooltip heading="Tooltip Heading">Imports Pop-up Field order settings from a CSV file<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
