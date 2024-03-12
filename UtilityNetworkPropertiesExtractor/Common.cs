@@ -89,6 +89,11 @@ namespace UtilityNetworkPropertiesExtractor
                 pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".geodatabase");
                 reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 12);
             }
+            else // perhaps a shapefile
+            {
+                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.Folder;
+                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri;
+            }
 
             // Only applies if Utility Network is detected
             if (utilityNetwork != null)
@@ -374,6 +379,7 @@ namespace UtilityNetworkPropertiesExtractor
             public const string FileGDB = "File Geodatabase";
             public const string EnterpriseGDB = "Enterprise Geodatabase";
             public const string MobileGDB = "Mobile Geodatabase";
+            public const string Folder = "Folder";
         }
 
         public class ReportHeaderInfo

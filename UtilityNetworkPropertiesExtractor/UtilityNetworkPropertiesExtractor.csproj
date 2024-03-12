@@ -135,6 +135,7 @@
     <Compile Include="Common.cs" />
     <Compile Include="ContingentValuesButton.cs" />
     <Compile Include="ExportSubnetworkResultFieldsButton.cs" />
+    <Compile Include="Helpers\LayerPopupInfoHelper.cs" />
     <Compile Include="LayerCountsButton.cs" />
     <Compile Include="DisplayFieldExpressionButton.cs" />
     <Compile Include="DisplayFilterButton.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="NetworkRulesButton.cs" />
     <Compile Include="NoNetworkRulesButton.cs" />
     <Compile Include="PopupFieldsButton.cs" />
+    <Compile Include="PopupFieldsImportButton.cs" />
     <Compile Include="ProjectItemsButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelationshipClassButton.cs" />
