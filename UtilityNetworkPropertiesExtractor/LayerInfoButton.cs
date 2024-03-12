@@ -833,9 +833,7 @@ namespace UtilityNetworkPropertiesExtractor
                 return string.Empty;
             }
             else
-            {
-                return "Popup Info not in the CIM";
-            }
+                return "Default settings used";
         }
 
         private class CSVLayout
