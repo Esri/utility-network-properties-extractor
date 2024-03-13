@@ -192,7 +192,7 @@ namespace UtilityNetworkPropertiesExtractor
                         if (!string.IsNullOrEmpty(fieldInPopup))
                         {
                             //Make sure the "Field In Popup" actually exists on the layer/table.
-                            //  i've seen instances where "dummy" fields were in the list (not sure how this originated).
+                            //  I've seen instances where LRS (Linear Referencing) fields were added to the list if the Utility Nework Layer was in the map. 
                             FieldDescription fieldDescription = fieldsList.Where(x => x.Name == fieldInPopup).FirstOrDefault();
                             if (fieldDescription != null || fieldInPopup.Contains("expression/"))  // not in Popup Fields List.   Add it to CSV
                             {
