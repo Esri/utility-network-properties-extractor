@@ -48,13 +48,14 @@
           <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_SymbolScalesButton" size="large" />
         </group>
         <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" size="middle" />
-		  <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
         </group>
       </groups>
@@ -161,6 +162,9 @@
         </button>
         <button id="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" caption="Import Pop-up Fields Settings" className="PopupFieldsImportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" keytip="YX" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Imports Pop-up Field order settings from a CSV file<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_SymbolScalesButton" caption="SymbolScalesButton" className="SymbolScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
