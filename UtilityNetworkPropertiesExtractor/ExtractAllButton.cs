@@ -50,6 +50,7 @@ namespace UtilityNetworkPropertiesExtractor
                 await RelationshipClassButton.ExtractRelationshipClassesAsync();
                 await LayerCountsButton.ExtractLayerCountAsync();
                 await PopupFieldsButton.ExtractPopupFieldsAsync();
+                await SymbolScalesButton.ExtractSymbolScalesAsync();
                 await AttributeRulesButton.ExtractAttributeRulesAsync();
                 await ContingentValuesButton.ExtractContingentValuesAsync();
                 ProjectItemsButton.ExtractProjectItem();

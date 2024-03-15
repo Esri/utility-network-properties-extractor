@@ -41,6 +41,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_VersionInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerScalesButton" size="middle" />
+		  <button refID="UtilityNetworkPropertiesExtractor_SymbolScalesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerCountsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_AttributeRulesButton" size="middle" />
@@ -48,7 +49,6 @@
           <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
-          <button refID="UtilityNetworkPropertiesExtractor_SymbolScalesButton" size="large" />
         </group>
         <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
@@ -93,7 +93,7 @@
         <button id="UtilityNetworkPropertiesExtractor_DomainOrphansButton" caption="Orphan Domains" className="DomainOrphansButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SyncCenter16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SyncCenter16.png" keytip="ZM" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Identifies domains not assigned to any field<disabledText /></tooltip>
         </button>
-        <button id="UtilityNetworkPropertiesExtractor_ExtractAllButton" caption="Extract All" className="ExtractAllButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" keytip="ZS" condition="esri_mapping_utilityNetworkCondition">
+        <button id="UtilityNetworkPropertiesExtractor_ExtractAllButton" caption="Extract All" className="ExtractAllButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/MetadataDocument32.png" keytip="ZS" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Execute all buttons in the 'Extract to CSV' group<disabledText /></tooltip>
         </button>
         <button id="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" caption="Map Field Settings" className="FieldSettingsInMapButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingCreateFeaturesWindowShow32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/EditingCreateFeaturesWindowShow32.png" keytip="ZJ" condition="esri_mapping_MapCondition">
@@ -163,7 +163,7 @@
         <button id="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" caption="Import Pop-up Fields Settings" className="PopupFieldsImportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/PopupSetSource32.png" keytip="YX" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Imports Pop-up Field order settings from a CSV file<disabledText /></tooltip>
         </button>
-        <button id="UtilityNetworkPropertiesExtractor_SymbolScalesButton" caption="SymbolScalesButton" className="SymbolScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="UtilityNetworkPropertiesExtractor_SymbolScalesButton" caption="Symbol Scales" className="SymbolScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SymbolGroup16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SymbolGroup16.png" keytip="YW" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>
