@@ -136,6 +136,7 @@
     <Compile Include="ContingentValuesButton.cs" />
     <Compile Include="ExportSubnetworkResultFieldsButton.cs" />
     <Compile Include="Helpers\LayerPopupInfoHelper.cs" />
+    <Compile Include="JSON Mappings\NetworkDiagramTemplateJSONMapping.cs" />
     <Compile Include="LayerCountsButton.cs" />
     <Compile Include="DisplayFieldExpressionButton.cs" />
     <Compile Include="DisplayFilterButton.cs" />
