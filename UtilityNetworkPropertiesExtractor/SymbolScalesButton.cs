@@ -67,8 +67,6 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + Common.GetActiveMapName());
-                    sw.WriteLine("Coordinate System," + MapView.Active.Map.SpatialReference.Name);
-                    sw.WriteLine("Map Units," + MapView.Active.Map.SpatialReference.Unit);
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine();
                                         
