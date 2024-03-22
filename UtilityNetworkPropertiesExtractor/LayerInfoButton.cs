@@ -64,8 +64,9 @@ namespace UtilityNetworkPropertiesExtractor
                 List<DisplayFilterLayout> displayFilterLayoutList = new List<DisplayFilterLayout>();
                 List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayoutList = new List<SharedTraceConfigurationLayout>();
                 List<DefinitionQueryLayout> definitionQueryLayoutList = new List<DefinitionQueryLayout>();
+                List<LabelLayout> labelLayoutList = new List<LabelLayout>();
 
-                InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList);
+                InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList, ref labelLayoutList);
 
                 string layerInfoFile = Path.Combine(Common.ExtractFilePath, _fileName);
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
@@ -93,14 +94,21 @@ namespace UtilityNetworkPropertiesExtractor
                     string defQueryFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_DefinitionQueries");
                     WriteDefQueriesCSV(definitionQueryLayoutList, defQueryFile);
                 }
+
+                if (labelLayoutList.Count >= 1)
+                {
+                    string labelFile = layerInfoFile.Replace("LayerInfo", "LayerInfo_Labels");
+                    WriteLabelCSV(labelLayoutList, labelFile);
+                }
             });
         }
 
-        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout, ref List<DefinitionQueryLayout> definitionQueryLayout)
+        private static void InterrogateLayers(ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DisplayFilterLayout> displayFilterLayoutList, ref List<SharedTraceConfigurationLayout> sharedTraceConfigurationLayout, ref List<DefinitionQueryLayout> definitionQueryLayout, ref List<LabelLayout> labelLayoutList)
         {
             int displayFilterCount;
             int layerPos = 1;
             int popupExpressionCount;
+            int labelCount;
             string layerContainer;
             string prevGroupLayerName = string.Empty;
             string popupName = string.Empty;
@@ -180,18 +188,17 @@ namespace UtilityNetworkPropertiesExtractor
 
                             //Labeling
                             string labelExpression = string.Empty;
-                            string labelMinScale = string.Empty;
-                            string labelMaxScale = string.Empty;
-                            if (cimFeatureLayer.LabelClasses != null)
+                            LabelLayout labelRec = null;
+                            labelCount = AddLabelInfoToList(csvLayout, cimFeatureLayer, ref labelLayoutList);
+                            if (labelCount > 0)
                             {
-                                if (cimFeatureLayer.LabelClasses.Length != 0)
+                                if (labelCount == 1)
                                 {
-                                    List<CIMLabelClass> cimLabelClassList = cimFeatureLayer.LabelClasses.ToList();
-                                    CIMLabelClass cimLabelClass = cimLabelClassList.FirstOrDefault();
-                                    labelExpression = cimLabelClass.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-                                    labelMinScale = Common.GetScaleValueText(cimLabelClass.MinimumScale);
-                                    labelMaxScale = Common.GetScaleValueText(cimLabelClass.MaximumScale);
+                                    labelRec = labelLayoutList.LastOrDefault(); // this layers label will always be at the bottom of the list
+                                    labelExpression = labelRec.LabelExpression;
                                 }
+                                else if (labelCount >= 2)
+                                    labelExpression = "see LayerInfo_Labels.csv";
                             }
 
                             //symbology
@@ -224,9 +231,11 @@ namespace UtilityNetworkPropertiesExtractor
                             csvLayout.IsSnappable = featureLayer.IsSnappable.ToString();
                             csvLayout.IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString();
                             csvLayout.IsLabelVisible = featureLayer.IsLabelVisible.ToString();
-                            csvLayout.LabelExpression = Common.EncloseStringInDoubleQuotes(labelExpression);
-                            csvLayout.LabelMaxScale = labelMaxScale;
-                            csvLayout.LabelMinScale = labelMinScale;
+                            csvLayout.LabelCount = labelCount.ToString();
+                            csvLayout.LabelName = labelRec?.LabelName;
+                            csvLayout.LabelExpression = labelExpression;
+                            csvLayout.LabelMaxScale = labelRec?.MaxScale;
+                            csvLayout.LabelMinScale = labelRec?.MinScale;
                             csvLayout.PopupExpressionArcade = popupExpression;
                             csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
                             csvLayout.PopupExpressionName = popupName;
@@ -501,6 +510,33 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
+        private static void WriteLabelCSV(List<LabelLayout> labelLayoutList, string outputFile)
+        {
+            using (StreamWriter sw = new StreamWriter(outputFile))
+            {
+                //Header information
+                sw.WriteLine(DateTime.Now + "," + "Layer Info - Labels");
+                sw.WriteLine();
+                sw.WriteLine("Project," + Project.Current.Path);
+                sw.WriteLine("Map," + Common.GetActiveMapName());
+                sw.WriteLine();
+
+                //Get all properties defined in the class.  This will be used to generate the CSV file
+                LabelLayout emptyRec = new LabelLayout();
+                PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                //Write column headers based on properties in the class
+                string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                sw.WriteLine(columnHeader);
+
+                foreach (LabelLayout row in labelLayoutList)
+                {
+                    string output = Common.ExtractClassValuesToString(row, properties);
+                    sw.WriteLine(output);
+                }
+            }
+        }
+
         private static void WritePopupCSV(List<PopupLayout> popupLayoutList, string outputFile)
         {
             using (StreamWriter sw = new StreamWriter(outputFile))
@@ -759,6 +795,38 @@ namespace UtilityNetworkPropertiesExtractor
             return recsAdded;
         }
 
+        private static int AddLabelInfoToList(CSVLayout csvLayout, CIMFeatureLayer cimFeatureLayer, ref List<LabelLayout> labelLayoutList)
+        {
+            int labelCount = 0;
+
+            if (cimFeatureLayer.LabelClasses != null)
+            {
+                for (int i = 0; i < cimFeatureLayer.LabelClasses.Length; i++)
+                {
+                    CIMLabelClass cimLabelClass = cimFeatureLayer.LabelClasses[i];
+                    string expr = cimLabelClass.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
+
+                    LabelLayout labelRec = new LabelLayout()
+                    {
+                        LayerPos = csvLayout.LayerPos,
+                        LayerType = csvLayout.LayerType,
+                        LayerName = csvLayout.LayerName,
+                        GroupLayerName = csvLayout.GroupLayerName,
+                        Visible = cimLabelClass.Visibility.ToString(),
+                        LabelName = Common.EncloseStringInDoubleQuotes(cimLabelClass.Name),
+                        LabelEngine = cimLabelClass.ExpressionEngine.ToString(),
+                        LabelExpression = Common.EncloseStringInDoubleQuotes(expr),
+                        MinScale = Common.GetScaleValueText(cimLabelClass.MinimumScale),
+                        MaxScale = Common.GetScaleValueText(cimLabelClass.MaximumScale)
+                    };
+
+                    labelLayoutList.Add(labelRec);
+                    labelCount += 1;
+                }
+            }
+            return labelCount;
+        }
+
         private static int AddPopupInfoToList(CSVLayout csvLayout, CIMPopupInfo cimPopupInfo, ref List<PopupLayout> popupLayoutList)
         {
             //Include Pop-up expressions if exist
@@ -868,7 +936,9 @@ namespace UtilityNetworkPropertiesExtractor
             public string SymbologyField3 { get; set; }
             public string EditTemplateCount { get; set; }
             public string DisplayField { get; set; }
+            public string LabelCount { get; set; }
             public string IsLabelVisible { get; set; }
+            public string LabelName { get; set; }
             public string LabelExpression { get; set; }
             public string LabelMaxScale { get; set; }
             public string LabelMinScale { get; set; }
@@ -910,6 +980,20 @@ namespace UtilityNetworkPropertiesExtractor
             public string DisplayFilterType { get; set; }
             public string DisplayFilterName { get; set; }
             public string DisplayFilterExpresssion { get; set; }
+            public string MaxScale { get; set; }
+            public string MinScale { get; set; }
+        }
+
+        private class LabelLayout
+        {
+            public string LayerPos { get; set; }
+            public string LayerType { get; set; }
+            public string GroupLayerName { get; set; }
+            public string LayerName { get; set; }
+            public string LabelName { get; set; }
+            public string Visible { get; set; }
+            public string LabelEngine { get; set; }
+            public string LabelExpression { get; set; }
             public string MaxScale { get; set; }
             public string MinScale { get; set; }
         }
