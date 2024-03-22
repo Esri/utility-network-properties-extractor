@@ -813,7 +813,7 @@ namespace UtilityNetworkPropertiesExtractor
                         LayerType = csvLayout.LayerType,
                         LayerName = csvLayout.LayerName,
                         GroupLayerName = csvLayout.GroupLayerName,
-                        Visibile = cimLabelClass.Visibility.ToString(),
+                        Visible = cimLabelClass.Visibility.ToString(),
                         LabelName = Common.EncloseStringInDoubleQuotes(cimLabelClass.Name),
                         LabelEngine = cimLabelClass.ExpressionEngine.ToString(),
                         LabelExpression = Common.EncloseStringInDoubleQuotes(expr),
@@ -991,7 +991,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string GroupLayerName { get; set; }
             public string LayerName { get; set; }
             public string LabelName { get; set; }
-            public string Visibile { get; set; }
+            public string Visible { get; set; }
             public string LabelEngine { get; set; }
             public string LabelExpression { get; set; }
             public string MaxScale { get; set; }
