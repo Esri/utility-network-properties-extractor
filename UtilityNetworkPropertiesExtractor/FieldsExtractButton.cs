@@ -31,14 +31,21 @@ namespace UtilityNetworkPropertiesExtractor
 
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Fields Info to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractFieldsAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Extract Fields");
+                MessageBox.Show(ex.Message, "Extracting Fields Info");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
         public static Task ExtractFieldsAsync()
