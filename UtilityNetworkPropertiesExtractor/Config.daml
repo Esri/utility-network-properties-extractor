@@ -41,7 +41,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_VersionInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerInfoButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerScalesButton" size="middle" />
-		  <button refID="UtilityNetworkPropertiesExtractor_SymbolScalesButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_SymbolScalesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_LayerCountsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_AttributeRulesButton" size="middle" />
@@ -49,6 +49,7 @@
           <button refID="UtilityNetworkPropertiesExtractor_GdbObjectNamesButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ProjectItemsButton" size="middle" />
+          <button refID="UtilityNetworkPropertiesExtractor_ExtractLocationButton" size="middle" />
         </group>
         <group id="UtilityNetworkPropertiesExtractor_Group2" caption="Efficiency Tools" appearsOnAddInTab="false" keytip="AG">
           <button refID="UtilityNetworkPropertiesExtractor_FieldSettingsInMapImportButton" size="middle" />
@@ -165,6 +166,9 @@
         </button>
         <button id="UtilityNetworkPropertiesExtractor_SymbolScalesButton" caption="Symbol Scales" className="SymbolScalesButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SymbolGroup16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/SymbolGroup16.png" keytip="YW" condition="esri_mapping_MapCondition">
           <tooltip heading="Tooltip Heading">Extract Symbol Scales Info<disabledText /></tooltip>
+        </button>
+        <button id="UtilityNetworkPropertiesExtractor_ExtractLocationButton" caption="Extract Location" className="ExtractLocationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/FolderOpenState32.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/FolderOpenState32.png" keytip="YV">
+          <tooltip heading="Tooltip Heading">Display Extract Location<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
