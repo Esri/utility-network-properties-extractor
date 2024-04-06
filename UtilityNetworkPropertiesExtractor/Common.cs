@@ -213,7 +213,6 @@ namespace UtilityNetworkPropertiesExtractor
         public static string GetActiveMapName()
         {
             //Strip out illegal character for file name
-            //   return Path.GetInvalidFileNameChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
             string mapName = Path.GetInvalidPathChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
             return mapName.Replace(",", "").Replace("'", "").Replace("\"", "");
         }
@@ -221,7 +220,7 @@ namespace UtilityNetworkPropertiesExtractor
         public static string GetProProjectName()
         {
             Project currProject = Project.Current;
-            return currProject.Name.Substring(0, currProject.Name.IndexOf("."));
+            return currProject.Name.Substring(0, currProject.Name.LastIndexOf("."));
         }
 
         private static string GetProVersion()
