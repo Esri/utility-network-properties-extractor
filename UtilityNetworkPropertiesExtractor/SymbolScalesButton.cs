@@ -170,7 +170,7 @@ namespace UtilityNetworkPropertiesExtractor
                                         };
 
                                         if (! string.IsNullOrEmpty(cimUniqueValueClass.Label))
-                                            csvLayout.SymbolLabel = cimUniqueValueClass.Label;
+                                            csvLayout.SymbolLabel = Common.EncloseStringInDoubleQuotes(cimUniqueValueClass.Label);
                                         else
                                             csvLayout.SymbolLabel = "<blank>";
 
@@ -208,7 +208,7 @@ namespace UtilityNetworkPropertiesExtractor
                                         LayerPos = layerPos.ToString(),
                                         GroupLayerName = groupLayerName,
                                         LayerName = Common.EncloseStringInDoubleQuotes(layer.Name),
-                                        SymbolLabel = cimClassBreak.Label,
+                                        SymbolLabel = Common.EncloseStringInDoubleQuotes(cimClassBreak.Label),
                                         SymbolMinScale = GetScaleValue(cimClassBreak.Symbol.MinScale),
                                         SymbolMaxScale = GetScaleValue(cimClassBreak.Symbol.MaxScale)
                                     };
