@@ -2,7 +2,7 @@
 
 For use with ArcGIS Pro 2.9
 
-This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 6 efficiency tools to help set up your map and get your machine info.  
+This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 5 efficiency tools to help set up your map and get your machine info.  
 
 The Add-in works against layers from feature services, database connections and file geodatabases. Buttons are enabled/disabled based on the layers in the map.  
 
@@ -21,7 +21,7 @@ Visual Studio:         2019
 ```
 
 ## ArcGIS Pro Add-In
- ![Screenshot](Screenshots/Toolbar2024.PNG) 
+ ![Screenshot](Screenshots/Toolbar_v29_2024.PNG) 
       
 ### 1.  Single click buttons that extract Utility Network, Geodatabase and Map properties to CSV files
 * **Utility Network**:   UN FeatureService, Asset Groups, Domain Networks, Network Rules, Network Attributes, Network Categories, Network Diagram Info, Terminal Configuration, Trace Configuration, No Network Rules
@@ -55,19 +55,6 @@ _Directions_
  5.  In Pro, click on the 'Import Map Field Settings' button
  6.  Choose the CSV file to import
  7.  Once prompted that the import is complete, review the changes in either the 'Fields' pane or selecting features and viewing in the 'Attributes' pane 
- 8.  You MUST save the Pro project for settings to persist
-
-####   Import Popup Field Settings
-* Using a CSV from a “Pop-up Fields” extraction, the Pop-up field visibility and order can be modified and applied to the active map
-
-_Directions_
- 1.  Open any map
- 2.  Generate a CSV by clicking the Pop-up Fields button
- 3.  Open the CSV in Excel and edit the necessary Pop-up Order and/or Visibility settings
- 4.  Once done, make sure to save the file in CSV format and then close the file
- 5.  In Pro, click on the 'Import Pop-up Field Settings' button
- 6.  Choose the CSV file to import
- 7.  Once prompted that the import is complete, review the changes in either the 'Configure Pop-ups' pane or identify a feature to open the Pop-up
  8.  You MUST save the Pro project for settings to persist
 
 ## Compilation Directions
