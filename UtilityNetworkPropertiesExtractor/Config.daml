@@ -68,7 +68,7 @@ limitations under the License.
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFieldExpressionButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_DisplayFilterButton" size="middle" />
           <button refID="UtilityNetworkPropertiesExtractor_ExportSubnetworkResultFieldsButton" size="middle" />
-          <button refID="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" size="middle" />
+			<!-- button refID="UtilityNetworkPropertiesExtractor_PopupFieldsImportButton" size="middle" /> -->
           <button refID="UtilityNetworkPropertiesExtractor_MachineNameButton" size="middle" />
           <!--<button refID="UtilityNetworkPropertiesExtractor_AssetTypeEditTemplatesButton" size="middle" /> -->
         </group>
