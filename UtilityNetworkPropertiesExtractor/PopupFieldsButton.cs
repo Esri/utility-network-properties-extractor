@@ -37,7 +37,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             try
             {
-                progDlg.Show();
+                progDlg.Show(); 
                 await ExtractPopupFieldsAsync();
             }
             catch (Exception ex)

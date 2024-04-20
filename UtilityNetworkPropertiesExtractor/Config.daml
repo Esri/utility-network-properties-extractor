@@ -18,8 +18,7 @@
         </tab>
       </tabs>
       <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
-              an empty group-->
+        <!-- comment this out if you have no controls on the Addin tab to avoid an empty group-->
         <group id="UtilityNetworkPropertiesExtractor_Group1" caption="Extract to CSV" appearsOnAddInTab="false" keytip="AF">
           <!-- host controls within groups -->
           <button refID="UtilityNetworkPropertiesExtractor_ExtractAllButton" size="middle" />

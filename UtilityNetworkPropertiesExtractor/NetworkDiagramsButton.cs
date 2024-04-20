@@ -10,11 +10,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Core.Data.NetworkDiagrams;
+using ArcGIS.Core.Data.UtilityNetwork;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,8 +25,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using MessageBox = System.Windows.MessageBox;
-using ArcGIS.Desktop.Core;
-using Newtonsoft.Json;
 
 namespace UtilityNetworkPropertiesExtractor
 {

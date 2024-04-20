@@ -21,7 +21,7 @@
 //This class, LayerPopupInfoHelper.cs, was copied from an ArcGIS Pro SDK Community Samples
 //Esri Github:  https://github.com/Esri/arcgis-pro-sdk-community-samples/tree/master/Map-Exploration/LayerPopups/Helpers
 //  Solution:  arcgis-pro-sdk-community-samples / Map-Exploration / LayerPopups  
-//Only change I made was to the namespace
+//Only change made was to the namespace
 
 using ArcGIS.Core.CIM;
 using System;

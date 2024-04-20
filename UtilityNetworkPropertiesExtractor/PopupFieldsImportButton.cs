@@ -126,7 +126,6 @@ namespace UtilityNetworkPropertiesExtractor
                 string timeDifference = Common.DetermineTimeDifference(startTime, endTime);
 
                 MapView.Active.DrawingPaused = false;
-
                 MessageBox.Show("You MUST save the Pro Project for the popup field setting changes to persist!\n\n Duration: " + timeDifference, "Popup Field settings were imported", MessageBoxButtons.OK, MessageBoxIcon.Information);
             });
         }

@@ -56,7 +56,6 @@ namespace UtilityNetworkPropertiesExtractor
                 ProjectItemsButton.ExtractProjectItem();
 
                 DateTime endTime = DateTime.Now;
-
                 string timeDifference = Common.DetermineTimeDifference(startTime, endTime);
 
                 MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "Duration: " + timeDifference, "CSV files were generated", System.Windows.MessageBoxButton.OK);

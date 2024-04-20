@@ -442,7 +442,6 @@ namespace UtilityNetworkPropertiesExtractor
 
                 //Add record to list
                 csvLayoutList.Add(csvLayout);
-
                 layerPos += 1;
             }
 

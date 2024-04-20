@@ -27,5 +27,4 @@ namespace UtilityNetworkPropertiesExtractor.JSONMappings
         public bool enableDiagramExtend { get; set; }
         public bool enableDiagramStorage { get; set; }
     }
-
 }

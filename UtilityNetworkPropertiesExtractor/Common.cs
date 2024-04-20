@@ -350,7 +350,6 @@ namespace UtilityNetworkPropertiesExtractor
             { 
                 throw;
             }
-
             return response;
         }
 
