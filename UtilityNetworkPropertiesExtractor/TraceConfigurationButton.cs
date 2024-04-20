@@ -68,8 +68,11 @@ namespace UtilityNetworkPropertiesExtractor
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
+                UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
+                if (unLayer == null)
+                    return;
 
+                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
                 using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
                 {
                     Common.CreateOutputDirectory();
@@ -88,8 +91,6 @@ namespace UtilityNetworkPropertiesExtractor
                             sw.WriteLine("Trace Configuration was introduced at Utility Network Version 5");
                             return;
                         }
-
-                        UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
 
                         //Get all properties defined in the class.  This will be used to generate the CSV file
                         CSVLayout emptyRec = new CSVLayout();
