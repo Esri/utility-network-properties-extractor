@@ -62,6 +62,10 @@ namespace UtilityNetworkPropertiesExtractor
                     return;
                 }
 
+                UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
+                if (unLayer == null)
+                    return;
+
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
                 Common.CreateOutputDirectory();
 
@@ -87,8 +91,6 @@ namespace UtilityNetworkPropertiesExtractor
 
                     if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
                     {
-                        UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
-
                         ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
                         if (portal == null)
                             throw new Exception("You must be logged into portal to extract the Utility Network FeatureService Info");
