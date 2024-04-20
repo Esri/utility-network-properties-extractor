@@ -62,20 +62,20 @@ namespace UtilityNetworkPropertiesExtractor
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
-                //Header information
-                sw.WriteLine(DateTime.Now + "," + "Symbol Scales");
+                    //Header information
+                    sw.WriteLine(DateTime.Now + "," + "Symbol Scales");
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine();
 
-                //Get all properties defined in the class.  This will be used to generate the CSV file
-                CSVLayout emptyRec = new CSVLayout();
+                    //Get all properties defined in the class.  This will be used to generate the CSV file
+                    CSVLayout emptyRec = new CSVLayout();
                     PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
 
-                //Write column headers based on properties in the class
-                string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                    //Write column headers based on properties in the class
+                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
                     List<CSVLayout> CSVLayoutList = new List<CSVLayout>();
@@ -89,10 +89,10 @@ namespace UtilityNetworkPropertiesExtractor
                     List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
                     foreach (Layer layer in layerList)
                     {
-                    //Determine if in a group layer
-                    layerContainer = layer.Parent.ToString();
+                        //Determine if in a group layer
+                        layerContainer = layer.Parent.ToString();
                         if (layerContainer != MapView.Active.Map.Name) // Group layer
-                    {
+                        {
                             if (layerContainer != prevGroupLayerName)
                                 prevGroupLayerName = layerContainer;
                         }
@@ -125,14 +125,14 @@ namespace UtilityNetworkPropertiesExtractor
 
                         if (layerType == "Feature Layer")
                         {
-                        //Add Layer details to the list                            
-                        CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
+                            //Add Layer details to the list                            
+                            CIMFeatureLayer cimFeatureLayerDef = layer.GetDefinition() as CIMFeatureLayer;
                             csvLayout.Renderer = cimFeatureLayerDef.Renderer.ToString().Replace("ArcGIS.Core.CIM.", "");
                             CSVLayoutList.Add(csvLayout);
 
-                        //Based on renderer type, get the symbol scales.
-                        //Simple Renderer
-                        if (cimFeatureLayerDef.Renderer is CIMSimpleRenderer cimSimpleRenderer)
+                            //Based on renderer type, get the symbol scales.
+                            //Simple Renderer
+                            if (cimFeatureLayerDef.Renderer is CIMSimpleRenderer cimSimpleRenderer)
                             {
                                 csvLayout = new CSVLayout()
                                 {
@@ -151,8 +151,8 @@ namespace UtilityNetworkPropertiesExtractor
                                 CSVLayoutList.Add(csvLayout);
                             }
 
-                        //Unqiue Renderer
-                        else if (cimFeatureLayerDef.Renderer is CIMUniqueValueRenderer uniqueRenderer)
+                            //Unqiue Renderer
+                            else if (cimFeatureLayerDef.Renderer is CIMUniqueValueRenderer uniqueRenderer)
                             {
                                 CIMUniqueValueGroup[] cimUniqueValueGroups = uniqueRenderer.Groups;
                                 foreach (CIMUniqueValueGroup cimUniqueValueGroup in cimUniqueValueGroups)
@@ -179,8 +179,8 @@ namespace UtilityNetworkPropertiesExtractor
                                 }
                             }
 
-                        //Heat Map
-                        else if (cimFeatureLayerDef.Renderer is CIMHeatMapRenderer cimHeatMapRenderer)
+                            //Heat Map
+                            else if (cimFeatureLayerDef.Renderer is CIMHeatMapRenderer cimHeatMapRenderer)
                             {
                                 List<string> heatMapLabels = new List<string> { "Sparse", "Dense" };
                                 foreach (string heatMapLabel in heatMapLabels)
@@ -198,8 +198,8 @@ namespace UtilityNetworkPropertiesExtractor
                                 }
                             }
 
-                        //Graduated Colors
-                        else if (cimFeatureLayerDef.Renderer is CIMClassBreaksRenderer cimClassBreaksRenderer)
+                            //Graduated Colors
+                            else if (cimFeatureLayerDef.Renderer is CIMClassBreaksRenderer cimClassBreaksRenderer)
                             {
                                 foreach (CIMClassBreak cimClassBreak in cimClassBreaksRenderer.Breaks)
                                 {

@@ -162,7 +162,6 @@ namespace UtilityNetworkPropertiesExtractor
             });
         }
 
-
         private static void BuildPopupFieldsList(string className, string tocName, string subtype, bool useLayerFields, List<FieldDescription> fieldsList, string[] fieldsInPopup, ref List<CSVLayout> csvLayoutList)
         {
             int popupOrder = 0;

@@ -124,13 +124,13 @@ namespace UtilityNetworkPropertiesExtractor
                         layerType = Common.GetLayerTypeDescription(layer);
                         switch(layerType)
                         {   //In the TOC, these 4 layers will have child layers
-                            case "Annotation Layer":
-                            case "Group Layer":
-                            case "Subtype Group Layer":
-                            case "Utility Network Layer":
+                            case "Annotation Layer" :
+                            case "Group Layer" :
+                            case "Subtype Group Layer" :
+                            case "Utility Network Layer" :
                                 groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
                                 break;
-                            default:
+                            default :
                                 groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
                                 break;
                         }
