@@ -10,11 +10,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Core.Data.NetworkDiagrams;
+using ArcGIS.Core.Data.UtilityNetwork;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,6 +62,10 @@ namespace UtilityNetworkPropertiesExtractor
                     return;
                 }
 
+                UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
+                if (unLayer == null)
+                    return;
+
                 Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
                 Common.CreateOutputDirectory();
 
@@ -69,19 +75,11 @@ namespace UtilityNetworkPropertiesExtractor
 
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
+                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
                     //Header information
                     UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
                     Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Network Diagram Info");
-
-                    sw.WriteLine("DiagramTemplates,Name");
-                    DiagramManager diagramManager = utilityNetwork.GetDiagramManager();
-                    IEnumerable<DiagramTemplate> diagramTemplateList = diagramManager.GetDiagramTemplates().OrderBy(x => x.Name);
-                    foreach (DiagramTemplate diagramTemplate in diagramTemplateList)
-                        sw.WriteLine("," + diagramTemplate.Name);
-
-                    sw.WriteLine();
-
-                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
 
                     //Get all properties defined in the class.  This will be used to generate the CSV file
                     CSVLayout emptyRec = new CSVLayout();
@@ -91,24 +89,57 @@ namespace UtilityNetworkPropertiesExtractor
                     string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
                     sw.WriteLine(columnHeader);
 
-                    IReadOnlyList<NetworkDiagram> networkDiagramList = diagramManager.GetNetworkDiagrams();
-                    foreach (NetworkDiagram diagram in networkDiagramList)
+                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
                     {
-                        NetworkDiagramInfo diagramInfo = diagram.GetDiagramInfo();
+                        ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
+                        if (portal == null)
+                            throw new Exception("You must be logged into portal to extract the Utility Network FeatureService Info");
 
-                        CSVLayout rec = new CSVLayout
+                        string unFeatureServiceURL = Common.GetURLOfUtilityNetworkLayer(unLayer, portal.GetToken());
+
+                        string diagramDatasetServiceURL = unFeatureServiceURL.Replace("FeatureServer", "NetworkDiagramServer/diagramDataset");
+                        EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(diagramDatasetServiceURL);
+
+                        string json = response?.Content?.ReadAsStringAsync()?.Result;
+                        if (json == null)
+                            throw new Exception("Failed to get data from Utility Network Feature Service endpoint");
+
+                        JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
+                        if (arcRestError?.error != null)
+                            throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + diagramDatasetServiceURL);
+
+                        JSONMappings.NetworkDiagramTemplateJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.NetworkDiagramTemplateJSONMapping>(json);
+
+                        for (int i = 0; i < parsedJson.diagramTemplateInfos.Length; i++)
                         {
-                            Name = diagram.Name,
-                            CreatedTime = diagramInfo.CreationDate.ToString(),
-                            LastModifiedTime = diagramInfo.LastUpdateDate.ToString(),
-                            DiagramStorage = diagramInfo.IsStored.ToString(),
-                            IsSystem = diagramInfo.IsSystem.ToString(),
-                            ExtendDiagram = diagramInfo.CanExtend.ToString(),
-                            Description = diagramInfo.Tag
-                        };
-                        csvLayoutList.Add(rec);
+                            //globalids needed for GP Tool
+                            CSVLayout rec = new CSVLayout()
+                            {
+                                Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.diagramTemplateInfos[i].name)),
+                                LastModifiedTime = Convert.ToString(Common.ConvertEpochTimeToReadableDate(parsedJson.diagramTemplateInfos[i].lastUpdateDate)),
+                                DiagramStorage = parsedJson.diagramTemplateInfos[i].enableDiagramStorage.ToString(),
+                                IsSystem = parsedJson.diagramTemplateInfos[i].usedByATier.ToString(),
+                                ExtendDiagram = parsedJson.diagramTemplateInfos[i].enableDiagramExtend.ToString(),
+                                Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.diagramTemplateInfos[i].description)),
+                                CreationDate = Convert.ToString(Common.ConvertEpochTimeToReadableDate(parsedJson.diagramTemplateInfos[i].creationDate))
+                            };
+                            csvLayoutList.Add(rec);
+                        }
                     }
-
+                    else
+                    {
+                        DiagramManager diagramManager = utilityNetwork.GetDiagramManager();
+                        IEnumerable<DiagramTemplate> diagramTemplateList = diagramManager.GetDiagramTemplates().OrderBy(x => x.Name);
+                        foreach (DiagramTemplate diagramTemplate in diagramTemplateList)
+                        {
+                            CSVLayout rec = new CSVLayout
+                            {
+                                Name = diagramTemplate.Name,
+                            };
+                            csvLayoutList.Add(rec);
+                        }
+                    }
+            
                     foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Name))
                     {
                         string output = Common.ExtractClassValuesToString(row, properties);
@@ -124,9 +155,9 @@ namespace UtilityNetworkPropertiesExtractor
 
         private class CSVLayout
         {
-            public string NetworkDiagrams { get; set; }
+            public string DiagramTemplate { get; set; }
             public string Name { get; set; }
-            public string CreatedTime { get; set; }
+            public string CreationDate { get; set; }
             public string LastModifiedTime { get; set; }
             public string DiagramStorage { get; set; }
             public string IsSystem { get; set; }
