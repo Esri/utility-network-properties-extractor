@@ -67,6 +67,8 @@ namespace UtilityNetworkPropertiesExtractor
                     sw.WriteLine();
                     sw.WriteLine("Project," + Project.Current.Path);
                     sw.WriteLine("Map," + Common.GetActiveMapName());
+                    sw.WriteLine("Coordinate System," + MapView.Active.Map.SpatialReference.Name);
+                    sw.WriteLine("Map Units," + MapView.Active.Map.SpatialReference.Unit);
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine();
 
@@ -86,6 +88,7 @@ namespace UtilityNetworkPropertiesExtractor
                         TwentyFiveHundred = "2500",
                         FiveThousand = "5000",
                         TenThousand = "10000",
+                        TwentyFiveThousand = "25000",
                         FiftyThousand = "50000",
                         OneHundredThousand = "100000",
                         TwoHundredThousand = "200000",
@@ -121,13 +124,13 @@ namespace UtilityNetworkPropertiesExtractor
                         layerType = Common.GetLayerTypeDescription(layer);
                         switch(layerType)
                         {   //In the TOC, these 4 layers will have child layers
-                            case "Annotation Layer":
-                            case "Group Layer":
-                            case "Subtype Group Layer":
-                            case "Utility Network Layer":
+                            case "Annotation Layer" :
+                            case "Group Layer" :
+                            case "Subtype Group Layer" :
+                            case "Utility Network Layer" :
                                 groupLayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
                                 break;
-                            default:
+                            default :
                                 groupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
                                 break;
                         }
@@ -145,6 +148,7 @@ namespace UtilityNetworkPropertiesExtractor
                             TwentyFiveHundred = IsLayerRenderedAtThisScale(header.TwentyFiveHundred, layer).ToString(),
                             FiveThousand = IsLayerRenderedAtThisScale(header.FiveThousand, layer).ToString(),
                             TenThousand = IsLayerRenderedAtThisScale(header.TenThousand, layer).ToString(),
+                            TwentyFiveThousand = IsLayerRenderedAtThisScale(header.TwentyFiveThousand, layer).ToString(),
                             FiftyThousand = IsLayerRenderedAtThisScale(header.FiftyThousand, layer).ToString(),
                             OneHundredThousand = IsLayerRenderedAtThisScale(header.OneHundredThousand, layer).ToString(),
                             TwoHundredThousand = IsLayerRenderedAtThisScale(header.TwoHundredThousand, layer).ToString(),
@@ -241,6 +245,7 @@ namespace UtilityNetworkPropertiesExtractor
             public string TwentyFiveHundred { get; set; }
             public string FiveThousand { get; set; }
             public string TenThousand { get; set; }
+            public string TwentyFiveThousand { get; set; }
             public string FiftyThousand { get; set; }
             public string OneHundredThousand { get; set; }
             public string TwoHundredThousand { get; set; }

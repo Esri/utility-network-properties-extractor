@@ -21,7 +21,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -88,6 +87,11 @@ namespace UtilityNetworkPropertiesExtractor
                 reportHeaderInfo.SourceType = DatastoreTypeDescriptions.MobileGDB;
                 pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".geodatabase");
                 reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 12);
+            }
+            else // perhaps a shapefile
+            {
+                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.Folder;
+                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri;
             }
 
             // Only applies if Utility Network is detected
@@ -208,7 +212,6 @@ namespace UtilityNetworkPropertiesExtractor
         public static string GetActiveMapName()
         {
             //Strip out illegal character for file name
-            //   return Path.GetInvalidFileNameChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
             string mapName = Path.GetInvalidPathChars().Aggregate(MapView.Active.Map.Name, (current, c) => current.Replace(c.ToString(), string.Empty));
             return mapName.Replace(",", "").Replace("'", "").Replace("\"", "");
         }
@@ -216,7 +219,7 @@ namespace UtilityNetworkPropertiesExtractor
         public static string GetProProjectName()
         {
             Project currProject = Project.Current;
-            return currProject.Name.Substring(0, currProject.Name.IndexOf("."));
+            return currProject.Name.Substring(0, currProject.Name.LastIndexOf("."));
         }
 
         private static string GetProVersion()
@@ -374,6 +377,7 @@ namespace UtilityNetworkPropertiesExtractor
             public const string FileGDB = "File Geodatabase";
             public const string EnterpriseGDB = "Enterprise Geodatabase";
             public const string MobileGDB = "Mobile Geodatabase";
+            public const string Folder = "Folder";
         }
 
         public class ReportHeaderInfo

@@ -20,14 +20,13 @@ Visual Studio:         2019
 .NET Target Framework: .NET Framework 4.8
 ```
 
-
 ## ArcGIS Pro Add-In
- ![Screenshot](Screenshots/Toolbar.PNG) 
+ ![Screenshot](Screenshots/Toolbar_v29_2024.PNG) 
       
 ### 1.  Single click buttons that extract Utility Network, Geodatabase and Map properties to CSV files
 * **Utility Network**:   UN FeatureService, Asset Groups, Domain Networks, Network Rules, Network Attributes, Network Categories, Network Diagram Info, Terminal Configuration, Trace Configuration, No Network Rules
 * **Geodatabase**:  Domain Values, Domain Assignments, Orphan Domains, Fields, Relationship Classes, Versioning Info, Attribute Rules, Contingent Values, GDB Object Names
-* **Map**:  Layer Info, Layer Scales, Layer Counts, Map Field Settings
+* **Map**:  Layer Info, Layer Scales, Layer Counts, Symbol Scales, Map Field Settings, Pop-up Fields
 
 * **CSV file(s)** are written to folder c:\temp\ProSDK_CSV\Pro Project Name\
                         
@@ -45,7 +44,7 @@ Visual Studio:         2019
 * Sql:  associationstatus not in (4,5,6,12,13,14,36,37,38,44,45,46)
 
 ####   Import Map Field Settings
-* Using a CSV from a “Map Field Settings” extraction, field settings can be modified and applied to the active map.
+* Using a CSV from a “Map Field Settings” extraction, field settings can be modified and applied to the active map
 * Map Field Settings that can be changed:  Visibility, Read-Only, Highlighted and Field Alias
 
 _Directions_
