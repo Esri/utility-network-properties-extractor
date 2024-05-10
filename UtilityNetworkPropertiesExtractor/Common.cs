@@ -359,14 +359,26 @@ namespace UtilityNetworkPropertiesExtractor
             sw.WriteLine();
             sw.WriteLine(reportHeaderInfo.SourceType + "," + reportHeaderInfo.FullPath);
             if (utilityNetworkDefinition != null)
-                WriteUnHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition);
+                WriteUnHeaderInfo(sw, utilityNetworkDefinition);
             sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
             sw.WriteLine();
         }
 
-        private static void WriteUnHeaderInfo(StreamWriter sw, ReportHeaderInfo reportHeaderInfo, UtilityNetworkDefinition utilityNetworkDefinition)
+        public static void WriteHeaderInfoForGeodatabase(StreamWriter sw, DataSourceInMap dataSourceInMap, string reportTitle)
         {
-            sw.WriteLine("Utility Network Name," + reportHeaderInfo.UtilityNetworkName);
+            sw.WriteLine(DateTime.Now + "," + reportTitle);
+            sw.WriteLine();
+            sw.WriteLine(dataSourceInMap.WorkspaceFactory + "," + dataSourceInMap.URI);           
+            IReadOnlyList<UtilityNetworkDefinition> utilityNetworkDefinitionList = dataSourceInMap.Geodatabase.GetDefinitions<UtilityNetworkDefinition>();
+            if (utilityNetworkDefinitionList.Count > 0)
+                WriteUnHeaderInfo(sw, utilityNetworkDefinitionList.FirstOrDefault());
+            sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
+            sw.WriteLine();
+        }
+
+        private static void WriteUnHeaderInfo(StreamWriter sw, UtilityNetworkDefinition utilityNetworkDefinition)
+        {
+            sw.WriteLine("Utility Network Name," + utilityNetworkDefinition.GetName());
             sw.WriteLine("Utility Network Release," + utilityNetworkDefinition.GetSchemaVersion());
         }
 
