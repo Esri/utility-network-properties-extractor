@@ -11,6 +11,7 @@
    limitations under the License.
 */
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,33 +24,31 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class ProjectItemsButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Project Items to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 ExtractProjectItem();
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Project Items");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static void ExtractProjectItem()
         {
-            _fileGenerated = false;
-
             Common.CreateOutputDirectory();
 
-            string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            _fileName = string.Format("{0}_{1}_ProjectItems.csv", dateFormatted, Common.GetActiveMapName());
-            string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+            string outputFile = Common.ConstructCsvFileName("ProjectItems");
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 sw.WriteLine(DateTime.Now + "," + "Project Items");
@@ -75,14 +74,13 @@ namespace UtilityNetworkPropertiesExtractor
                         ItemType = item.Type,
                         ItemName = item.Name,
                         Description = Common.EncloseStringInDoubleQuotes(item.Description)
-
                     };
 
                     csvLayoutList.Add(rec);
                 }
 
                 //Write body of report
-                foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ItemType).ThenBy(x => x.TimeStamp).ThenBy(x => x.ItemName))
+                foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ItemType).ThenBy(x => x.ItemName))
                 {
                     string output = Common.ExtractClassValuesToString(row, properties);
                     sw.WriteLine(output);
@@ -90,7 +88,6 @@ namespace UtilityNetworkPropertiesExtractor
 
                 sw.Flush();
                 sw.Close();
-                _fileGenerated = true;
             }
         }
 
@@ -99,7 +96,6 @@ namespace UtilityNetworkPropertiesExtractor
             public string ItemType { get; set; }
             public string ItemName { get; set; }
             public string Description { get; set; }
-            public string TimeStamp { get; set; }
         }
     }
 }

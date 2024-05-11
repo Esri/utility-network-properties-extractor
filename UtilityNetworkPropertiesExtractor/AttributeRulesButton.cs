@@ -55,15 +55,6 @@ namespace UtilityNetworkPropertiesExtractor
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 string attrRuleFileName = string.Empty;
 
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer firstFeatureLayer);
-
-                //Only call this if there's an active mapview, otherwise we get a null reference exception
-                if (utilityNetwork == null && MapView.Active != null)
-                    firstFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, firstFeatureLayer);
-                Common.CreateOutputDirectory();
-
                 Dictionary<string, Table> tablesDict = new Dictionary<string, Table>();
 
                 //If Subtype Group layers are in the map, will have multiple layers pointing to same source featureclass
@@ -98,7 +89,7 @@ namespace UtilityNetworkPropertiesExtractor
                     if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                         fcName = pair.Key.Substring(pos + 1);
 
-                    attrRuleFileName = string.Format("{0}_{1}_AttributeRules_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
+                    attrRuleFileName = string.Format("{0}_{1}_AttributeRules_{2}.csv", dateFormatted, Common.GetActiveMapName(), fcName);
                     string attrRuleoutputFile = Path.Combine(Common.ExtractFilePath, attrRuleFileName);
                     string pathToTable = pair.Key;
                     IReadOnlyList<string> attrRuleArgs;

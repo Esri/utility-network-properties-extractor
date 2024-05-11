@@ -55,13 +55,6 @@ namespace UtilityNetworkPropertiesExtractor
                 string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 string attrRuleFileName = string.Empty;
 
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer firstFeatureLayer);
-                if (utilityNetwork == null)
-                    firstFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, firstFeatureLayer);
-                Common.CreateOutputDirectory();
-
                 Dictionary<string, Table> tablesDict = new Dictionary<string, Table>();
 
                 //Populate Dictionary of distinct table names
@@ -95,10 +88,10 @@ namespace UtilityNetworkPropertiesExtractor
                     if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                         fcName = pair.Key.Substring(pos + 1);
 
-                    string cvGroupFileName = string.Format("{0}_{1}_ContingentValuesGroups_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
+                    string cvGroupFileName = string.Format("{0}_{1}_ContingentValuesGroups_{2}.csv", dateFormatted, Common.GetActiveMapName(), fcName);
                     string cvGroupOutputFile = Path.Combine(Common.ExtractFilePath, cvGroupFileName);
 
-                    string cvFileName = string.Format("{0}_{1}_ContingentValues_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
+                    string cvFileName = string.Format("{0}_{1}_ContingentValues_{2}.csv", dateFormatted, Common.GetActiveMapName(), fcName);
                     string cvOutputFile = Path.Combine(Common.ExtractFilePath, cvFileName);
 
                     string pathToTable = pair.Key;

@@ -10,11 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,18 +26,23 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class DomainAssignmentsButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Domain Assignments to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractDomainAssignmentsAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Domain Assignments");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -46,94 +50,86 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
+                List<DataSourceInMap> dataSourceInMapList = DataSourcesInMapHelper.GetDataSourcesInMap();
+                foreach (DataSourceInMap dataSourceInMap in dataSourceInMapList)
                 {
-                    Common.CreateOutputDirectory();
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_DomainAssignments.csv", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    string defaultCode = string.Empty;
-                    string defaultValue = string.Empty;
-                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    if (dataSourceInMap.WorkspaceFactory != WorkspaceFactory.Shapefile.ToString())
                     {
-                        //Header information
-                        UtilityNetworkDefinition utilityNetworkDefinition = null;
-                        if (utilityNetwork != null)
-                            utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                        Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Domain Assignments");
-
-                        //Get all properties defined in the class.  This will be used to generate the CSV file
-                        CSVLayout emptyRec = new CSVLayout();
-                        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                        //Write column headers based on properties in the class
-                        string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                        sw.WriteLine(columnHeader);
-
-                        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                        IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
-                        foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
+                        using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            try
+                            string outputFile = Common.ConstructCsvFileName("DomainAssignments", dataSourceInMap.NameForCSV);
+                            using (StreamWriter sw = new StreamWriter(outputFile))
                             {
-                                IReadOnlyList<Field> listOfFields = fcDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypes = fcDefinition.GetSubtypes();
+                                //Header information
+                                Common.WriteHeaderInfoForGeodatabase(sw, dataSourceInMap, "Domain Assignments");
 
-                                if (subtypes.Count != 0)
+                                //Get all properties defined in the class.  This will be used to generate the CSV file
+                                CSVLayout emptyRec = new CSVLayout();
+                                PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                                //Write column headers based on properties in the class
+                                string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                                sw.WriteLine(columnHeader);
+
+                                List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                                IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
+                                foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
                                 {
-                                    foreach (Subtype subtype in subtypes)
-                                        BuildDomainAssignments(fcDefinition, subtype, listOfFields, ref csvLayoutList);
+                                    try
+                                    {
+                                        IReadOnlyList<Field> listOfFields = fcDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypes = fcDefinition.GetSubtypes();
+
+                                        if (subtypes.Count != 0)
+                                        {
+                                            foreach (Subtype subtype in subtypes)
+                                                BuildDomainAssignments(fcDefinition, subtype, listOfFields, ref csvLayoutList);
+                                        }
+                                        else
+                                            BuildDomainAssignments(fcDefinition, null, listOfFields, ref csvLayoutList);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
                                 }
-                                else
-                                    BuildDomainAssignments(fcDefinition, null, listOfFields, ref csvLayoutList);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
-                            }
-                        }
 
-                        IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
-                        foreach (TableDefinition tableDefinition in tableDefinitions)
-                        {
-                            try
-                            {
-                                IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
-
-                                if (subtypes.Count != 0)
+                                IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
+                                foreach (TableDefinition tableDefinition in tableDefinitions)
                                 {
-                                    foreach (Subtype subtype in subtypes)
-                                        BuildDomainAssignments(tableDefinition, subtype, listOfFields, ref csvLayoutList);
+                                    try
+                                    {
+                                        IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
+
+                                        if (subtypes.Count != 0)
+                                        {
+                                            foreach (Subtype subtype in subtypes)
+                                                BuildDomainAssignments(tableDefinition, subtype, listOfFields, ref csvLayoutList);
+                                        }
+                                        else
+                                            BuildDomainAssignments(tableDefinition, null, listOfFields, ref csvLayoutList);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
                                 }
-                                else
-                                    BuildDomainAssignments(tableDefinition, null, listOfFields, ref csvLayoutList);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
+
+                                //Write body of CSV
+                                foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Domain))
+                                {
+                                    string output = Common.ExtractClassValuesToString(row, properties);
+                                    sw.WriteLine(output);
+                                }
+
+                                sw.Flush();
+                                sw.Close();
                             }
                         }
-
-                        //Write body of CSV
-                        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Domain))
-                        {
-                            string output = Common.ExtractClassValuesToString(row, properties);
-                            sw.WriteLine(output);
-                        }
-
-                        sw.Flush();
-                        sw.Close();
                     }
                 }
             });

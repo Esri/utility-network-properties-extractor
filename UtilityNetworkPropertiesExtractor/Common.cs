@@ -12,6 +12,7 @@
 */
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
+using ArcGIS.Core.Data.DDL;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Mapping;
@@ -21,6 +22,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Policy;
+using System.Windows.Markup;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -47,63 +51,6 @@ namespace UtilityNetworkPropertiesExtractor
                 Directory.CreateDirectory(ExtractFilePath);
         }
 
-        public static ReportHeaderInfo DetermineReportHeaderProperties(UtilityNetwork utilityNetwork, FeatureLayer featureLayer)
-        {
-            ReportHeaderInfo reportHeaderInfo = new()
-            {
-                ProProjectName = GetProProjectName(),
-                MapName = GetActiveMapName()
-            };
-
-            if (utilityNetwork == null && featureLayer == null)
-                return reportHeaderInfo;
-
-            reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri;
-
-            int pos;
-            if (reportHeaderInfo.FullPath.Contains(@"/rest/"))
-            {
-                //Path is to a specific layer.  https://<webadaptorname>/server/rest/services/Naperville/NapervilleUN/FeatureServer/6
-                //Need to strip off all characters after FeatureServer
-                string searchstring = "FeatureServer";
-                pos = reportHeaderInfo.FullPath.IndexOf(searchstring);
-                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + searchstring.Length);
-                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.FeatureService;
-            }
-            else if (reportHeaderInfo.FullPath.Contains(".gdb"))
-            {
-                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.FileGDB;
-                pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".gdb");
-                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 4);
-            }
-            else if (reportHeaderInfo.FullPath.Contains(".sde"))
-            {
-                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.EnterpriseGDB;
-                pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".sde");
-                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 4);
-            }
-            else if (reportHeaderInfo.FullPath.Contains(".geodatabase"))
-            {
-                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.MobileGDB;
-                pos = featureLayer.GetPath().AbsoluteUri.IndexOf(".geodatabase");
-                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri.Substring(0, pos + 12);
-            }
-            else // perhaps a shapefile
-            {  
-                reportHeaderInfo.SourceType = DatastoreTypeDescriptions.Folder;
-                reportHeaderInfo.FullPath = featureLayer.GetPath().AbsoluteUri;
-            }
-
-            // Only applies if Utility Network is detected
-            if (utilityNetwork != null)
-            {
-                reportHeaderInfo.UtilityNetworkName = utilityNetwork.GetName();
-                reportHeaderInfo.UtiltyNetworkSchemaVersion = utilityNetwork.GetDefinition().GetSchemaVersion();
-            }
-
-            return reportHeaderInfo;
-        }
-
         public static string DetermineTimeDifference(DateTime startTime, DateTime endTime)
         {
             TimeSpan traceTime = endTime.Subtract(startTime);
@@ -123,11 +70,6 @@ namespace UtilityNetworkPropertiesExtractor
         public static string EncloseStringInDoubleQuotes(string value)
         {
             return "\"" + value + "\"";
-        }
-
-        public static UtilityNetworkLayer FindTheUtilityNetworkLayer()
-        {
-            return MapView.Active.Map.GetLayersAsFlattenedList().OfType<UtilityNetworkLayer>().FirstOrDefault();
         }
 
         public static string GetCodedValueDomainValue(CodedValueDomain cvd, string code)
@@ -251,27 +193,8 @@ namespace UtilityNetworkPropertiesExtractor
             return null;
         }
 
-        public static string GetURLOfUtilityNetworkLayer(UtilityNetworkLayer unLayer)
+        public static string AppendTokenToUrl(string url, string token)
         {
-            string url = string.Empty;
-            CIMDataConnection dataConn = unLayer.GetDataConnection();
-            if (dataConn is CIMStandardDataConnection stDataConn)
-            {
-                //the data connection value could look like either of these
-                //<WorkspaceConnectionString> URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer </WorkspaceConnectionString>
-                //<WorkspaceConnectionString> URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;... </WorkspaceConnectionString>
-
-                url = stDataConn.WorkspaceConnectionString.Split('=')[1];
-                int pos = url.IndexOf(";");
-                if (pos > 0)  // if the URL contains VERSION details, strip that off.
-                    url = url.Substring(0, pos);
-            }
-            return url;
-        }
-
-        public static string GetURLOfUtilityNetworkLayer(UtilityNetworkLayer unLayer, string token)
-        {
-            string url = GetURLOfUtilityNetworkLayer(unLayer);
             return $"{url}?f=json&token={token}";
         }
 
@@ -353,14 +276,41 @@ namespace UtilityNetworkPropertiesExtractor
             return response;
         }
 
-        public static void WriteHeaderInfo(StreamWriter sw, ReportHeaderInfo reportHeaderInfo, UtilityNetworkDefinition utilityNetworkDefinition, string reportTitle)
+        public static string ConstructCsvFileName(string reportTitle)
+        {
+            return ConstructFileName(reportTitle, string.Empty, ".csv");
+        }
+
+        public static string ConstructCsvFileName(string reportTitle, string dataSourceName)
+        {
+            return ConstructFileName(reportTitle, dataSourceName, ".csv");
+        }
+
+        public static string ConstructTextFileName(string reportTitle, string dataSourceName)
+        {
+            return ConstructFileName(reportTitle, dataSourceName, ".txt");
+        }
+
+        private static string ConstructFileName(string reportTitle, string dataSourceName, string extension)
+        {
+            string fileName;
+            string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+            if (string.IsNullOrEmpty(dataSourceName))
+                fileName = $"{dateFormatted}_{GetActiveMapName()}_{reportTitle}.{extension}";
+            else
+                fileName = $"{dateFormatted}_{GetActiveMapName()}_{reportTitle}_{dataSourceName}.{extension}";
+
+            string outputFile = Path.Combine(ExtractFilePath, fileName);
+            return outputFile;
+        }
+
+        public static void WriteHeaderInfoForMap(StreamWriter sw, string reportTitle)
         {
             sw.WriteLine(DateTime.Now + "," + reportTitle);
             sw.WriteLine();
-            sw.WriteLine(reportHeaderInfo.SourceType + "," + reportHeaderInfo.FullPath);
-            if (utilityNetworkDefinition != null)
-                WriteUnHeaderInfo(sw, utilityNetworkDefinition);
-            sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
+            sw.WriteLine("Project," + Project.Current.Path);
+            sw.WriteLine("Map," + GetActiveMapName());
             sw.WriteLine();
         }
 
@@ -371,34 +321,25 @@ namespace UtilityNetworkPropertiesExtractor
             sw.WriteLine(dataSourceInMap.WorkspaceFactory + "," + dataSourceInMap.URI);           
             IReadOnlyList<UtilityNetworkDefinition> utilityNetworkDefinitionList = dataSourceInMap.Geodatabase.GetDefinitions<UtilityNetworkDefinition>();
             if (utilityNetworkDefinitionList.Count > 0)
-                WriteUnHeaderInfo(sw, utilityNetworkDefinitionList.FirstOrDefault());
+                WriteUtilityNetworkInfo(sw, utilityNetworkDefinitionList.FirstOrDefault());
             sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
             sw.WriteLine();
         }
 
-        private static void WriteUnHeaderInfo(StreamWriter sw, UtilityNetworkDefinition utilityNetworkDefinition)
+        public static void WriteHeaderInfoForUtilityNetwork(StreamWriter sw, UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap, string reportTitle)
+        {
+            sw.WriteLine(DateTime.Now + "," + reportTitle);
+            sw.WriteLine();
+            sw.WriteLine(utilityNetworkDataSourceInMap.WorkspaceFactory + "," + utilityNetworkDataSourceInMap.URI);
+            WriteUtilityNetworkInfo(sw, utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition());
+            sw.WriteLine("ArcGIS Pro Version," + GetProVersion());
+            sw.WriteLine();
+        }
+
+        private static void WriteUtilityNetworkInfo(StreamWriter sw, UtilityNetworkDefinition utilityNetworkDefinition)
         {
             sw.WriteLine("Utility Network Name," + utilityNetworkDefinition.GetName());
             sw.WriteLine("Utility Network Release," + utilityNetworkDefinition.GetSchemaVersion());
-        }
-
-        public static class DatastoreTypeDescriptions
-        {
-            public const string FeatureService = "FeatureService";
-            public const string FileGDB = "File Geodatabase";
-            public const string EnterpriseGDB = "Enterprise Geodatabase";
-            public const string MobileGDB = "Mobile Geodatabase";
-            public const string Folder = "Folder";
-        }
-
-        public class ReportHeaderInfo
-        {
-            public string FullPath { get; set; }
-            public string SourceType { get; set; }
-            public string ProProjectName { get; set; }
-            public string MapName { get; set; }
-            public string UtilityNetworkName { get; set; }
-            public string UtiltyNetworkSchemaVersion { get; set; }
         }
     }
 }

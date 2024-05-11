@@ -27,6 +27,7 @@ namespace UtilityNetworkPropertiesExtractor
                 progDlg.Show();
 
                 DateTime startTime = DateTime.Now;
+                Common.CreateOutputDirectory();
 
                 await UNFeatureServiceInfoButton.ExtractUNFeatureServiceInfo(false);
                 await AssetGroupsButton.ExtractAssetGroupsAsync(false);

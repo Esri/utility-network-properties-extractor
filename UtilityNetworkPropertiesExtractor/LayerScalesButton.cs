@@ -11,7 +11,6 @@
    limitations under the License.
 */
 using ArcGIS.Core.CIM;
-using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -27,8 +26,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class LayerScalesButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -54,19 +51,11 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerScales.csv", dateFormatted, Common.GetActiveMapName());
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+                string outputFile = Common.ConstructCsvFileName("LayerScales");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    sw.WriteLine(DateTime.Now + "," + "Layer Scales");
-                    sw.WriteLine();
-                    sw.WriteLine("Project," + Project.Current.Path);
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
+                    Common.WriteHeaderInfoForMap(sw, "Layer Scales");
                     sw.WriteLine("Coordinate System," + MapView.Active.Map.SpatialReference.Name);
                     sw.WriteLine("Map Units," + MapView.Active.Map.SpatialReference.Unit);
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());

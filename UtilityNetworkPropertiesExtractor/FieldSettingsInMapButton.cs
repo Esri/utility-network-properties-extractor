@@ -26,8 +26,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class FieldSettingsInMapButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -52,30 +50,15 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+                string outputFile = Common.ConstructCsvFileName("FieldSettingsInMap");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = null;
-                    if (utilityNetwork != null)
-                        utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
+                    Common.WriteHeaderInfoForMap(sw, "Field Settings in Map");
                     
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
 
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
                     sw.WriteLine("");

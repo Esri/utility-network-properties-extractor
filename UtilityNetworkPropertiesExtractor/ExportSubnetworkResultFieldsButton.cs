@@ -10,17 +10,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MessageBox = System.Windows.MessageBox;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -33,21 +33,23 @@ namespace UtilityNetworkPropertiesExtractor
     // Note: Export Subnetwork is not supported in client-server mode.  So this button will raise an error when exectued against a map using database connections.
     internal class ExportSubnetworkResultFieldsButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-        
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Asset Groups to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await BuildResultFieldsAsync();
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "TXT file has been generated");
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Build Export Subnetwork Result Fields");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -55,81 +57,71 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                     return;
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.EnterpriseGDB)
-                {                   
-                    MessageBox.Show("Use a map with Utility Network layers from FeatureServices to generate the 'result_fields' value needed by the Export Subnetwork GP Tool", "Build Export Subnetwork Result Fields", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Stop);
-                    return;
-                }
 
                 string resultFields = string.Empty;
-                using (Geodatabase geodatabase = featureLayerInUn.GetTable().GetDatastore() as Geodatabase)
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_ExportSubnetworkResultFields.txt", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();
-                        IReadOnlyList<TableDefinition> tableDefinitionList = geodatabase.GetDefinitions<TableDefinition>();
-
-                        //Get all Network Sources
-                        UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                        IOrderedEnumerable<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources().OrderBy(x => x.ID);
-                        foreach (NetworkSource networkSource in networkSourceList)
+                        string outputFile = Common.ConstructTextFileName("ExportSubnetworkResultFields", utilityNetworkDataSourceInMap.NameForCSV);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            // don't include these UN classes when builidng the ResultFields
-                            if (networkSource.UsageType == SourceUsageType.SubnetLine || networkSource.UsageType == SourceUsageType.Association || networkSource.UsageType == SourceUsageType.SystemJunction)
-                                continue;
+                            IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();
+                            IReadOnlyList<TableDefinition> tableDefinitionList = geodatabase.GetDefinitions<TableDefinition>();
 
-                            // Utility Network FeatureClasses's UsageType values are between 0 and 7
-                            if ((int)networkSource.UsageType <= 7)
+                            //Get all Network Sources
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            IOrderedEnumerable<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources().OrderBy(x => x.ID);
+                            foreach (NetworkSource networkSource in networkSourceList)
                             {
-                                //search for featureclass
-                                foreach (FeatureClassDefinition fcDefinition in fcDefinitionList)
+                                // don't include these UN classes when builidng the ResultFields
+                                if (networkSource.UsageType == SourceUsageType.SubnetLine || networkSource.UsageType == SourceUsageType.Association || networkSource.UsageType == SourceUsageType.SystemJunction)
+                                    continue;
+
+                                // Utility Network FeatureClasses's UsageType values are between 0 and 7
+                                if ((int)networkSource.UsageType <= 7)
                                 {
-                                    string fcName = fcDefinition.GetName();
-
-                                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
-                                        fcName = ReformatClassNameFromService(fcName);
-
-                                    if (fcName == networkSource.Name)
+                                    //search for featureclass
+                                    foreach (FeatureClassDefinition fcDefinition in fcDefinitionList)
                                     {
-                                        IReadOnlyList<Field> fieldsList = fcDefinition.GetFields();
-                                        BuildResultsString(fcName, fieldsList, ref resultFields);
-                                        break;
+                                        string fcName = fcDefinition.GetName();
+
+                                        if (utilityNetworkDataSourceInMap.WorkspaceFactory == WorkspaceFactory.FeatureService.ToString())
+                                            fcName = ReformatClassNameFromService(fcName);
+
+                                        if (fcName == networkSource.Name)
+                                        {
+                                            IReadOnlyList<Field> fieldsList = fcDefinition.GetFields();
+                                            BuildResultsString(fcName, fieldsList, ref resultFields);
+                                            break;
+                                        }
+                                    }
+                                }
+                                else // Utility Network Tables
+                                {
+                                    foreach (TableDefinition tableDefinition in tableDefinitionList)
+                                    {
+                                        string tableName = tableDefinition.GetName();
+
+                                        if (utilityNetworkDataSourceInMap.WorkspaceFactory == WorkspaceFactory.FeatureService.ToString())
+                                            tableName = ReformatClassNameFromService(tableName);
+
+                                        if (tableName == networkSource.Name)
+                                        {
+                                            IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
+                                            BuildResultsString(tableName, fieldsList, ref resultFields);
+                                            break;
+                                        }
                                     }
                                 }
                             }
-                            else // Utility Network Tables
-                            {
-                                foreach (TableDefinition tableDefinition in tableDefinitionList)
-                                {
-                                    string tableName = tableDefinition.GetName();
 
-                                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
-                                        tableName = ReformatClassNameFromService(tableName);
-
-                                    if (tableName == networkSource.Name)
-                                    {
-                                        IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
-                                        BuildResultsString(tableName, fieldsList, ref resultFields);
-                                        break;
-                                    }
-                                }
-                            }
+                            sw.WriteLine(Common.EncloseStringInDoubleQuotes(resultFields));
+                            sw.Flush();
                         }
-
-                        sw.WriteLine(Common.EncloseStringInDoubleQuotes(resultFields));
-                        sw.Flush();
-                        _fileGenerated = true;
                     }
                 }
             });

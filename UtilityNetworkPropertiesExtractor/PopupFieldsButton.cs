@@ -54,30 +54,15 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_PopupFields.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+                string outputFile = Common.ConstructCsvFileName("PopupFields");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = null;
-                    if (utilityNetwork != null)
-                        utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Popup Fields");
+                    Common.WriteHeaderInfoForMap(sw, "Popup Fields");
 
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
 
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
                     sw.WriteLine("");

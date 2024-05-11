@@ -1,12 +1,21 @@
-﻿using ArcGIS.Core.CIM;
+﻿/*
+   Copyright 2021 Esri
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS, 
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Mapping;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -17,18 +26,14 @@ namespace UtilityNetworkPropertiesExtractor
             List<DataSourceInMap> dataSourceInMapsList = new List<DataSourceInMap>();
             List<string> serviceNameList = new List<string>();
 
-            var mesg = string.Empty;
-
             List<FeatureLayer> featureLayers = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().ToList();
             foreach (FeatureLayer featureLayer in featureLayers)
             {
-                DataSourceInMap dataSourceInMap = GetDataSourcesFromMapMember(featureLayer);
+                DataSourceInMap dataSourceInMap = GetDataSourceFromMapMember(featureLayer);
                 if (!serviceNameList.Contains(dataSourceInMap.URI))
                 {
                     serviceNameList.Add(dataSourceInMap.URI);
                     dataSourceInMap.Geodatabase = featureLayer?.GetTable().GetDatastore() as Geodatabase;
-                    //mesg += dataSourceInMap.NameForCSV + "\n\n";
-
                     dataSourceInMapsList.Add(dataSourceInMap);
                 }
             }
@@ -36,12 +41,11 @@ namespace UtilityNetworkPropertiesExtractor
             List<StandaloneTable> standaloneTables = MapView.Active.Map.GetStandaloneTablesAsFlattenedList().ToList();
             foreach (StandaloneTable tb in standaloneTables)
             {
-                DataSourceInMap dataSourceInMap = GetDataSourcesFromMapMember(tb);
+                DataSourceInMap dataSourceInMap = GetDataSourceFromMapMember(tb);
                 if (!serviceNameList.Contains(dataSourceInMap.URI))
                 {
                     serviceNameList.Add(dataSourceInMap.URI);
                     dataSourceInMap.Geodatabase = tb?.GetTable().GetDatastore() as Geodatabase;
-                    //mesg += dataSourceInMap.NameForCSV + "\n\n";
                     dataSourceInMapsList.Add(dataSourceInMap);
                 }
             }
@@ -49,7 +53,38 @@ namespace UtilityNetworkPropertiesExtractor
             return dataSourceInMapsList;
         }
 
-        private static DataSourceInMap GetDataSourcesFromMapMember(MapMember mapMember)
+        public static List<UtilityNetworkDataSourceInMap> GetUtilityNetworkDataSourcesInMap()
+        {
+            List<UtilityNetworkDataSourceInMap> utilityNetworksInMapsList = new List<UtilityNetworkDataSourceInMap>();
+
+            List<UtilityNetworkLayer> utillityNetworkLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<UtilityNetworkLayer>().ToList();
+            foreach (UtilityNetworkLayer utilityNetworkLayer in utillityNetworkLayerList)
+            {
+                DataSourceInMap dataSourceInMap = GetDataSourceFromMapMember(utilityNetworkLayer);
+                if (dataSourceInMap != null)
+                {
+                    CompositeLayer compositeLayer = utilityNetworkLayer;
+                    FeatureLayer featureLayer = compositeLayer.Layers.First() as FeatureLayer;
+                    UtilityNetwork un = utilityNetworkLayer.GetUtilityNetwork();
+
+                    UtilityNetworkDataSourceInMap utilityNetworkInMap = new UtilityNetworkDataSourceInMap()
+                    {
+                        UtilityNetwork = un,
+                        UtilityNetworkLayer = utilityNetworkLayer,
+                        SchemaVersion = un.GetDefinition().GetSchemaVersion(),
+                        WorkspaceFactory = dataSourceInMap.WorkspaceFactory,
+                        URI = dataSourceInMap.URI,
+                        Geodatabase = featureLayer?.GetTable().GetDatastore() as Geodatabase,
+                        NameForCSV = dataSourceInMap.NameForCSV
+                    };
+
+                    utilityNetworksInMapsList.Add(utilityNetworkInMap);
+                }
+            }
+            return utilityNetworksInMapsList;
+        }
+
+        private static DataSourceInMap GetDataSourceFromMapMember(MapMember mapMember)
         {
             DataSourceInMap dataSourceInMap = new DataSourceInMap();
             Dictionary<string, string> connStringDict = new Dictionary<string, string>();
@@ -119,6 +154,7 @@ namespace UtilityNetworkPropertiesExtractor
             int pos = dataSourceInMap.URI.LastIndexOf("\\");
             dataSourceInMap.NameForCSV = dataSourceInMap.URI.Substring(pos + 1);
         }
+        
         private static void GetSqlLiteInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
         {
             //< WorkspaceConnectionString >AUTHENTICATION_MODE=OSA;DATABASE=main;DB_CONNECTION_PROPERTIES=C:\EsriData\Mobile GDB\Electric UN.geodatabase;INSTANCE = sde:sqlite: C:\EsriData\Mobile GDB\Electric UN.geodatabase; IS_GEODATABASE = true; IS_NOSERVER = 0; SERVER = C:</ WorkspaceConnectionString >
@@ -133,17 +169,22 @@ namespace UtilityNetworkPropertiesExtractor
         private static void GetFeatureServiceInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
         {
             //<WorkspaceConnectionString> URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;... </WorkspaceConnectionString>
-            string serviceName = string.Empty;
-
+            
             string url = connStringDict["URL"];
-            int pos = url.IndexOf("/FeatureServer");
-            if (pos > 0)
-                url = url.Substring(0, pos);  // Removes /Featureserver and everything to the right of it
+            int pos = url.IndexOf(";");
+            if (pos > 0)  // if the URL contains VERSION details, strip that off.
+                url = url.Substring(0, pos);
 
             //Service Name
-            int lastSlashPos = url.LastIndexOf("/");
+            string serviceName = string.Empty;
+
+            int fsPos = url.LastIndexOf("/FeatureServer");
+            string tempURL = url.Substring(0, fsPos);
+
+
+            int lastSlashPos = tempURL.LastIndexOf("/");
             if (lastSlashPos > 0)
-                serviceName = url.Substring(lastSlashPos + 1);
+                serviceName = tempURL.Substring(lastSlashPos + 1);
 
             dataSourceInMap.URI = url;
             dataSourceInMap.NameForCSV = serviceName;
@@ -155,9 +196,10 @@ namespace UtilityNetworkPropertiesExtractor
             dataSourceInMap.URI = connStringDict["DATABASE"];
 
             //only want fGDB name with no extension
-            string noExtension = dataSourceInMap.URI.Split(".")[0];
-            int pos = noExtension.LastIndexOf("\\");
-            dataSourceInMap.NameForCSV = noExtension.Substring(pos + 1);
+            int extensionPos = dataSourceInMap.URI.LastIndexOf(".");
+            string tempURI = dataSourceInMap.URI.Substring(0, extensionPos);
+            int pos = tempURI.LastIndexOf("\\");
+            dataSourceInMap.NameForCSV = tempURI.Substring(pos + 1);
         }
 
         private static void GetSdeInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
@@ -178,5 +220,11 @@ namespace UtilityNetworkPropertiesExtractor
         public string URI { get; set; }
         public string NameForCSV { get; set; }
         public Geodatabase Geodatabase { get; set; }
+    }
+    public class UtilityNetworkDataSourceInMap : DataSourceInMap
+    {
+        public UtilityNetwork UtilityNetwork { get; set; }
+        public UtilityNetworkLayer UtilityNetworkLayer { get; set; }
+        public string SchemaVersion { get; set; }
     }
 }

@@ -15,7 +15,6 @@ using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,100 +27,100 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class DomainNetworksButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Domain Networks to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractDomainNetworksAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Domain Networks");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static Task ExtractDomainNetworksAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Domain Networks", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Domain Groups", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-
-                Common.CreateOutputDirectory();
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_DomainNetworks.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    string output = string.Empty;
-
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Domain Networks");
-
-                    //Network Topology section
-                    CSVLayoutNetworkTopology emptyNetworkRec = new CSVLayoutNetworkTopology();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyNetworkRec);
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = new List<CSVLayoutNetworkTopology>();
-                    NetworkTopologyInfo(utilityNetwork, ref csvLayoutNetworkTopoList);
-                    foreach (CSVLayoutNetworkTopology row in csvLayoutNetworkTopoList)
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
+                        string outputFile = Common.ConstructCsvFileName("DomainNetworks", utilityNetworkDataSourceInMap.NameForCSV);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
+                        {
+                            string output = string.Empty;
+
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Domain Networks");
+
+                            //Network Topology section
+                            CSVLayoutNetworkTopology emptyNetworkRec = new CSVLayoutNetworkTopology();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyNetworkRec);
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            List<CSVLayoutNetworkTopology> csvLayoutNetworkTopoList = new List<CSVLayoutNetworkTopology>();
+                            NetworkTopologyInfo(utilityNetworkDataSourceInMap.UtilityNetwork, ref csvLayoutNetworkTopoList);
+                            foreach (CSVLayoutNetworkTopology row in csvLayoutNetworkTopoList)
+                            {
+                                output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            //Domain Networks section
+                            CSVLayoutDomainNetworks emptyRec = new CSVLayoutDomainNetworks();
+                            properties = Common.GetPropertiesOfClass(emptyRec);
+                            columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
+                            IReadOnlyList<DomainNetwork> domainNetworksList = utilityNetworkDefinition.GetDomainNetworks();
+                            DomainNetworks(utilityNetworkDataSourceInMap, domainNetworksList, ref csvLayoutDomainNetworksList);
+                            foreach (CSVLayoutDomainNetworks row in csvLayoutDomainNetworksList)
+                            {
+                                output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            //Tier Section
+                            CSVLayoutTierInfo emptyTierRec = new CSVLayoutTierInfo();
+                            properties = Common.GetPropertiesOfClass(emptyTierRec);
+                            columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
+                            TierInfo(utilityNetworkDataSourceInMap, domainNetworksList, ref csvLayoutTierInfo);
+                            foreach (CSVLayoutTierInfo row in csvLayoutTierInfo)
+                            {
+                                output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
+
+                        }
                     }
-
-                    //Domain Networks section
-                    CSVLayoutDomainNetworks emptyRec = new CSVLayoutDomainNetworks();
-                    properties = Common.GetPropertiesOfClass(emptyRec);
-                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    List<CSVLayoutDomainNetworks> csvLayoutDomainNetworksList = new List<CSVLayoutDomainNetworks>();
-                    IReadOnlyList<DomainNetwork> domainNetworksList = utilityNetworkDefinition.GetDomainNetworks();
-                    DomainNetworks(reportHeaderInfo, domainNetworksList, ref csvLayoutDomainNetworksList);
-                    foreach (CSVLayoutDomainNetworks row in csvLayoutDomainNetworksList)
-                    {
-                        output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    //Tier Section
-                    CSVLayoutTierInfo emptyTierRec = new CSVLayoutTierInfo();
-                    properties = Common.GetPropertiesOfClass(emptyTierRec);
-                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    List<CSVLayoutTierInfo> csvLayoutTierInfo = new List<CSVLayoutTierInfo>();
-                    TierInfo(reportHeaderInfo, domainNetworksList, ref csvLayoutTierInfo);
-                    foreach (CSVLayoutTierInfo row in csvLayoutTierInfo)
-                    {
-                        output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-
-                    _fileGenerated = true;
                 }
             });
         }
@@ -162,7 +161,7 @@ namespace UtilityNetworkPropertiesExtractor
             return table.GetCount();
         }
 
-        private static void DomainNetworks(Common.ReportHeaderInfo reportHeaderInfo, IReadOnlyList<DomainNetwork> domainNetworksList, ref List<CSVLayoutDomainNetworks> myDomainNetworksCSVList)
+        private static void DomainNetworks(UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap, IReadOnlyList<DomainNetwork> domainNetworksList, ref List<CSVLayoutDomainNetworks> myDomainNetworksCSVList)
         {
             string tierGroupName = string.Empty;
             string updPolicyForContainers = string.Empty;
@@ -184,7 +183,7 @@ namespace UtilityNetworkPropertiesExtractor
                 foreach (Tier tier in domainNetwork.Tiers)
                 {
                     //These properties didn't exist before UN version 4
-                    if (Convert.ToInt32(reportHeaderInfo.UtiltyNetworkSchemaVersion) >= 4)
+                    if (Convert.ToInt32(utilityNetworkDataSourceInMap.SchemaVersion) >= 4)
                     {
                         tierGroupName = tier.TierGroup?.Name;
                         updPolicyForContainers = tier.HasUpdateSubnetworkPolicy(UpdateSubnetworkPolicy.Containers).ToString();
@@ -213,7 +212,7 @@ namespace UtilityNetworkPropertiesExtractor
             myDomainNetworksCSVList.Add(rec);
         }
 
-        private static void TierInfo(Common.ReportHeaderInfo reportHeaderInfo, IReadOnlyList<DomainNetwork> domainNetworksList, ref List<CSVLayoutTierInfo> tierInfoCSVList)
+        private static void TierInfo(UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap, IReadOnlyList<DomainNetwork> domainNetworksList, ref List<CSVLayoutTierInfo> tierInfoCSVList)
         {
 
             foreach (DomainNetwork domainNetwork in domainNetworksList)
@@ -424,7 +423,7 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                     tierInfoCSVList.Add(emptyTierRec);
 
-                    if (Convert.ToInt32(reportHeaderInfo.UtiltyNetworkSchemaVersion) >= 4)
+                    if (Convert.ToInt32(utilityNetworkDataSourceInMap.SchemaVersion) >= 4)
                     {
                         //Junction Objects
                         IReadOnlyList<AssetType> junctionObjectList = tier.ValidJunctionObjects;
