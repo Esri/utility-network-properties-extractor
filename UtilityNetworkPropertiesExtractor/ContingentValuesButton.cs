@@ -62,22 +62,30 @@ namespace UtilityNetworkPropertiesExtractor
                             IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();
                             foreach (FeatureClassDefinition fcDefinition in fcDefinitionList)
                             {
-                                //Determine the feature dataset name (if applicable) for the featureclass
-                                using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(fcDefinition.GetName()))
+                                try
                                 {
-                                    FeatureDataset featureDataset = featureClass.GetFeatureDataset();
-                                    if (featureDataset != null)
+                                    //Determine the feature dataset name (if applicable) for the featureclass
+                                    using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(fcDefinition.GetName()))
                                     {
-                                        //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
-                                        pathToTable = $"{geodatabase.GetPath().LocalPath}/{featureDataset.GetName()}/{fcDefinition.GetName()}";
-                                    }
-                                    else
-                                        pathToTable = $"{geodatabase.GetPath().LocalPath}/{fcDefinition.GetName()}";
+                                        FeatureDataset featureDataset = featureClass.GetFeatureDataset();
+                                        if (featureDataset != null)
+                                        {
+                                            //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
+                                            pathToTable = $"{geodatabase.GetPath().LocalPath}/{featureDataset.GetName()}/{fcDefinition.GetName()}";
+                                        }
+                                        else
+                                            pathToTable = $"{geodatabase.GetPath().LocalPath}/{fcDefinition.GetName()}";
 
-                                    //Call GP Tool to Export Contingent Values
-                                    string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
-                                    string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
-                                    await CallGPTool(dataSourceInMap, pathToTable, fcDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                        //Call GP Tool to Export Contingent Values
+                                        string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                        string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                        await CallGPTool(dataSourceInMap, pathToTable, fcDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                    }
+                                }
+
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, $"Extract Contingent Values - {fcDefinition.GetName()} ");
                                 }
                             }
 
@@ -85,15 +93,22 @@ namespace UtilityNetworkPropertiesExtractor
                             IReadOnlyList<TableDefinition> tableDefinitionList = geodatabase.GetDefinitions<TableDefinition>();
                             foreach (TableDefinition tableDefinition in tableDefinitionList)
                             {
-                                using (Table table = geodatabase.OpenDataset<Table>(tableDefinition.GetName()))
+                                try
                                 {
-                                    //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
-                                    pathToTable = $"{geodatabase.GetPath().LocalPath}/{tableDefinition.GetName()}";
+                                    using (Table table = geodatabase.OpenDataset<Table>(tableDefinition.GetName()))
+                                    {
+                                        //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
+                                        pathToTable = $"{geodatabase.GetPath().LocalPath}/{tableDefinition.GetName()}";
 
-                                    //Call GP Tool to Export Attribute Rules
-                                    string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
-                                    string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
-                                    await CallGPTool(dataSourceInMap, pathToTable, tableDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                        //Call GP Tool to Export Attribute Rules
+                                        string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                        string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                        await CallGPTool(dataSourceInMap, pathToTable, tableDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(ex.Message, $"Extract Contingent Values - {tableDefinition.GetName()} ");
                                 }
                             }
                         }
