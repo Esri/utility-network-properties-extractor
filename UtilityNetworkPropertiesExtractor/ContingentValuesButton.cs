@@ -10,12 +10,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +34,6 @@ namespace UtilityNetworkPropertiesExtractor
             try
             {
                 progDlg.Show();
-
                 await ExtractContingentValuesAsync();
             }
             catch (Exception ex)
@@ -52,108 +50,89 @@ namespace UtilityNetworkPropertiesExtractor
         {
             await QueuedTask.Run(async () =>
             {
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string attrRuleFileName = string.Empty;
-
-                Dictionary<string, Table> tablesDict = new Dictionary<string, Table>();
-
-                //Populate Dictionary of distinct table names
-                IEnumerable<FeatureLayer> featureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>();
-                foreach (FeatureLayer featureLayer in featureLayerList)
+                List<DataSourceInMap> dataSourceInMapList = DataSourcesInMapHelper.GetDataSourcesInMap();
+                foreach (DataSourceInMap dataSourceInMap in dataSourceInMapList)
                 {
-                    Table table = Common.GetTableFromFeatureLayer(featureLayer);
-                    string tableName = table.GetName();
-
-                    if (!tablesDict.ContainsKey(tableName))
-                        tablesDict.Add(tableName, table);
-                }
-
-                //Standalone Tables
-                IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
-                foreach (StandaloneTable standaloneTable in standaloneTableList)
-                {
-                    Table table = standaloneTable.GetTable();
-                    string tableName = table.GetName();
-
-                    if (!tablesDict.ContainsKey(tableName))
-                        tablesDict.Add(tableName, table);
-                }
-
-                //Execute GP for each table in the dictionary
-                foreach (KeyValuePair<string, Table> pair in tablesDict)
-                {
-                    string fcName = pair.Key;
-                    int pos = pair.Key.LastIndexOf(".");
-
-                    if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
-                        fcName = pair.Key.Substring(pos + 1);
-
-                    string cvGroupFileName = string.Format("{0}_{1}_ContingentValuesGroups_{2}.csv", dateFormatted, Common.GetActiveMapName(), fcName);
-                    string cvGroupOutputFile = Path.Combine(Common.ExtractFilePath, cvGroupFileName);
-
-                    string cvFileName = string.Format("{0}_{1}_ContingentValues_{2}.csv", dateFormatted, Common.GetActiveMapName(), fcName);
-                    string cvOutputFile = Path.Combine(Common.ExtractFilePath, cvFileName);
-
-                    string pathToTable = pair.Key;
-                    IReadOnlyList<string> cvArgs;
-
-                    using (Datastore datastore = pair.Value.GetDatastore())
+                    if (dataSourceInMap.WorkspaceFactory != WorkspaceFactory.FeatureService.ToString() || dataSourceInMap.WorkspaceFactory != WorkspaceFactory.Shapefile.ToString())
                     {
-                        if (datastore is UnknownDatastore)
-                            continue;
-
-                        Uri uri = datastore.GetPath();
-                        if (uri.AbsoluteUri.ToLower().Contains("https")) // can't extract Contingent Values when layer's source is a FeatuerService
-                            continue;
-
-                        var datastorePath = uri.LocalPath;
-
-                        FeatureClass featureclass = pair.Value as FeatureClass;
-                        FeatureDataset featureDataset = null;
-
-                        if (featureclass != null)
-                            featureDataset = featureclass.GetFeatureDataset();
-
-                        if (featureDataset == null)
+                        using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            //<path to connfile>.sde/meh.unadmin.featureclass
-                            pathToTable = string.Format("{0}\\{1}", datastorePath, pair.Value.GetName());
-                        }
-                        else
-                        {
-                            //<path to connfile>.sde/meh.unadmin.Electric\meh.unadmin.ElectricDevice
-                            string featureDatasetName = featureclass.GetFeatureDataset().GetName();
-                            pathToTable = string.Format("{0}\\{1}\\{2}", datastorePath, featureDatasetName, pair.Value.GetName());
-                        }
+                            // FeatureClasses
+                            string pathToTable;
+                            IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();
+                            foreach (FeatureClassDefinition fcDefinition in fcDefinitionList)
+                            {
+                                //Determine the feature dataset name (if applicable) for the featureclass
+                                using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(fcDefinition.GetName()))
+                                {
+                                    FeatureDataset featureDataset = featureClass.GetFeatureDataset();
+                                    if (featureDataset != null)
+                                    {
+                                        //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
+                                        pathToTable = $"{geodatabase.GetPath().LocalPath}/{featureDataset.GetName()}/{fcDefinition.GetName()}";
+                                    }
+                                    else
+                                        pathToTable = $"{geodatabase.GetPath().LocalPath}/{fcDefinition.GetName()}";
 
-                        ////arcpy.management.ExportContingentValues("DHC Line", r"C:\temp\ProSdk_CSV\DHC_Line_CV_groups.CSV", r"C:\temp\ProSdk_CSV\DHC_Line_CV.CSV")
-                        pathToTable = pathToTable.Replace("\\", "/");
-                        cvArgs = Geoprocessing.MakeValueArray(pathToTable, cvGroupOutputFile, cvOutputFile);
-                        var result = await Geoprocessing.ExecuteToolAsync("management.ExportContingentValues", cvArgs);
+                                    //Call GP Tool to Export Contingent Values
+                                    string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                    string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{fcDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                    await CallGPTool(dataSourceInMap, pathToTable, fcDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                }
+                            }
+
+                            // Tables
+                            IReadOnlyList<TableDefinition> tableDefinitionList = geodatabase.GetDefinitions<TableDefinition>();
+                            foreach (TableDefinition tableDefinition in tableDefinitionList)
+                            {
+                                using (Table table = geodatabase.OpenDataset<Table>(tableDefinition.GetName()))
+                                {
+                                    //Use the absolute path for local files results in escape characters for things like spaces, which the GP tool can't handle for input/output of local files.
+                                    pathToTable = $"{geodatabase.GetPath().LocalPath}/{tableDefinition.GetName()}";
+
+                                    //Call GP Tool to Export Attribute Rules
+                                    string cvGroupOutputFile = Common.CreateCsvFile($"ContingentValuesGroups_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                    string cvOutputFile = Common.CreateCsvFile($"ContingentValues_{tableDefinition.GetName()}", dataSourceInMap.NameForCSV);
+                                    await CallGPTool(dataSourceInMap, pathToTable, tableDefinition.GetName(), cvGroupOutputFile, cvOutputFile);
+                                }
+                            }
+                        }
                     }
+
+                    //Delete files were ARs weren't assigned to the object.
+                    DeleteEmptyFiles(dataSourceInMap);
                 }
-
-                //Delete files that only have 1 line (header) which means 0 Attribute Rules are assigned
-                DirectoryInfo directoryInfo = new DirectoryInfo(Common.ExtractFilePath);
-                List<FileInfo> blankFiles = directoryInfo.GetFiles().Where(f => f.Extension == ".csv" && f.Name.Contains("_ContingentValues")).ToList();
-                foreach (FileInfo bf in blankFiles)
-                {
-                    string[] lines = File.ReadAllLines(bf.FullName);
-                    int cnt = lines.Count();
-
-                    if (cnt == 1)
-                        bf.Delete();
-                }
-
-                //Delete the .xml files that are genereated by the GP tool
-                List<FileInfo> deleteableFiles = directoryInfo.GetFiles().Where(f => f.Extension == ".xml" && f.Name.Contains("_ContingentValues")).ToList();
-                foreach (FileInfo file in deleteableFiles)
-                    file.Delete();
-
-                FileInfo[] schemaIniFile = directoryInfo.GetFiles("schema.ini");
-                foreach (FileInfo schemaIni in schemaIniFile)
-                    schemaIni.Delete();
             });
+        }
+
+        private static async Task CallGPTool(DataSourceInMap dataSourceInMap, string pathToTable, string objectName, string cvGroupOutputFile, string cvOutputFile)
+        {
+            IReadOnlyList<string> cvArgs = Geoprocessing.MakeValueArray(pathToTable, cvGroupOutputFile, cvOutputFile);
+            await Geoprocessing.ExecuteToolAsync("management.ExportContingentValues", cvArgs);
+        }
+
+        private static void DeleteEmptyFiles(DataSourceInMap dataSourceInMap)
+        {
+            //Delete files that only have 1 line (header) which means 0 Contingent Valuess were assigned
+            DirectoryInfo directoryInfo = new DirectoryInfo(Path.Combine(Common.ExtractFilePath, dataSourceInMap.NameForCSV));
+            List<FileInfo> blankFiles = directoryInfo.GetFiles().Where(f => f.Extension == ".csv" && f.Name.Contains("_ContingentValues")).ToList();
+            foreach (FileInfo bf in blankFiles)
+            {
+                string[] lines = File.ReadAllLines(bf.FullName);
+                int cnt = lines.Count();
+
+                if (cnt == 1)
+                    bf.Delete();
+            }
+
+            //Delete the .xml files that are genereated by the GP tool
+            List<FileInfo> deleteableFiles = directoryInfo.GetFiles().Where(f => f.Extension == ".xml" && f.Name.Contains("_ContingentValues")).ToList();
+            foreach (FileInfo file in deleteableFiles)
+                file.Delete();
+
+            FileInfo[] schemaIniFile = directoryInfo.GetFiles("schema.ini");
+            foreach (FileInfo schemaIni in schemaIniFile)
+                schemaIni.Delete();
         }
     }
 }
