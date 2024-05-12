@@ -50,7 +50,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                string outputFile = Common.ConstructCsvFileName("FieldSettingsInMap");
+                string outputFile = Common.CreateCsvFileContainingMapName("FieldSettingsInMap");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information

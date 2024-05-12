@@ -70,7 +70,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        string outputFile = Common.ConstructCsvFileName("TraceConfig", utilityNetworkDataSourceInMap.NameForCSV);
+                        string outputFile = Common.CreateCsvFile("TraceConfig", utilityNetworkDataSourceInMap.NameForCSV);
                         using (StreamWriter sw = new StreamWriter(outputFile))
                         {
                             //Header information

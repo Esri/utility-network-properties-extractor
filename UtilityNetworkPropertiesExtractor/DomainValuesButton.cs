@@ -59,7 +59,7 @@ namespace UtilityNetworkPropertiesExtractor
                         {
                             int i = 0;
                             
-                            string outputFile = Common.ConstructCsvFileName("DomainValues", dataSourceInMap.NameForCSV);                       
+                            string outputFile = Common.CreateCsvFile("DomainValues", dataSourceInMap.NameForCSV);                       
                             using (StreamWriter sw = new StreamWriter(outputFile))
                             {
                                 //Header information

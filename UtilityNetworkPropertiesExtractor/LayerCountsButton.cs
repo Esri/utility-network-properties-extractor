@@ -54,7 +54,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             { 
-                string outputFile = Common.ConstructCsvFileName("LayerCounts");
+                string outputFile = Common.CreateCsvFileContainingMapName("LayerCounts");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information

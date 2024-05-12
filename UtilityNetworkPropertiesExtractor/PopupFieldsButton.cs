@@ -54,7 +54,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                string outputFile = Common.ConstructCsvFileName("PopupFields");
+                string outputFile = Common.CreateCsvFileContainingMapName("PopupFields");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information

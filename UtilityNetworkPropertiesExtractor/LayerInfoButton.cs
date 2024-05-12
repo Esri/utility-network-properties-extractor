@@ -62,7 +62,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList, ref labelLayoutList);
 
-                string layerInfoFile = Common.ConstructCsvFileName("LayerInfo");
+                string layerInfoFile = Common.CreateCsvFileContainingMapName("LayerInfo");
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
 
                 if (popupLayoutList.Count >= 1)

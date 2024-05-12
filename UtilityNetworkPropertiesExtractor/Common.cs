@@ -275,33 +275,49 @@ namespace UtilityNetworkPropertiesExtractor
             }
             return response;
         }
-
-        public static string ConstructCsvFileName(string reportTitle)
+                
+        public static string CreateCsvFileContainingMapName(string reportTitle)
         {
-            return ConstructFileName(reportTitle, string.Empty, ".csv");
+            return CreateFile(reportTitle, string.Empty, "csv", true);
         }
 
-        public static string ConstructCsvFileName(string reportTitle, string dataSourceName)
+        public static string CreateCsvFile(string reportTitle, string dataSourceName)
         {
-            return ConstructFileName(reportTitle, dataSourceName, ".csv");
+            return CreateFile(reportTitle, dataSourceName, "csv");
         }
 
-        public static string ConstructTextFileName(string reportTitle, string dataSourceName)
+        public static string CreateTextFile(string reportTitle, string dataSourceName)
         {
-            return ConstructFileName(reportTitle, dataSourceName, ".txt");
+            return CreateFile(reportTitle, dataSourceName, "txt");
         }
 
-        private static string ConstructFileName(string reportTitle, string dataSourceName, string extension)
+        private static string CreateFile(string reportTitle, string dataSourceName, string extension, bool mapCentric = false)
         {
+            string outputFile;
             string fileName;
             string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
-            if (string.IsNullOrEmpty(dataSourceName))
-                fileName = $"{dateFormatted}_{GetActiveMapName()}_{reportTitle}.{extension}";
-            else
-                fileName = $"{dateFormatted}_{GetActiveMapName()}_{reportTitle}_{dataSourceName}.{extension}";
+            if (string.IsNullOrEmpty(dataSourceName)) // datasource could be: FeatureService, fGDB, mGDB (Sqlite), SDE connection
+            {
+                if (mapCentric)
+                    fileName = $"{dateFormatted}_{GetActiveMapName()}_{reportTitle}.{extension}";
+                else
+                    fileName = $"{dateFormatted}_{reportTitle}.{extension}";
 
-            string outputFile = Path.Combine(ExtractFilePath, fileName);
+                outputFile = Path.Combine(ExtractFilePath, fileName);
+            }
+            else
+            {
+                //create new folder using the datasource name
+                string newFolder = Path.Combine(ExtractFilePath, dataSourceName);
+
+                if (!Directory.Exists(newFolder))
+                    Directory.CreateDirectory(newFolder);
+
+                fileName = $"{dateFormatted}_{dataSourceName}_{reportTitle}.{extension}";
+                outputFile = Path.Combine(newFolder, fileName);
+            }
+                                       
             return outputFile;
         }
 

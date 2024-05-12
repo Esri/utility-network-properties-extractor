@@ -48,7 +48,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             Common.CreateOutputDirectory();
 
-            string outputFile = Common.ConstructCsvFileName("ProjectItems");
+            string outputFile = Common.CreateCsvFileContainingMapName("ProjectItems");
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 sw.WriteLine(DateTime.Now + "," + "Project Items");
