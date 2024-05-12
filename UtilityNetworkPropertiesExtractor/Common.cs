@@ -276,22 +276,22 @@ namespace UtilityNetworkPropertiesExtractor
             return response;
         }
                 
-        public static string CreateCsvFileContainingMapName(string reportTitle)
+        public static string BuildCsvNameContainingMapName(string reportTitle)
         {
-            return CreateFile(reportTitle, string.Empty, "csv", true);
+            return BuildNameForFile(reportTitle, string.Empty, "csv", true);
         }
 
-        public static string CreateCsvFile(string reportTitle, string dataSourceName)
+        public static string BuildCsvName(string reportTitle, string dataSourceName)
         {
-            return CreateFile(reportTitle, dataSourceName, "csv");
+            return BuildNameForFile(reportTitle, dataSourceName, "csv");
         }
 
-        public static string CreateTextFile(string reportTitle, string dataSourceName)
+        public static string BuildTextFileName(string reportTitle, string dataSourceName)
         {
-            return CreateFile(reportTitle, dataSourceName, "txt");
+            return BuildNameForFile(reportTitle, dataSourceName, "txt");
         }
 
-        private static string CreateFile(string reportTitle, string dataSourceName, string extension, bool mapCentric = false)
+        private static string BuildNameForFile(string reportTitle, string dataSourceName, string extension, bool mapCentric = false)
         {
             string outputFile;
             string fileName;

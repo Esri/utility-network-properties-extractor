@@ -59,7 +59,7 @@ namespace UtilityNetworkPropertiesExtractor
                             if (! geodatabase.IsVersioningSupported())
                                 continue;  //move onto next geodatabase
 
-                            string outputFile = Common.CreateCsvFile("Versions", dataSourceInMap.NameForCSV);
+                            string outputFile = Common.BuildCsvName("Versions", dataSourceInMap.NameForCSV);
                             using (StreamWriter sw = new StreamWriter(outputFile))
                             {
                                 //Header information

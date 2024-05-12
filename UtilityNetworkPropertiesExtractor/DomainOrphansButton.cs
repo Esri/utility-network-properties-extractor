@@ -56,7 +56,7 @@ namespace UtilityNetworkPropertiesExtractor
                     {
                         using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            string outputFile = Common.CreateCsvFile("OrphanDomains", dataSourceInMap.NameForCSV);
+                            string outputFile = Common.BuildCsvName("OrphanDomains", dataSourceInMap.NameForCSV);
                             using (StreamWriter sw = new StreamWriter(outputFile))
                             {
                                 //Header information

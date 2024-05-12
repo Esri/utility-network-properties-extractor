@@ -57,7 +57,7 @@ namespace UtilityNetworkPropertiesExtractor
                     {
                         using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            string outputFile = Common.CreateCsvFile("RelationshipClasses", dataSourceInMap.NameForCSV);
+                            string outputFile = Common.BuildCsvName("RelationshipClasses", dataSourceInMap.NameForCSV);
                             using (StreamWriter sw = new StreamWriter(outputFile))
                             {
                                 //Header information

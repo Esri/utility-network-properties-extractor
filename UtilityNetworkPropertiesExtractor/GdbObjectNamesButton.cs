@@ -60,7 +60,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                     {
-                        string outputFile = Common.CreateCsvFile("GdbObjectNames", dataSourceInMap.NameForCSV);
+                        string outputFile = Common.BuildCsvName("GdbObjectNames", dataSourceInMap.NameForCSV);
                         using (StreamWriter sw = new StreamWriter(outputFile))
                         {
                             //Header information

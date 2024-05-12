@@ -66,7 +66,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        string outputFile = Common.CreateTextFile("ExportSubnetworkResultFields", utilityNetworkDataSourceInMap.NameForCSV);
+                        string outputFile = Common.BuildTextFileName("ExportSubnetworkResultFields", utilityNetworkDataSourceInMap.NameForCSV);
                         using (StreamWriter sw = new StreamWriter(outputFile))
                         {
                             IReadOnlyList<FeatureClassDefinition> fcDefinitionList = geodatabase.GetDefinitions<FeatureClassDefinition>();

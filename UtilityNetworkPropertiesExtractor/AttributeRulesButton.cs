@@ -11,7 +11,6 @@
    limitations under the License.
 */
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -51,9 +50,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             await QueuedTask.Run(async () =>
             {
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string attrRuleFileName = string.Empty;
-
                 Common.CreateOutputDirectory();
                 Dictionary<string, Table> tablesDict = new Dictionary<string, Table>();
 
@@ -89,10 +85,7 @@ namespace UtilityNetworkPropertiesExtractor
                     if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                         fcName = pair.Key.Substring(pos + 1);
 
-                    //attrRuleFileName = string.Format("{0}_{1}_AttributeRules_{2}.csv", dateFormatted, reportHeaderInfo.MapName, fcName);
-                    //string attrRuleoutputFile = Path.Combine(Common.ExtractFilePath, attrRuleFileName);
-
-                    string attrRuleOutputFile = Common.CreateCsvFile($"AttributeRules_{fcName}", string.Empty);
+                    string attrRuleOutputFile = Common.BuildCsvName($"AttributeRules_{fcName}", string.Empty);
                     string pathToTable = pair.Key;
                     IReadOnlyList<string> attrRuleArgs;
 
