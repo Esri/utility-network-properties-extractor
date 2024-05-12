@@ -117,51 +117,60 @@ namespace UtilityNetworkPropertiesExtractor
                                         break;
                                 }
 
-                                //Loop through each object in the definitionList and determine it's FeatureDataset before writing it to the CSV file
-                                foreach (Definition definition in definitionList)
+                                try
                                 {
-                                    string featureDatasetName = string.Empty;
 
-                                    //Determine the feature dataset name (if applicable) for the featureclass
-                                    if (datasetType == DatasetType.FeatureClass)
+                                    //Loop through each object in the definitionList and determine it's FeatureDataset before writing it to the CSV file
+                                    foreach (Definition definition in definitionList)
                                     {
-                                        using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(definition.GetName()))
+                                        string featureDatasetName = string.Empty;
+
+                                        //Determine the feature dataset name (if applicable) for the featureclass
+                                        if (datasetType == DatasetType.FeatureClass)
                                         {
-                                            FeatureDataset featureDataset = featureClass.GetFeatureDataset();
-                                            if (featureDataset != null)
-                                                featureDatasetName = featureDataset.GetName();
+                                            using (FeatureClass featureClass = geodatabase.OpenDataset<FeatureClass>(definition.GetName()))
+                                            {
+                                                FeatureDataset featureDataset = featureClass.GetFeatureDataset();
+                                                if (featureDataset != null)
+                                                    featureDatasetName = featureDataset.GetName();
+                                            }
                                         }
-                                    }
 
-                                    //Determine the feature dataset name (if applicable) for the RelationshipClass
-                                    else if (datasetType == DatasetType.RelationshipClass)
-                                    {
-                                        using (RelationshipClass relationshipClass = geodatabase.OpenDataset<RelationshipClass>(definition.GetName()))
+                                        //Determine the feature dataset name (if applicable) for the RelationshipClass
+                                        else if (datasetType == DatasetType.RelationshipClass)
                                         {
-                                            FeatureDataset featureDataset = relationshipClass.GetFeatureDataset();
-                                            if (featureDataset != null)
-                                                featureDatasetName = featureDataset.GetName();
+                                            using (RelationshipClass relationshipClass = geodatabase.OpenDataset<RelationshipClass>(definition.GetName()))
+                                            {
+                                                FeatureDataset featureDataset = relationshipClass.GetFeatureDataset();
+                                                if (featureDataset != null)
+                                                    featureDatasetName = featureDataset.GetName();
+                                            }
                                         }
-                                    }
 
-                                    //Determine the feature dataset name for the Utility Network object
-                                    else if (datasetType == DatasetType.UtilityNetwork)
-                                    {
-                                        using (UtilityNetwork un = geodatabase.OpenDataset<UtilityNetwork>(definition.GetName()))
+                                        //Determine the feature dataset name for the Utility Network object
+                                        else if (datasetType == DatasetType.UtilityNetwork)
                                         {
-                                            NetworkSource assemblyNetworkSource = un.GetDefinition().GetNetworkSources().Where(x => x.UsageType == SourceUsageType.Assembly).First();
-                                            FeatureClass assemblyFeatureClass = un.GetTable(assemblyNetworkSource) as FeatureClass;
-                                            featureDatasetName = assemblyFeatureClass.GetFeatureDataset()?.GetName();
+                                            using (UtilityNetwork un = geodatabase.OpenDataset<UtilityNetwork>(definition.GetName()))
+                                            {
+                                                NetworkSource assemblyNetworkSource = un.GetDefinition().GetNetworkSources().Where(x => x.UsageType == SourceUsageType.Assembly).First();
+                                                FeatureClass assemblyFeatureClass = un.GetTable(assemblyNetworkSource) as FeatureClass;
+                                                featureDatasetName = assemblyFeatureClass.GetFeatureDataset()?.GetName();
+                                            }
                                         }
-                                    }
 
-                                    CSVLayout rec = new CSVLayout()
-                                    {
-                                        ObjectType = definition.DatasetType.ToString(),
-                                        ObjectName = definition.GetName(),
-                                        FeatureDataset = featureDatasetName
-                                    };
-                                    csvLayoutList.Add(rec);
+                                        CSVLayout rec = new CSVLayout()
+                                        {
+                                            ObjectType = definition.DatasetType.ToString(),
+                                            ObjectName = definition.GetName(),
+                                            FeatureDataset = featureDatasetName
+                                        };
+                                        csvLayoutList.Add(rec);
+                                    }
+                                }
+                                catch (Exception ex)  // suppress error message
+                                {
+                                    if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                        MessageBox.Show(ex.Message);
                                 }
                             }
 
