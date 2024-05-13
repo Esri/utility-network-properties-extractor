@@ -84,6 +84,21 @@ namespace UtilityNetworkPropertiesExtractor
             return utilityNetworksInMapsList;
         }
 
+        public static DataSourceInMap GetDataSourceOfLayerForDatabaseGPToolUsage(MapMember mapMember)
+        {
+            DataSourceInMap dataSourceInMap = GetDataSourceFromMapMember(mapMember);
+
+            //GP Tools like "Export Attribute Rules" and "Export Contingent Values" can only be run against a DB connection.
+            if (dataSourceInMap.WorkspaceFactory == WorkspaceFactory.SDE.ToString() ||
+                dataSourceInMap.WorkspaceFactory == WorkspaceFactory.SQLite.ToString() ||
+                dataSourceInMap.WorkspaceFactory == WorkspaceFactory.FileGDB.ToString())
+            {
+                return dataSourceInMap;
+            }
+            else 
+                return null; 
+        }
+
         private static DataSourceInMap GetDataSourceFromMapMember(MapMember mapMember)
         {
             DataSourceInMap dataSourceInMap = new DataSourceInMap();
