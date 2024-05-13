@@ -17,22 +17,23 @@ namespace UtilityNetworkPropertiesExtractor
 
             //If Subtype Group layers are in the map, will have multiple layers pointing to same source featureclass
             //Populate Dictionary of distinct featureclasses
-            IEnumerable<FeatureLayer> featureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>();
+            IReadOnlyList<FeatureLayer> featureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().ToList();
             foreach (FeatureLayer featureLayer in featureLayerList)
             {
-                DataSourceInMap dataSourcesInMap = DataSourcesInMapHelper.GetDataSourceOfLayerForDatabaseGPToolUsage(featureLayer);
-                if (dataSourcesInMap != null)
+                Table table = featureLayer.GetTable();
+                if (!tablesDict.ContainsKey(table.GetName()))
                 {
-                    Table table = featureLayer.GetTable();
-
-                    TableAndDataSource tableAndDataSource = new TableAndDataSource()
+                    DataSourceInMap dataSourcesInMap = DataSourcesInMapHelper.GetDataSourceOfLayerForDatabaseGPToolUsage(featureLayer);
+                    if (dataSourcesInMap != null)
                     {
-                        DataSourceName = dataSourcesInMap.Name,
-                        Table = table
-                    };
+                        TableAndDataSource tableAndDataSource = new TableAndDataSource()
+                        {
+                            DataSourceName = dataSourcesInMap.Name,
+                            Table = table
+                        };
 
-                    if (!tablesDict.ContainsKey(table.GetName()))
                         tablesDict.Add(table.GetName(), tableAndDataSource);
+                    }
                 }
             }
 
@@ -40,22 +41,23 @@ namespace UtilityNetworkPropertiesExtractor
             IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
             foreach (StandaloneTable standaloneTable in standaloneTableList)
             {
-                DataSourceInMap dataSourcesInMap = DataSourcesInMapHelper.GetDataSourceOfLayerForDatabaseGPToolUsage(standaloneTable);
-                if (dataSourcesInMap != null)
+                Table table = standaloneTable.GetTable();
+                if (!tablesDict.ContainsKey(table.GetName()))
                 {
-                    Table table = standaloneTable.GetTable();
-
-                    TableAndDataSource tableAndDataSource = new TableAndDataSource()
+                    DataSourceInMap dataSourcesInMap = DataSourcesInMapHelper.GetDataSourceOfLayerForDatabaseGPToolUsage(standaloneTable);
+                    if (dataSourcesInMap != null)
                     {
-                        DataSourceName = dataSourcesInMap.Name,
-                        Table = table
-                    };
+                        TableAndDataSource tableAndDataSource = new TableAndDataSource()
+                        {
+                            DataSourceName = dataSourcesInMap.Name,
+                            Table = table
+                        };
 
-                    if (!tablesDict.ContainsKey(table.GetName()))
                         tablesDict.Add(table.GetName(), tableAndDataSource);
+                    }
                 }
             }
-
+        
             return tablesDict;
         }
 
