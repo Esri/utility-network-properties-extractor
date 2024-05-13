@@ -184,13 +184,14 @@ namespace UtilityNetworkPropertiesExtractor
                 return scale.ToString();
         }
 
-        public static Table GetTableFromFeatureLayer(FeatureLayer featureLayer)
+        public static string StripDatabaseOwnerAndSchema(string datasetName)
         {
-            Table table = featureLayer.GetTable();
-            if (table is FeatureClass)
-                return table;
-
-            return null;
+            //Strip off database name and owner (if exists)
+            string retVal = datasetName;
+            int pos = datasetName.LastIndexOf(".");
+            if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
+                retVal = datasetName.Substring(pos + 1);
+            return retVal;
         }
 
         public static string AppendTokenToUrl(string url, string token)
