@@ -64,7 +64,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        string outputFile = Common.BuildCsvName("AssetGroups", utilityNetworkDataSourceInMap.NameForCSV);
+                        string outputFile = Common.BuildCsvName("AssetGroups", utilityNetworkDataSourceInMap.Name);
                         using (StreamWriter sw = new StreamWriter(outputFile))
                         {
                             //Header information

@@ -71,9 +71,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 //Now delete any files that were generated but didn't have any Attribute Rules assigned
                 GeoprocessingPrepHelper.DeleteEmptyFiles("_AttributeRules");
-
             });
         }
-
     }
 }

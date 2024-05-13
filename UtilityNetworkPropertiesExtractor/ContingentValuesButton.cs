@@ -73,8 +73,6 @@ namespace UtilityNetworkPropertiesExtractor
                 //Now delete any files that were generated but didn't have any Contingent Values assigned
                 GeoprocessingPrepHelper.DeleteEmptyFiles("_ContingentValues");
             });
-        }
-
-        
+        }       
     }
 }

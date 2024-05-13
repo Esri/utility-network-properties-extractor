@@ -73,7 +73,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     { 
-                        string outputFile = Common.BuildCsvName("UNFeatureServiceInfo", utilityNetworkDataSourceInMap.NameForCSV);
+                        string outputFile = Common.BuildCsvName("UNFeatureServiceInfo", utilityNetworkDataSourceInMap.Name);
                         using (StreamWriter sw = new StreamWriter(outputFile))
                         {
                             //Header information

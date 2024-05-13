@@ -27,7 +27,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     TableAndDataSource tableAndDataSource = new TableAndDataSource()
                     {
-                        DataSourceName = dataSourcesInMap.NameForCSV,
+                        DataSourceName = dataSourcesInMap.Name,
                         Table = table
                     };
 
@@ -47,7 +47,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                     TableAndDataSource tableAndDataSource = new TableAndDataSource()
                     {
-                        DataSourceName = dataSourcesInMap.NameForCSV,
+                        DataSourceName = dataSourcesInMap.Name,
                         Table = table
                     };
 

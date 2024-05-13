@@ -75,7 +75,7 @@ namespace UtilityNetworkPropertiesExtractor
                         WorkspaceFactory = dataSourceInMap.WorkspaceFactory,
                         URI = dataSourceInMap.URI,
                         Geodatabase = featureLayer?.GetTable().GetDatastore() as Geodatabase,
-                        NameForCSV = dataSourceInMap.NameForCSV
+                        Name = dataSourceInMap.Name
                     };
 
                     utilityNetworksInMapsList.Add(utilityNetworkInMap);
@@ -167,7 +167,7 @@ namespace UtilityNetworkPropertiesExtractor
             //<WorkspaceConnectionString>DATABASE=C:\Pro Project_8485e4\Folder Name</WorkspaceConnectionString>
             dataSourceInMap.URI = connStringDict["DATABASE"];
             int pos = dataSourceInMap.URI.LastIndexOf("\\");
-            dataSourceInMap.NameForCSV = dataSourceInMap.URI.Substring(pos + 1);
+            dataSourceInMap.Name = dataSourceInMap.URI.Substring(pos + 1);
         }
         
         private static void GetSqlLiteInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
@@ -178,7 +178,7 @@ namespace UtilityNetworkPropertiesExtractor
             //only want fGDB name with no extension
             string noExtension = dataSourceInMap.URI.Split(".")[0];
             int pos = noExtension.LastIndexOf("\\");
-            dataSourceInMap.NameForCSV = noExtension.Substring(pos + 1);
+            dataSourceInMap.Name = noExtension.Substring(pos + 1);
         }
 
         private static void GetFeatureServiceInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
@@ -202,7 +202,7 @@ namespace UtilityNetworkPropertiesExtractor
                 serviceName = tempURL.Substring(lastSlashPos + 1);
 
             dataSourceInMap.URI = url;
-            dataSourceInMap.NameForCSV = serviceName;
+            dataSourceInMap.Name = serviceName;
         }
 
         private static void GetFileGdbInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
@@ -214,7 +214,7 @@ namespace UtilityNetworkPropertiesExtractor
             int extensionPos = dataSourceInMap.URI.LastIndexOf(".");
             string tempURI = dataSourceInMap.URI.Substring(0, extensionPos);
             int pos = tempURI.LastIndexOf("\\");
-            dataSourceInMap.NameForCSV = tempURI.Substring(pos + 1);
+            dataSourceInMap.Name = tempURI.Substring(pos + 1);
         }
 
         private static void GetSdeInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
@@ -224,16 +224,16 @@ namespace UtilityNetworkPropertiesExtractor
             string dbConnProperties = connStringDict["DB_CONNECTION_PROPERTIES"];
             string databaseName = connStringDict["DATABASE"];
             dataSourceInMap.URI = $"{dbConnProperties}.{databaseName}";
-            dataSourceInMap.NameForCSV = databaseName;
+            dataSourceInMap.Name = databaseName;
             return;
         }
     }
 
     public class DataSourceInMap
     {
+        public string Name { get; set; }
         public string WorkspaceFactory { get; set; }
         public string URI { get; set; }
-        public string NameForCSV { get; set; }
         public Geodatabase Geodatabase { get; set; }
     }
     public class UtilityNetworkDataSourceInMap : DataSourceInMap
