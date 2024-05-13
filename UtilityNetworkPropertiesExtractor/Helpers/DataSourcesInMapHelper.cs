@@ -171,9 +171,16 @@ namespace UtilityNetworkPropertiesExtractor
         }
         
         private static void GetSqlLiteInfo(Dictionary<string, string> connStringDict, ref DataSourceInMap dataSourceInMap)
-        {
+        {   //1.  Add Utility Network FeatureDataset to Map
             //< WorkspaceConnectionString >AUTHENTICATION_MODE=OSA;DATABASE=main;DB_CONNECTION_PROPERTIES=C:\EsriData\Mobile GDB\Electric UN.geodatabase;INSTANCE = sde:sqlite: C:\EsriData\Mobile GDB\Electric UN.geodatabase; IS_GEODATABASE = true; IS_NOSERVER = 0; SERVER = C:</ WorkspaceConnectionString >
-            dataSourceInMap.URI = connStringDict["DB_CONNECTION_PROPERTIES"];
+
+            //2.  Added individual FC within the Utility Network FeatureDataset to the map
+            //< WorkspaceConnectionString > DATABASE = C:\EsriData\Electric UN Foundation v2\Database\Electric_UtilityNetwork.geodatabase </ WorkspaceConnectionString >
+
+            if (connStringDict.ContainsKey("DB_CONNECTION_PROPERTIES"))
+                dataSourceInMap.URI = connStringDict["DB_CONNECTION_PROPERTIES"];
+            else
+                dataSourceInMap.URI = connStringDict["DATABASE"];
 
             //only want fGDB name with no extension
             string noExtension = dataSourceInMap.URI.Split(".")[0];
