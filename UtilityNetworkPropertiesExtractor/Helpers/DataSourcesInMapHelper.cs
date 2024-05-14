@@ -117,6 +117,7 @@ namespace UtilityNetworkPropertiesExtractor
                     connStringDict.Add(kvp[0], kvp[1]);
                 }
 
+                // Get info based on type of workspace factory
                 if (stDataConn.WorkspaceFactory == WorkspaceFactory.FeatureService)
                 {
                     GetFeatureServiceInfo(connStringDict, ref dataSourceInMap);
@@ -128,6 +129,10 @@ namespace UtilityNetworkPropertiesExtractor
                 else if (stDataConn.WorkspaceFactory == WorkspaceFactory.FileGDB)
                 {
                     GetFileGdbInfo(connStringDict, ref dataSourceInMap);
+                }
+                else if (stDataConn.WorkspaceFactory == WorkspaceFactory.SQLite)
+                {
+                    GetSqlLiteInfo(connStringDict, ref dataSourceInMap);
                 }
                 else if (stDataConn.WorkspaceFactory == WorkspaceFactory.Shapefile)
                 {
@@ -145,11 +150,11 @@ namespace UtilityNetworkPropertiesExtractor
                     connStringDict.Add(kvp[0], kvp[1]);
                 }
 
+                // Get info based on type of workspace factory
                 if (fdDataConn.WorkspaceFactory == WorkspaceFactory.SQLite)
                 {
                     GetSqlLiteInfo(connStringDict, ref dataSourceInMap);
                 }
-
                 else if (fdDataConn.WorkspaceFactory == WorkspaceFactory.SDE)
                 {
                     GetSdeInfo(connStringDict, ref dataSourceInMap);
