@@ -134,65 +134,12 @@ namespace UtilityNetworkPropertiesExtractor
                             }
                         }
                     }
-                    //else // Shapefile
-                    //{
-                    //    //////////////////////////////////////////////////////
-                    //    ////May 14,2024:  If the Fields button is clicked multiple times in the same Pro session, ArcGIS pro may crash.  
-                    //    ////Commenting out since this is problematic
-                    //    ////Using Pro 3.1.4
-                    //    //////////////////////////////////////////////////////
-                        
-                    //    string outputFile = Common.BuildCsvName("Fields", dataSourceInMap.Name);
-                    //    using (StreamWriter sw = new StreamWriter(outputFile))
-                    //    {
-                    //        //Header information
-                    //        Common.WriteHeaderInfoForMap(sw, "Fields");
-
-                    //        //Get all properties defined in the class.  This will be used to generate the CSV file
-                    //        CSVLayout emptyRec = new CSVLayout();
-                    //        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //        //Write column headers based on properties in the class
-                    //        string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    //        sw.WriteLine(columnHeader);
-
-                    //        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                    //        FileSystemConnectionPath fileConnection = new FileSystemConnectionPath(new Uri(dataSourceInMap.URI), FileSystemDatastoreType.Shapefile);
-                    //        using (FileSystemDatastore shapefile = new FileSystemDatastore(fileConnection))
-                    //        {
-                    //            try
-                    //            {
-                    //                foreach (string shapefileName in Directory.GetFiles(dataSourceInMap.URI, "*.shp"))
-                    //                {
-                    //                    using (FeatureClass featureClass = shapefile.OpenDataset<FeatureClass>(shapefileName))
-                    //                    {
-                    //                        FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition();
-                    //                        IReadOnlyList<Field> fieldsList = featureClassDefinition.GetFields();
-                    //                        BuildFieldInfo(featureClassDefinition, null, fieldsList, ref csvLayoutList);
-                    //                    }
-                    //                }
-                    //            }
-                    //            catch (Exception ex)
-                    //            {
-                    //                MessageBox.Show(ex.Message, "Shapefile Fields Exception");
-                    //            }
-                    //        }
-
-                    //        //Write body of report
-                    //        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ClassName))
-                    //        {
-                    //            string output = Common.ExtractClassValuesToString(row, properties);
-                    //            sw.WriteLine(output);
-                    //        }
-
-                    //        sw.Flush();
-                    //        sw.Close();
-                    //    }
-                    //}
+                    else // Shapefile
+                        BuildCsvForShapefile(dataSourceInMap);
                 }
             });
         }
+                
         private static void BuildFieldInfo(TableDefinition tableDefinition, Subtype subtype, IReadOnlyList<Field> fieldsList, ref List<CSVLayout> csvLayoutList)
         {
             string defaultCode;
@@ -263,6 +210,74 @@ namespace UtilityNetworkPropertiesExtractor
                 rangeValue = string.Empty;
             }
         }
+
+        private static void BuildCsvForShapefile(DataSourceInMap dataSourceInMap)
+        {
+            //return;
+
+            //////////////////////////////////////////////////////
+            ////May 14,2024:  Click the Fields multiple multiple times in the same Pro session may cause ArcGIS pro may crash.  
+            ////  Sometimes it's the 2nd or 9th click.  Other instances it doesn't occur.
+            ////Tested on ArcGIS Pro 3.1.4
+            ////Immediately returning since having ArcGIS Pro crash is unacceptable.
+            //////////////////////////////////////////////////////
+
+            try
+            {
+                string outputFile = Common.BuildCsvName("Fields", dataSourceInMap.Name);
+                using (StreamWriter sw = new StreamWriter(outputFile))
+                {
+                    //Header information
+                    Common.WriteHeaderInfoForMap(sw, "Fields");
+
+                    //Get all properties defined in the class.  This will be used to generate the CSV file
+                    CSVLayout emptyRec = new CSVLayout();
+                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                    //Write column headers based on properties in the class
+                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                    sw.WriteLine(columnHeader);
+
+                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                    FileSystemConnectionPath fileConnection = new FileSystemConnectionPath(new Uri(dataSourceInMap.URI), FileSystemDatastoreType.Shapefile);
+                    using (FileSystemDatastore shapefile = new FileSystemDatastore(fileConnection))
+                    {
+                        try
+                        {
+                            foreach (string shapefileName in Directory.GetFiles(dataSourceInMap.URI, "*.shp"))
+                            {
+                                using (FeatureClass featureClass = shapefile.OpenDataset<FeatureClass>(shapefileName))
+                                {
+                                    FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition();
+                                    IReadOnlyList<Field> fieldsList = featureClassDefinition.GetFields();
+                                    BuildFieldInfo(featureClassDefinition, null, fieldsList, ref csvLayoutList);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Shapefile Fields - Inner Exception");
+                        }
+                    }
+
+                    //Write body of report
+                    foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ClassName))
+                    {
+                        string output = Common.ExtractClassValuesToString(row, properties);
+                        sw.WriteLine(output);
+                    }
+
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Shapefile Fields - Outer Exception");
+            }
+        }
+        
         private class CSVLayout
         {
             public string ClassName { get; set; }
