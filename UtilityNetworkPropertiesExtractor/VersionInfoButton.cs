@@ -10,6 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
@@ -27,8 +28,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class VersionInfoButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -37,7 +36,6 @@ namespace UtilityNetworkPropertiesExtractor
             try
             {
                 progDlg.Show();
-
                 await ExtractVersionInfoAsync(true);
             }
             catch (Exception ex)
@@ -54,129 +52,113 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-
-                using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
+                List<DataSourceInMap> dataSourceInMapList = DataSourcesInMapHelper.GetDataSourcesInMap();
+                foreach (DataSourceInMap dataSourceInMap in dataSourceInMapList)
                 {
-                    if ( (!geodatabase.IsVersioningSupported()) || reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.MobileGDB)
+                    if (dataSourceInMap.WorkspaceFactory != WorkspaceFactory.Shapefile.ToString())
                     {
-                        //Pro 2.9 SDK:  Against a mobile geodatabase, geodatabase.IsVersioningSupported() is incorrectly returning true.
-                        //  According to help docs, mobile geodatabase doesn't support versioning
-                        if (showErrorPrompt)
-                            throw new Exception("Versioning is not supported in a " + reportHeaderInfo.SourceType);
-
-                        return;
-                    }
-
-                    //Branch versions are only available in the feature service in which they were created.
-                    //https://pro.arcgis.com/en/pro-app/2.9/help/data/geodatabases/overview/manage-branch-versions.htm
-                    if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.EnterpriseGDB)
-                    {
-                        if (showErrorPrompt)
-                            throw new Exception("Branch Versions can't be accessed via a database connection");
-
-                        return;
-                    }
-
-                    Common.CreateOutputDirectory();
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_Versions.csv", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    using (StreamWriter sw = new StreamWriter(outputFile))
-                    {
-                        //Header information
-                        UtilityNetworkDefinition utilityNetworkDefinition = null;
-                        if (utilityNetwork != null)
-                            utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                        Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Versions");
-
-                        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                        //Get all properties defined in the class.  This will be used to generate the CSV file
-                        CSVLayout emptyRec = new CSVLayout();
-                        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                        using (VersionManager versionManager = geodatabase.GetVersionManager())
+                        using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            string owner = string.Empty;
-                            string name = string.Empty;
-                            string parentOwner = string.Empty;
-                            string parentName = string.Empty;
+                            if (!geodatabase.IsVersioningSupported())
+                                continue;  //move onto next geodatabase
 
-                            IReadOnlyList<ArcGIS.Core.Data.Version> versionList = versionManager.GetVersions();
-
-                            sw.WriteLine("Versioning Type," + versionManager.GetVersioningType().ToString());
-                            sw.WriteLine("Version Count," + versionList.Count);
-                            sw.WriteLine();
-
-                            //Write column headers based on properties in the class
-                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                            sw.WriteLine(columnHeader); ;
-
-                            int i = 0;
-                            foreach (ArcGIS.Core.Data.Version version in versionList)
+                            string outputFile = Common.BuildCsvName("Versions", dataSourceInMap.Name);
+                            using (StreamWriter sw = new StreamWriter(outputFile))
                             {
-                                //Parse version
-                                ParseVersion(version, out owner, out name);
+                                //Header information
+                                Common.WriteHeaderInfoForGeodatabase(sw, dataSourceInMap, "Versions");
 
-                                //Parse Parent (if exists)
-                                if (!string.IsNullOrEmpty(version.GetParent()?.GetName()))
-                                    ParseVersion(version.GetParent(), out parentOwner, out parentName);
-
-                                i++;
-
-                                CSVLayout rec = new CSVLayout()
+                                //Branch versions are only available in the Featureservice in which they were created.
+                                //https://pro.arcgis.com/en/pro-app/2.9/help/data/geodatabases/overview/manage-branch-versions.htm
+                                if (dataSourceInMap.WorkspaceFactory == WorkspaceFactory.SDE.ToString())
                                 {
-                                    ID = i.ToString(),
-                                    Name = name,
-                                    Owner = owner,
-                                    ParentName = parentName,
-                                    ParentOwner = parentOwner,
-                                    Description = Common.EncloseStringInDoubleQuotes(version.GetDescription()),
-                                    Access = version.GetAccessType().ToString(),
-                                    Created = version.GetCreatedDate().ToString(),
-                                    Modified = version.GetModifiedDate().ToString()
-                                };
+                                    sw.WriteLine("Branch Versions can't be accessed via a database connection");
+                                    continue;
+                                }
 
-                                if (version.GetName().ToUpper() != "SDE.DEFAULT")
-                                    rec.HasConflicts = version.HasConflicts().ToString();
+                                List<CSVLayout> csvLayoutList = new List<CSVLayout>();
 
-                                csvLayoutList.Add(rec);
+                                //Get all properties defined in the class.  This will be used to generate the CSV file
+                                CSVLayout emptyRec = new CSVLayout();
+                                PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
 
-                                //if traditional versioning, list out child versions
-                                if (versionManager.GetVersioningType() == VersionType.Traditional)
+                                using (VersionManager versionManager = geodatabase.GetVersionManager())
                                 {
-                                    IReadOnlyList<ArcGIS.Core.Data.Version> childList = version.GetChildren();
-                                    foreach (ArcGIS.Core.Data.Version child in childList)
+                                    string owner = string.Empty;
+                                    string name = string.Empty;
+                                    string parentOwner = string.Empty;
+                                    string parentName = string.Empty;
+
+                                    IReadOnlyList<ArcGIS.Core.Data.Version> versionList = versionManager.GetVersions();
+
+                                    sw.WriteLine("Versioning Type," + versionManager.GetVersioningType().ToString());
+                                    sw.WriteLine("Version Count," + versionList.Count);
+                                    sw.WriteLine();
+
+                                    //Write column headers based on properties in the class
+                                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                                    sw.WriteLine(columnHeader); ;
+
+                                    int i = 0;
+                                    foreach (ArcGIS.Core.Data.Version version in versionList)
                                     {
-                                        CSVLayout childRec = new CSVLayout()
+                                        //Parse version
+                                        ParseVersion(version, out owner, out name);
+
+                                        //Parse Parent (if exists)
+                                        if (!string.IsNullOrEmpty(version.GetParent()?.GetName()))
+                                            ParseVersion(version.GetParent(), out parentOwner, out parentName);
+
+                                        i++;
+
+                                        CSVLayout rec = new CSVLayout()
                                         {
-                                            ChildVersions = child.GetName()
+                                            ID = i.ToString(),
+                                            Name = name,
+                                            Owner = owner,
+                                            ParentName = parentName,
+                                            ParentOwner = parentOwner,
+                                            Description = Common.EncloseStringInDoubleQuotes(version.GetDescription()),
+                                            Access = version.GetAccessType().ToString(),
+                                            Created = version.GetCreatedDate().ToString(),
+                                            Modified = version.GetModifiedDate().ToString()
                                         };
 
-                                        csvLayoutList.Add(childRec);
+                                        if (version.GetName().ToUpper() != "SDE.DEFAULT")
+                                            rec.HasConflicts = version.HasConflicts().ToString();
+
+                                        csvLayoutList.Add(rec);
+
+                                        //if traditional versioning, list out child versions
+                                        if (versionManager.GetVersioningType() == VersionType.Traditional)
+                                        {
+                                            IReadOnlyList<ArcGIS.Core.Data.Version> childList = version.GetChildren();
+                                            foreach (ArcGIS.Core.Data.Version child in childList)
+                                            {
+                                                CSVLayout childRec = new CSVLayout()
+                                                {
+                                                    ChildVersions = child.GetName()
+                                                };
+
+                                                csvLayoutList.Add(childRec);
+                                            }
+                                        }
+
+                                        parentOwner = string.Empty;
+                                        parentName = string.Empty;
                                     }
                                 }
 
-                                parentOwner = string.Empty;
-                                parentName = string.Empty;
+                                foreach (CSVLayout row in csvLayoutList)
+                                {
+                                    string output = Common.ExtractClassValuesToString(row, properties);
+                                    sw.WriteLine(output);
+                                }
+
+                                sw.Flush();
+                                sw.Close();
                             }
                         }
-
-                        foreach (CSVLayout row in csvLayoutList)
-                        {
-                            string output = Common.ExtractClassValuesToString(row, properties);
-                            sw.WriteLine(output);
-                        }
-
-                        sw.Flush();
-                        sw.Close();
                     }
                 }
             });

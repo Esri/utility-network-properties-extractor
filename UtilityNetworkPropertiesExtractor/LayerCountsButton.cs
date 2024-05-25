@@ -67,10 +67,7 @@ namespace UtilityNetworkPropertiesExtractor
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    sw.WriteLine(DateTime.Now + "," + "Layer and Table Counts");
-                    sw.WriteLine();
-                    sw.WriteLine("Project," + Project.Current.Path);
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
+                    Common.WriteHeaderInfoForMap(sw, "Layer and Table Counts");
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
                     int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();

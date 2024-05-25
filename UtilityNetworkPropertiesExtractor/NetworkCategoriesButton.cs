@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,110 +27,110 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class NetworkCategoriesButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Network Categories to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractNetworkCategoriesAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Network Categories");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static Task ExtractNetworkCategoriesAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Network Categories", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Network Categories", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_NetworkCategories.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Network Categories");
-
-                    //Network Categories
-                    sw.WriteLine();
-                    sw.WriteLine("Network Categories");
-                    IEnumerable<string> categories = utilityNetworkDefinition.GetAvailableCategories().OrderBy(x => x).ToList();
-                    foreach (string category in categories)
-                        sw.WriteLine("," + category);
-
-                    sw.WriteLine("");
-
-                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayout emptyRec = new CSVLayout();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    IReadOnlyList<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources();
-                    foreach (NetworkSource networkSource in networkSourceList)
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        //Asset Groups
-                        IReadOnlyList<AssetGroup> assetGroupList = networkSource.GetAssetGroups();
-                        foreach (AssetGroup assetGroup in assetGroupList)
+                        string outputFile = Common.BuildCsvName("NetworkCategories", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            //Asset Types
-                            IReadOnlyList<AssetType> assetTypeList = assetGroup.GetAssetTypes();
-                            foreach (AssetType assetType in assetTypeList)
-                            {
-                                //Categories
-                                IReadOnlyList<string> categoriesList = assetType.CategoryList;
-                                foreach (string category in categoriesList)
-                                {
-                                    CSVLayout rec = new CSVLayout()
-                                    {
-                                        NetworkCategory = category,
-                                        ClassName = networkSource.Name,
-                                        AssetGroupCode = assetGroup.Code.ToString(),
-                                        AssetGroup = assetGroup.Name,
-                                        AssetTypeCode = assetType.Code.ToString(),
-                                        AssetType = assetType.Name,
-                                    };
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Network Categories");
 
-                                    csvLayoutList.Add(rec);
+                            //Network Categories
+                            sw.WriteLine();
+                            sw.WriteLine("Network Categories");
+                            IEnumerable<string> categories = utilityNetworkDefinition.GetAvailableCategories().OrderBy(x => x).ToList();
+                            foreach (string category in categories)
+                                sw.WriteLine("," + category);
+
+                            sw.WriteLine("");
+
+                            List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayout emptyRec = new CSVLayout();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            IReadOnlyList<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources();
+                            foreach (NetworkSource networkSource in networkSourceList)
+                            {
+                                //Network Categories
+                                IReadOnlyList<AssetGroup> assetGroupList = networkSource.GetAssetGroups();
+                                foreach (AssetGroup assetGroup in assetGroupList)
+                                {
+                                    //Asset Types
+                                    IReadOnlyList<AssetType> assetTypeList = assetGroup.GetAssetTypes();
+                                    foreach (AssetType assetType in assetTypeList)
+                                    {
+                                        //Categories
+                                        IReadOnlyList<string> categoriesList = assetType.CategoryList;
+                                        foreach (string category in categoriesList)
+                                        {
+                                            CSVLayout rec = new CSVLayout()
+                                            {
+                                                NetworkCategory = category,
+                                                ClassName = networkSource.Name,
+                                                AssetGroupCode = assetGroup.Code.ToString(),
+                                                AssetGroup = assetGroup.Name,
+                                                AssetTypeCode = assetType.Code.ToString(),
+                                                AssetType = assetType.Name,
+                                            };
+
+                                            csvLayoutList.Add(rec);
+                                        }
+                                    }
                                 }
                             }
+
+                            foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.NetworkCategory))
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
                         }
                     }
-
-                    foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.NetworkCategory))
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                    _fileGenerated = true;
                 }
             });
         }

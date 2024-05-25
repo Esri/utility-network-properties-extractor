@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,98 +26,98 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class NoNetworkRulesButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting No Network Rules to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractNoNetworkRulesAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract No Network Rules");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static Task ExtractNoNetworkRulesAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract No Network Rules", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract No Network Rules", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_NoNetworkRules.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "No Network Rule Assignments");
-
-                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayout emptyRec = new CSVLayout();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader); ;
-
-                    IReadOnlyList<Rule> allRules = utilityNetworkDefinition.GetRules();
-                    IReadOnlyList<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources();
-                    foreach (NetworkSource networkSource in networkSourceList)
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        IReadOnlyList<AssetGroup> assetGroupList = networkSource.GetAssetGroups();
-                        foreach (AssetGroup assetGroup in assetGroupList)
+                        string outputFile = Common.BuildCsvName("NoNetworkRules", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            //Asset Types
-                            IReadOnlyList<AssetType> assetTypeList = assetGroup.GetAssetTypes();
-                            foreach (AssetType assetType in assetTypeList)
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "No Network Rule Assignments");
+
+                            List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayout emptyRec = new CSVLayout();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader); ;
+
+                            IReadOnlyList<Rule> allRules = utilityNetworkDefinition.GetRules();
+                            IReadOnlyList<NetworkSource> networkSourceList = utilityNetworkDefinition.GetNetworkSources();
+                            foreach (NetworkSource networkSource in networkSourceList)
                             {
-                                if (!AreRulesAssigned(networkSource.ID, assetGroup.Code, assetType.Code, allRules))
+                                IReadOnlyList<AssetGroup> assetGroupList = networkSource.GetAssetGroups();
+                                foreach (AssetGroup assetGroup in assetGroupList)
                                 {
-                                    CSVLayout rec = new CSVLayout()
+                                    //Asset Types
+                                    IReadOnlyList<AssetType> assetTypeList = assetGroup.GetAssetTypes();
+                                    foreach (AssetType assetType in assetTypeList)
                                     {
-                                        ClassName = networkSource.Name,
-                                        AssetGroupCode = assetGroup.Code.ToString(),
-                                        AssetGroup = assetGroup.Name,
-                                        AssetTypeCode = assetType.Code.ToString(),
-                                        AssetType = assetType.Name
-                                    };
-                                    csvLayoutList.Add(rec);
+                                        if (!AreRulesAssigned(networkSource.ID, assetGroup.Code, assetType.Code, allRules))
+                                        {
+                                            CSVLayout rec = new CSVLayout()
+                                            {
+                                                ClassName = networkSource.Name,
+                                                AssetGroupCode = assetGroup.Code.ToString(),
+                                                AssetGroup = assetGroup.Name,
+                                                AssetTypeCode = assetType.Code.ToString(),
+                                                AssetType = assetType.Name
+                                            };
+                                            csvLayoutList.Add(rec);
+                                        }
+                                    }
                                 }
                             }
+
+                            //Write body
+                            foreach (CSVLayout row in csvLayoutList)
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
                         }
                     }
-
-                    //Write body
-                    foreach (CSVLayout row in csvLayoutList)
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                    _fileGenerated = true;
                 }
             });
         }
