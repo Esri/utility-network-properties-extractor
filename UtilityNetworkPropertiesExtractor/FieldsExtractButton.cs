@@ -134,8 +134,8 @@ namespace UtilityNetworkPropertiesExtractor
                             }
                         }
                     }
-                    else // Shapefile
-                        BuildCsvForShapefile(dataSourceInMap);
+                    //else // Shapefile
+                    //    BuildCsvForShapefile(dataSourceInMap);
                 }
             });
         }
@@ -213,13 +213,11 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static void BuildCsvForShapefile(DataSourceInMap dataSourceInMap)
         {
-            //return;
-
             //////////////////////////////////////////////////////
-            ////May 14,2024:  Click the Fields multiple multiple times in the same Pro session may cause ArcGIS pro may crash.  
+            ////May 14,2024:  Click the Fields multiple multiple times in the same Pro session may cause ArcGIS Pro to crash.  
             ////  Sometimes it's the 2nd or 9th click.  Other instances it doesn't occur.
             ////Tested on ArcGIS Pro 3.1.4
-            ////Immediately returning since having ArcGIS Pro crash is unacceptable.
+            ////BUG-000167818:  The FeatureClassDefinition class throws a NullReferenceException for a shapefile in ArcGIS Pro SDK for .NET v3.3
             //////////////////////////////////////////////////////
 
             try
