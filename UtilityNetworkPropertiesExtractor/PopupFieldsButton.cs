@@ -28,8 +28,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class PopupFieldsButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
