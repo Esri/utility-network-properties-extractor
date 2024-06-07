@@ -35,7 +35,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             try
             {
-                progDlg.Show(); 
+                progDlg.Show();
                 await ExtractPopupFieldsAsync();
             }
             catch (Exception ex)
@@ -105,7 +105,7 @@ namespace UtilityNetworkPropertiesExtractor
                                 fieldsInPopup = GetFieldsInPopup(cimFeatureLayer.PopupInfo, ref useLayerFields);
 
                             //Build the CSV file
-                            BuildPopupFieldsList(table.GetName(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList );
+                            BuildPopupFieldsList(table.GetName(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
                         }
                     }
 
@@ -123,7 +123,7 @@ namespace UtilityNetworkPropertiesExtractor
                             //Get all fields on the table
                             List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
                             CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
-                            
+
                             //Get Fields defined in the Popup
                             fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
 
@@ -152,7 +152,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             //useLayerFields:  In Pro, this option is checked:  Use visible fields and Arcade Expressions
             //In either case, use the setting defined at the fields level
-            if (useLayerFields || fieldsInPopup == null)  
+            if (useLayerFields || fieldsInPopup == null)
             {
                 foreach (FieldDescription fieldDescription in fieldsList)
                 {
@@ -178,7 +178,7 @@ namespace UtilityNetworkPropertiesExtractor
                             //  I've noticed LRS (Linear Referencing) fields included in the Popup list when the layer is part of a Domain Network or was a Tracing Start/Barrier table.
                             FieldDescription fieldDescription = fieldsList.Where(x => x.Name == fieldInPopup).FirstOrDefault();
                             if (fieldDescription != null || fieldInPopup.Contains("expression/"))  // not in Popup Fields List.   Add it to CSV
-                            {                               
+                            {
                                 fieldVisibility = true;
 
                                 string fieldAlias;
@@ -239,12 +239,15 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 //determine if expression is visible in popup
                 CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
-                for (int j = 0; j < cimMediaInfos.Length; j++)
+                if (cimMediaInfos != null)
                 {
-                    if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                    for (int j = 0; j < cimMediaInfos.Length; j++)
                     {
-                        fields = cimTableMediaInfo.Fields;
-                        useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
+                        if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                        {
+                            fields = cimTableMediaInfo.Fields;
+                            useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
+                        }
                     }
                 }
             }
