@@ -232,25 +232,28 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static string[] GetFieldsInPopup(CIMPopupInfo cimPopupInfo, ref bool useLayerFields)
         {
-            bool useLayerFieldsVal = true;
-            string[] fields = null;
-
-            if (cimPopupInfo != null)
-            {
-                //determine if expression is visible in popup
-                CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
-                for (int j = 0; j < cimMediaInfos.Length; j++)
-                {
-                    if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
-                    {
-                        fields = cimTableMediaInfo.Fields;
-                        useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
-                    }
-                }
-            }
-
-            useLayerFields = useLayerFieldsVal;
-            return fields;
+          bool useLayerFieldsVal = true;
+          string[] fields = null;
+      
+          if (cimPopupInfo != null)
+          {
+              //determine if expression is visible in popup
+              CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
+              if (cimMediaInfos != null)
+              {
+                  for (int j = 0; j < cimMediaInfos.Length; j++)
+                  {
+                      if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                      {
+                          fields = cimTableMediaInfo.Fields;
+                          useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
+                      }
+                  }
+              }
+          }
+      
+          useLayerFields = useLayerFieldsVal;
+          return fields;
         }
 
         private class CSVLayout
