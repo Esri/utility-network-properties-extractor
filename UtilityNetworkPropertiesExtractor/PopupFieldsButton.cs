@@ -59,7 +59,7 @@ namespace UtilityNetworkPropertiesExtractor
                     Common.WriteHeaderInfoForMap(sw, "Popup Fields");
 
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
 
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
@@ -112,23 +112,30 @@ namespace UtilityNetworkPropertiesExtractor
                     //Standalone Tables in the map
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        using (Table table = standaloneTable.GetTable())
+                        if (standaloneTable is not SubtypeGroupTable) // exclude the SubtypeGroupTable from the report
                         {
-                            if (table == null) // broken datasource.  Don't add to the csv
-                                continue;
+                            using (Table table = standaloneTable.GetTable())
+                            {
+                                if (table == null) // broken datasource.  Don't add to the csv
+                                    continue;
 
-                            bool useLayerFields = false;
-                            string[] fieldsInPopup = null;
+                                subtypeValue = string.Empty;
+                                if (standaloneTable.IsSubtypeTable)
+                                    subtypeValue = standaloneTable.SubtypeValue.ToString();
+                                
+                                bool useLayerFields = false;
+                                string[] fieldsInPopup = null;
 
-                            //Get all fields on the table
-                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
+                                //Get all fields on the table
+                                List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                                CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
 
-                            //Get Fields defined in the Popup
-                            fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
+                                //Get Fields defined in the Popup
+                                fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
 
-                            //Build the CSV file
-                            BuildPopupFieldsList(table.GetName(), standaloneTable.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
+                                //Build the CSV file
+                                BuildPopupFieldsList(table.GetName(), standaloneTable.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
+                            }
                         }
                     }
 

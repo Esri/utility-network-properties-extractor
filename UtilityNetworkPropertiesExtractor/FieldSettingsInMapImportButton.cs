@@ -88,7 +88,7 @@ namespace UtilityNetworkPropertiesExtractor
                 {
                     //Get layers and standalone tables in the map
                     List<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
-                    IReadOnlyList<StandaloneTable> standaloneTablesList = MapView.Active.Map.StandaloneTables;
+                    IReadOnlyList<StandaloneTable> standaloneTablesList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
                     uint tocCount = (uint)basicFeatureLayerList.Count + (uint)standaloneTablesList.Count;
 
                     CancelableProgressorSource cps = new CancelableProgressorSource(progress) { Max = tocCount };
@@ -183,7 +183,6 @@ namespace UtilityNetworkPropertiesExtractor
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "UpdateFieldSettings");

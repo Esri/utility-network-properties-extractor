@@ -56,7 +56,7 @@ namespace UtilityNetworkPropertiesExtractor
                     Common.WriteHeaderInfoForMap(sw, "Field Settings in Map");
                     
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
 
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
@@ -88,13 +88,19 @@ namespace UtilityNetworkPropertiesExtractor
                     //Standalone Tables in the map
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        using (Table table = standaloneTable.GetTable())
+                        if (standaloneTable is not SubtypeGroupTable) // exclude the SubtypeGroupTable from the report
                         {
-                            if (table == null) // broken datasource.  Don't add to the csv
-                                continue;
+                            using (Table table = standaloneTable.GetTable())
+                            {
+                                if (table == null) // broken datasource.  Don't add to the csv
+                                    continue;
 
-                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            WriteFieldSettings(sw, standaloneTable.Name, table.GetName(), string.Empty, fieldDescList);
+                                if (standaloneTable.IsSubtypeTable)
+                                    subtypeValue = standaloneTable.SubtypeValue.ToString();
+
+                                List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                                WriteFieldSettings(sw, standaloneTable.Name, table.GetName(), subtypeValue, fieldDescList);
+                            }
                         }
                     }
 

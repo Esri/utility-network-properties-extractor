@@ -351,7 +351,6 @@ namespace UtilityNetworkPropertiesExtractor
                         else
                             layerContainer = standaloneTable.Parent.ToString();
 
-
                         layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, layerContainer, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
 
                         //check if subtype group table
