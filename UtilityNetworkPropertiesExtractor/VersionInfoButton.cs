@@ -33,7 +33,7 @@ namespace UtilityNetworkPropertiesExtractor
             try
             {
                 progDlg.Show();
-                await ExtractVersionInfoAsync(true);
+                await ExtractVersionInfoAsync();
             }
             catch (Exception ex)
             {
@@ -45,7 +45,7 @@ namespace UtilityNetworkPropertiesExtractor
             }
         }
 
-        public static Task ExtractVersionInfoAsync(bool showErrorPrompt)
+        public static Task ExtractVersionInfoAsync()
         {
             return QueuedTask.Run(() =>
             {
@@ -86,10 +86,11 @@ namespace UtilityNetworkPropertiesExtractor
                                     string parentOwner = string.Empty;
                                     string parentName = string.Empty;
 
-                                    IReadOnlyList<ArcGIS.Core.Data.Version> versionList = versionManager.GetVersions();
+                                    //Get listings of all version names
+                                    IReadOnlyList<string> versionNamesList = versionManager.GetVersionNames();
 
                                     sw.WriteLine("Versioning Type," + versionManager.GetVersioningType().ToString());
-                                    sw.WriteLine("Version Count," + versionList.Count);
+                                    sw.WriteLine("Version Count," + versionNamesList.Count);
                                     sw.WriteLine();
 
                                     //Write column headers based on properties in the class
@@ -97,8 +98,10 @@ namespace UtilityNetworkPropertiesExtractor
                                     sw.WriteLine(columnHeader); ;
 
                                     int i = 0;
-                                    foreach (ArcGIS.Core.Data.Version version in versionList)
-                                    {
+                                    foreach (string versionName in versionNamesList)
+                                    {                                        
+                                        ArcGIS.Core.Data.Version version = versionManager.GetVersion(versionName);
+
                                         //Parse version
                                         ParseVersion(version, out owner, out name);
 
@@ -121,7 +124,8 @@ namespace UtilityNetworkPropertiesExtractor
                                             Modified = version.GetModifiedDate().ToString()
                                         };
 
-                                        if (version.GetName().ToUpper() != "SDE.DEFAULT")
+
+                                        if (! version.GetName().ToUpper().Equals("SDE.DEFAULT"))
                                             rec.HasConflicts = version.HasConflicts().ToString();
 
                                         csvLayoutList.Add(rec);
@@ -163,7 +167,7 @@ namespace UtilityNetworkPropertiesExtractor
 
         private static void ParseVersion(ArcGIS.Core.Data.Version version, out string owner, out string name)
         {
-            int pos = version.GetName().LastIndexOf(".");
+            int pos = version.GetName().LastIndexOf('.');
             owner = version.GetName().Substring(0, pos);
             name = version.GetName().Substring(pos + 1);
         }
