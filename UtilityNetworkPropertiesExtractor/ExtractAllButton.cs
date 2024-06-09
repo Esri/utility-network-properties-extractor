@@ -60,7 +60,7 @@ namespace UtilityNetworkPropertiesExtractor
                 
                 //Longer duration reports (if dataset is large)
                 await LayerCountsButton.ExtractLayerCountAsync();
-                await VersionInfoButton.ExtractVersionInfoAsync(false);
+                await VersionInfoButton.ExtractVersionInfoAsync();
 
                 //Some report had to go last
                 ProjectItemsButton.ExtractProjectItem();

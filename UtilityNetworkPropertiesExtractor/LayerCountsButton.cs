@@ -247,7 +247,6 @@ namespace UtilityNetworkPropertiesExtractor
 
             string layerType = Common.GetLayerTypeDescription(standaloneTable);
             string layerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name);
-            recordCount = 0;
             definitionQuery = string.Empty;
             QueryFilter queryFilter = new QueryFilter();
             Table table = standaloneTable.GetTable();

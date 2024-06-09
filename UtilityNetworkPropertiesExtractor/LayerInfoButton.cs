@@ -110,7 +110,7 @@ namespace UtilityNetworkPropertiesExtractor
             string displayFilterExpression = string.Empty;
             string displayFilterName = string.Empty;
             string additionalDefQueriesText;
-            bool addToCsvLayoutList = true;
+            bool addToCsvLayoutList;
 
             //List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
             IReadOnlyList<MapMember> mapMemberList = MapView.Active.Map.GetMapMembersAsFlattenedList();
@@ -232,7 +232,7 @@ namespace UtilityNetworkPropertiesExtractor
                             //Assign Featurelayer values
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                             csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
-                            csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Count().ToString();
+                            csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Length.ToString();
                             csvLayout.IsSnappable = featureLayer.IsSnappable.ToString();
                             csvLayout.IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString();
                             csvLayout.IsLabelVisible = featureLayer.IsLabelVisible.ToString();
@@ -426,7 +426,7 @@ namespace UtilityNetworkPropertiesExtractor
                 LayerType = "Standalone Table"
             };
 
-            if (standaloneTable is SubtypeGroupTable subtypeGroupTable)
+            if (standaloneTable is SubtypeGroupTable)
             {
                 csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name);
                 csvLayout.LayerName = string.Empty;
@@ -697,7 +697,7 @@ namespace UtilityNetworkPropertiesExtractor
             string returnMessage = string.Empty;
             int cnt = 0;
 
-            if (definitionQuery.Count() > 0)
+            if (definitionQuery.Count > 0)
             {
                 bool activeDefQuery;
                 foreach (DefinitionQuery filter in definitionQuery)
