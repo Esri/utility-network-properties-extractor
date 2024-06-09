@@ -12,7 +12,6 @@
 */
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.DDL;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Mapping;
@@ -22,9 +21,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Windows.Markup;
 
 namespace UtilityNetworkPropertiesExtractor
 {
@@ -35,7 +31,7 @@ namespace UtilityNetworkPropertiesExtractor
         private const string ExtractFileRootPath = @"C:\temp\ProSdk_CSV\";
 
         //Two Field Setting buttons are writing/reading the same files.  Constants used to ensure that a code change to 1 button doesn't break the other
-        public const string FieldSettingsClassNameHeader = "Class Name";      
+        public const string FieldSettingsClassNameHeader = "Class Name";
 
         public static DateTime ConvertEpochTimeToReadableDate(long epoch)
         {
@@ -112,40 +108,81 @@ namespace UtilityNetworkPropertiesExtractor
             return cnt;
         }
 
+
+        public static int GetCountOfAllTablesInMap()
+        {
+            int cnt = 0;
+
+            // Standalone table in a Group Layer
+            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
+            foreach (GroupLayer groupLayer in groupLayerList)
+                cnt += GetCountOfTables(groupLayer.StandaloneTables);
+
+            //Standalone tables section in the TOC
+            cnt += GetCountOfTables(MapView.Active.Map.StandaloneTables);
+
+            return cnt;
+        }
+
+        private static int GetCountOfTables(IReadOnlyList<StandaloneTable> standaloneTableList)
+        {
+            int cnt = 0;
+            foreach (StandaloneTable standaloneTable in standaloneTableList)
+            {
+                cnt += 1;
+                if (standaloneTable is SubtypeGroupTable subtypeGroupTable)
+                    cnt += subtypeGroupTable.StandaloneTables.Count;
+            }
+
+            return cnt;
+        }
+
         public static string GetExtractFilePath()
         {
             return ExtractFileRootPath + GetProProjectName() + "\\" + GetActiveMapName();
         }
 
-        public static string GetLayerTypeDescription(Layer layer)
+        public static string GetLayerTypeDescription(MapMember mapMember)
         {
-            string retVal;
+            string retVal = string.Empty;
 
-            if (layer is FeatureLayer)
-                retVal = "Feature Layer";
-            else if (layer is GroupLayer)
-                retVal = "Group Layer";
-            else if (layer is SubtypeGroupLayer)
-                retVal = "Subtype Group Layer";
-            else if (layer is AnnotationLayer)
-                retVal = "Annotation Layer";
-            else if (layer is AnnotationSubLayer)
-                retVal = "Annotation Sub Layer";
-            else if (layer is DimensionLayer)
-                retVal = "Dimension Layer";
-            else if (layer is UtilityNetworkLayer)
-                retVal = "Utility Network Layer";
-            else if (layer is TiledServiceLayer)
-                retVal = "Tiled Service Layer";
-            else if (layer is VectorTileLayer)
-                retVal = "Vector Tile Layer";
-            else if (layer is GraphicsLayer)
-                retVal = "Graphics Layer";
-            else if (layer is ImageServiceLayer)
-                retVal = "Image Service Layer";
-            else if (layer.MapLayerType == MapLayerType.BasemapBackground)
-                retVal = "Basemap";
-            else
+            // Layers
+            if (mapMember is Layer layer)
+            {
+                if (layer is FeatureLayer)
+                    retVal = "Feature Layer";
+                else if (layer is GroupLayer)
+                    retVal = "Group Layer";
+                else if (layer is SubtypeGroupLayer)
+                    retVal = "Subtype Group Layer";
+                else if (layer is AnnotationLayer)
+                    retVal = "Annotation Layer";
+                else if (layer is AnnotationSubLayer)
+                    retVal = "Annotation Sub Layer";
+                else if (layer is DimensionLayer)
+                    retVal = "Dimension Layer";
+                else if (layer is UtilityNetworkLayer)
+                    retVal = "Utility Network Layer";
+                else if (layer is TiledServiceLayer)
+                    retVal = "Tiled Service Layer";
+                else if (layer is VectorTileLayer)
+                    retVal = "Vector Tile Layer";
+                else if (layer is GraphicsLayer)
+                    retVal = "Graphics Layer";
+                else if (layer is ImageServiceLayer)
+                    retVal = "Image Service Layer";
+                else if (layer.MapLayerType == MapLayerType.BasemapBackground)
+                    retVal = "Basemap";
+            }
+            else // Tables
+            {
+                if (mapMember is StandaloneTable)
+                    retVal = "Standalone Table";
+                else if (mapMember is SubtypeGroupTable)
+                    retVal = "Subtype Group Table";
+            }
+
+            if (string.IsNullOrEmpty(retVal))
                 retVal = "Undefined in this Add-In";
 
             return retVal;
@@ -271,12 +308,12 @@ namespace UtilityNetworkPropertiesExtractor
                 response.EnsureSuccessStatusCode();
             }
             catch (Exception)
-            { 
+            {
                 throw;
             }
             return response;
         }
-                
+
         public static string BuildCsvNameContainingMapName(string reportTitle)
         {
             return BuildNameForFile(reportTitle, string.Empty, "csv", true);
@@ -318,7 +355,7 @@ namespace UtilityNetworkPropertiesExtractor
                 fileName = $"{dateFormatted}_{dataSourceName}_{reportTitle}.{extension}";
                 outputFile = Path.Combine(newFolder, fileName);
             }
-                                       
+
             return outputFile;
         }
 
@@ -335,7 +372,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             sw.WriteLine(DateTime.Now + "," + reportTitle);
             sw.WriteLine();
-            sw.WriteLine(dataSourceInMap.WorkspaceFactory + "," + dataSourceInMap.URI);           
+            sw.WriteLine(dataSourceInMap.WorkspaceFactory + "," + dataSourceInMap.URI);
             IReadOnlyList<UtilityNetworkDefinition> utilityNetworkDefinitionList = dataSourceInMap.Geodatabase.GetDefinitions<UtilityNetworkDefinition>();
             if (utilityNetworkDefinitionList.Count > 0)
                 WriteUtilityNetworkInfo(sw, utilityNetworkDefinitionList.FirstOrDefault());
