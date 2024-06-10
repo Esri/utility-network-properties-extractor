@@ -112,7 +112,6 @@ namespace UtilityNetworkPropertiesExtractor
             string additionalDefQueriesText;
             bool addToCsvLayoutList;
 
-            //List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
             IReadOnlyList<MapMember> mapMemberList = MapView.Active.Map.GetMapMembersAsFlattenedList();
             foreach (MapMember mapMember in mapMemberList)
             {
@@ -151,7 +150,6 @@ namespace UtilityNetworkPropertiesExtractor
                     csvLayout.LayerType = Common.GetLayerTypeDescription(mapMember);
                     csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(mapMember.Name);
                     csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
-
 
                     //BasicFeatureLayer (Layers that inherit from BasicFeatureLayer are FeatureLayer, AnnotationLayer and DimensionLayer)
                     if (mapMember is BasicFeatureLayer basicFeatureLayer)

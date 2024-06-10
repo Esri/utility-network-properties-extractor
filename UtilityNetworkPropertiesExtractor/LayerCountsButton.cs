@@ -87,7 +87,6 @@ namespace UtilityNetworkPropertiesExtractor
                     string layerType = string.Empty;
                     bool addToCsvLayoutList = false;
 
-
                     IReadOnlyList<MapMember> mapMemberList = MapView.Active.Map.GetMapMembersAsFlattenedList();
                     foreach (MapMember mapMember in mapMemberList)
                     {
