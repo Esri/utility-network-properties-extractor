@@ -277,7 +277,7 @@ namespace UtilityNetworkPropertiesExtractor
                     {
                         csvLayout.GroupLayerName = csvLayout.LayerName;
                         csvLayout.LayerName = string.Empty;
-
+                       
                         CIMSubtypeGroupLayer cimSubtypeGroupLayer = subtypeGroupLayer.GetDefinition() as CIMSubtypeGroupLayer;
                         if (cimSubtypeGroupLayer.EnableDisplayFilters)
                         {
@@ -344,22 +344,26 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.SharedTraceConfiguration = sharedTraceConfiguation;
                     }
 
+                    //Subtype Group Table
+                    else if (mapMember is SubtypeGroupTable subtypeGroupTable)
+                    {
+                        layerContainer = Common.GetGroupLayerNameForStandaloneTable(subtypeGroupTable);
+                        layerPos = InterrogateStandaloneTable(subtypeGroupTable, layerPos, layerContainer, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+                        
+                        //Include "sub tables" in the report 
+                        IReadOnlyList<StandaloneTable> standaloneTablesList = subtypeGroupTable.StandaloneTables;
+                        foreach (StandaloneTable standaloneTable in standaloneTablesList)
+                            layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, mapMember.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+
+                        //Since already added Table info to CsvLayoutList, don't do it again.
+                        addToCsvLayoutList = false;
+                    }
+
+                    //Standalone Table
                     else if (mapMember is StandaloneTable standaloneTable)
                     {
-                        if (standaloneTable.Parent.ToString().Equals(MapView.Active.Map.Name))
-                            layerContainer = "";
-                        else
-                            layerContainer = standaloneTable.Parent.ToString();
-
+                        layerContainer = Common.GetGroupLayerNameForStandaloneTable(standaloneTable);
                         layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, layerContainer, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
-
-                        //check if subtype group table
-                        if (standaloneTable is SubtypeGroupTable subtypeGroupTable)
-                        {
-                            IReadOnlyList<StandaloneTable> sgtList = subtypeGroupTable.StandaloneTables;
-                            foreach (StandaloneTable sgt in sgtList)
-                                layerPos = InterrogateStandaloneTable(sgt, layerPos, mapMember.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
-                        }
 
                         //Since already added Table info to CsvLayoutList, don't do it again.
                         addToCsvLayoutList = false;
@@ -423,16 +427,17 @@ namespace UtilityNetworkPropertiesExtractor
                 LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
                 LayerPos = layerPos.ToString(),
                 LayerSource = standaloneTable.GetTable().GetPath().ToString(),
-                LayerType = "Standalone Table"
+                LayerType = Common.GetLayerTypeDescription(standaloneTable)
             };
-
+            
+            //Subtype Group Table entry
             if (standaloneTable is SubtypeGroupTable)
             {
                 csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name);
                 csvLayout.LayerName = string.Empty;
-                csvLayout.LayerType = "Subtype Group Table";
+                csvLayout.LayerSource = string.Empty;
             }
-            else if (standaloneTable.IsSubtypeTable)
+            else if (standaloneTable.IsSubtypeTable)  // sub table that is part of the Subtype Group Table
             {
                 csvLayout.IsSubtypeLayer = standaloneTable.IsSubtypeTable.ToString();
                 csvLayout.SubtypeValue = standaloneTable.SubtypeValue.ToString();

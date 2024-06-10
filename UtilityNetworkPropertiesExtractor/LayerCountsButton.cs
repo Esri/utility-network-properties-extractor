@@ -181,24 +181,24 @@ namespace UtilityNetworkPropertiesExtractor
                             csvLayout.LayerName = string.Empty;
                             recordCount = 0;
                         }
+                        else if (mapMember is SubtypeGroupTable subtypeGroupTable)
+                        {
+                            layerContainer = Common.GetGroupLayerNameForStandaloneTable(subtypeGroupTable);
+ 
+                            InterrogateStandaloneTables(subtypeGroupTable, layerContainer, ref CSVLayoutList, ref layerPos, ref sum);
+
+                            IReadOnlyList<StandaloneTable> standaloneTablesList = subtypeGroupTable.StandaloneTables;
+                            foreach (StandaloneTable standaloneTable in standaloneTablesList)
+                                InterrogateStandaloneTables(standaloneTable, subtypeGroupTable.Name, ref CSVLayoutList, ref layerPos, ref sum);
+
+                            //Since already added Table info to CsvLayoutList, don't do it again.
+                            addToCsvLayoutList = false;
+                        }
                         else if (mapMember is StandaloneTable standaloneTable)
                         {
-                            if (standaloneTable.Parent.ToString().Equals(MapView.Active.Map.Name))
-                                layerContainer = "";
-                            else
-                                layerContainer = standaloneTable.Parent.ToString();
+                            layerContainer = Common.GetGroupLayerNameForStandaloneTable(standaloneTable);
 
                             InterrogateStandaloneTables(standaloneTable, layerContainer, ref CSVLayoutList, ref layerPos, ref sum);
-
-                            //check if subtype group table
-                            if (standaloneTable is SubtypeGroupTable subtypeGroupTable)
-                            {
-                                IReadOnlyList<StandaloneTable> sgtList = subtypeGroupTable.StandaloneTables;
-                                foreach (StandaloneTable sgt in sgtList)
-                                    InterrogateStandaloneTables(sgt, standaloneTable.Name, ref CSVLayoutList, ref layerPos, ref sum);
-                                // layerPos = InterrogateStandaloneTable(sgt, layerPos, mapMember.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
-
-                            }
 
                             //Since already added Table info to CsvLayoutList, don't do it again.
                             addToCsvLayoutList = false;

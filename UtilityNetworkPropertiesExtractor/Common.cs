@@ -95,20 +95,17 @@ namespace UtilityNetworkPropertiesExtractor
             return retVal;
         }
 
-        public static int GetCountOfTablesInGroupLayers()
+        public static string GetGroupLayerNameForStandaloneTable(StandaloneTable standaloneTable)
         {
-            int cnt = 0;
-            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
-            foreach (GroupLayer groupLayer in groupLayerList)
-            {
-                if (groupLayer.StandaloneTables.Count > 0)
-                    cnt += groupLayer.StandaloneTables.Count;
-            }
+            string retVal = string.Empty;
+            if (standaloneTable.Parent.ToString().Equals(MapView.Active.Map.Name))  // if Parent matches the Map Name, leave the value blank
+                retVal = "";
+            else
+                retVal = standaloneTable.Parent.ToString();
 
-            return cnt;
+            return retVal;
         }
-
-
+               
         public static int GetCountOfAllTablesInMap()
         {
             int cnt = 0;
@@ -176,10 +173,10 @@ namespace UtilityNetworkPropertiesExtractor
             }
             else // Tables
             {
-                if (mapMember is StandaloneTable)
-                    retVal = "Standalone Table";
-                else if (mapMember is SubtypeGroupTable)
+                if (mapMember is SubtypeGroupTable)
                     retVal = "Subtype Group Table";
+                else if (mapMember is StandaloneTable)
+                    retVal = "Standalone Table";
             }
 
             if (string.IsNullOrEmpty(retVal))
@@ -198,7 +195,7 @@ namespace UtilityNetworkPropertiesExtractor
         public static string GetProProjectName()
         {
             Project currProject = Project.Current;
-            return currProject.Name.Substring(0, currProject.Name.LastIndexOf("."));
+            return currProject.Name.Substring(0, currProject.Name.LastIndexOf('.'));
         }
 
         private static string GetProVersion()
@@ -225,7 +222,7 @@ namespace UtilityNetworkPropertiesExtractor
         {
             //Strip off database name and owner (if exists)
             string retVal = datasetName;
-            int pos = datasetName.LastIndexOf(".");
+            int pos = datasetName.LastIndexOf('.');
             if (pos != -1) // strip off schema and owner of Featureclass Name (if exists).  Ex:  meh.unadmin.ElectricDevice
                 retVal = datasetName.Substring(pos + 1);
             return retVal;
