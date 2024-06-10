@@ -58,8 +58,8 @@ namespace UtilityNetworkPropertiesExtractor
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
                     IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
 
-                    sw.WriteLine("Layers," + basicFeatureLayerList.Count());
-                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
+                    sw.WriteLine("Layers," + basicFeatureLayerList.Count);
+                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count);
                     sw.WriteLine("");
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
