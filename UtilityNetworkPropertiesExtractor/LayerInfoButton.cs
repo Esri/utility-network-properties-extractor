@@ -27,7 +27,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class LayerInfoButton : Button
     {
-        private static string _fileName = string.Empty;
         private const string _defQueriesMesg = "see LayerInfo_DefinitionQueries";
 
         protected async override void OnClick()
@@ -54,11 +53,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerInfo.csv", dateFormatted, Common.GetActiveMapName());
-
                 List<CSVLayout> csvLayoutList = new List<CSVLayout>();
                 List<PopupLayout> popupLayoutList = new List<PopupLayout>();
                 List<DisplayFilterLayout> displayFilterLayoutList = new List<DisplayFilterLayout>();
@@ -68,7 +62,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList, ref labelLayoutList);
 
-                string layerInfoFile = Path.Combine(Common.ExtractFilePath, _fileName);
+                string layerInfoFile = Common.BuildCsvNameContainingMapName("LayerInfo");
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
 
                 if (popupLayoutList.Count >= 1)
@@ -480,10 +474,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
+                Common.WriteHeaderInfoForMap(sw, "Layer Info");
                 sw.WriteLine("Coordinate System," + MapView.Active.Map.SpatialReference.Name);
                 sw.WriteLine("Map Units," + MapView.Active.Map.SpatialReference.Unit);
                 sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
@@ -515,11 +506,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Labels");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Labels");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 LabelLayout emptyRec = new LabelLayout();
@@ -542,12 +529,8 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Popup Expressions");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
-
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Popup Expressions");
+                
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 PopupLayout emptyRec = new PopupLayout();
                 PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
@@ -569,11 +552,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Shared Trace Configuration");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Shared Trace Configuration");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 SharedTraceConfigurationLayout emptyRec = new SharedTraceConfigurationLayout();
@@ -596,12 +575,8 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Definition Queries");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
-
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Definition Queries");
+                
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 DefinitionQueryLayout emptyRec = new DefinitionQueryLayout();
                 PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);

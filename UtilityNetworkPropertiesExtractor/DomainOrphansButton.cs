@@ -10,11 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,18 +25,23 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class DomainOrphansButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Orphan Domains to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractOrphanDomainsAsync();
-                MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Extract Orphan Domains");
+                MessageBox.Show(ex.Message, "Extract Domain Values");
+            }
+            finally
+            {
+                progDlg.Dispose();
             }
         }
 
@@ -45,91 +49,83 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-
-                using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
+                List<DataSourceInMap> dataSourceInMapList = DataSourcesInMapHelper.GetDataSourcesInMap();
+                foreach (DataSourceInMap dataSourceInMap in dataSourceInMapList)
                 {
-                    Common.CreateOutputDirectory();
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_OrphanDomains.csv", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    string defaultCode = string.Empty;
-                    string defaultValue = string.Empty;
-                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    if (dataSourceInMap.WorkspaceFactory != WorkspaceFactory.Shapefile.ToString())
                     {
-                        //Header information
-                        UtilityNetworkDefinition utilityNetworkDefinition = null;
-                        if (utilityNetwork != null)
-                            utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                        HashSet<string> assignedDomainsList = new HashSet<string>();
-                        Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Orphan Domains");
-
-                        //Get Domains assigned to a featureclass
-                        IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
-                        foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
+                        using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            try
+                            string outputFile = Common.BuildCsvName("OrphanDomains", dataSourceInMap.Name);
+                            using (StreamWriter sw = new StreamWriter(outputFile))
                             {
-                                IReadOnlyList<Field> listOfFields = fcDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypes = fcDefinition.GetSubtypes();
+                                //Header information
+                                Common.WriteHeaderInfoForGeodatabase(sw, dataSourceInMap, "Orphan Domains");
 
-                                if (subtypes.Count != 0)
+                                HashSet<string> assignedDomainsList = new HashSet<string>();
+
+                                //Get Domains assigned to a featureclass
+                                IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
+                                foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
                                 {
-                                    foreach (Subtype subtype in subtypes)
-                                        PopulateAssignedDomainList(assignedDomainsList, listOfFields, subtype);
+                                    try
+                                    {
+                                        IReadOnlyList<Field> listOfFields = fcDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypes = fcDefinition.GetSubtypes();
+
+                                        if (subtypes.Count != 0)
+                                        {
+                                            foreach (Subtype subtype in subtypes)
+                                                PopulateAssignedDomainList(assignedDomainsList, listOfFields, subtype);
+                                        }
+                                        else
+                                            PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
                                 }
-                                else
-                                    PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
-                            }
-                        }
 
-                        //Get Domains assigned to a table
-                        IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
-                        foreach (TableDefinition tableDefinition in tableDefinitions)
-                        {
-                            try
-                            {
-                                IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
-
-                                if (subtypes.Count != 0)
+                                //Get Domains assigned to a table
+                                IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
+                                foreach (TableDefinition tableDefinition in tableDefinitions)
                                 {
-                                    foreach (Subtype subtype in subtypes)
-                                        PopulateAssignedDomainList(assignedDomainsList, listOfFields, subtype);
+                                    try
+                                    {
+                                        IReadOnlyList<Field> listOfFields = tableDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypes = tableDefinition.GetSubtypes();
+
+                                        if (subtypes.Count != 0)
+                                        {
+                                            foreach (Subtype subtype in subtypes)
+                                                PopulateAssignedDomainList(assignedDomainsList, listOfFields, subtype);
+                                        }
+                                        else
+                                            PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
                                 }
-                                else
-                                    PopulateAssignedDomainList(assignedDomainsList, listOfFields, null);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
+
+                                //Now loop through each domain in the geodatabase and see if it's in the assigned list
+                                sw.WriteLine("Domain Name");
+                                IEnumerable<Domain> domainsList = geodatabase.GetDomains().OrderBy(x => x.GetName());
+                                foreach (Domain domain in domainsList)
+                                {
+                                    if (!assignedDomainsList.Contains(domain.GetName()))
+                                        sw.WriteLine(domain.GetName());
+                                }
+
+                                sw.Flush();
+                                sw.Close();
+                                assignedDomainsList.Clear();
                             }
                         }
-
-                        //Now loop through each domain in the geodatabase and see if it's in the assigned list
-                        sw.WriteLine("Domain Name");
-                        IEnumerable<Domain> domainsList = geodatabase.GetDomains().OrderBy(x => x.GetName());
-                        foreach (Domain domain in domainsList)
-                        {
-                            if (!assignedDomainsList.Contains(domain.GetName()))
-                                sw.WriteLine(domain.GetName());
-                        }
-
-                        sw.Flush();
-                        sw.Close();
-                        assignedDomainsList.Clear();
                     }
                 }
             });

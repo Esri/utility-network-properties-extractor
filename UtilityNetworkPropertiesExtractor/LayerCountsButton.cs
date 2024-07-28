@@ -13,7 +13,6 @@
 
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -31,8 +30,6 @@ namespace UtilityNetworkPropertiesExtractor
     //The number of layers in the map will impact the execution duration.  
     internal class LayerCountsButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -41,7 +38,6 @@ namespace UtilityNetworkPropertiesExtractor
             try
             {
                 progDlg.Show();
-
                 await ExtractLayerCountAsync();
             }
             catch (Exception ex)
@@ -57,20 +53,12 @@ namespace UtilityNetworkPropertiesExtractor
         public static Task ExtractLayerCountAsync()
         {
             return QueuedTask.Run(() =>
-            {
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerCounts.csv", dateFormatted, Common.GetActiveMapName());
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+            { 
+                string outputFile = Common.BuildCsvNameContainingMapName("LayerCounts");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    sw.WriteLine(DateTime.Now + "," + "Layer and Table Counts");
-                    sw.WriteLine();
-                    sw.WriteLine("Project," + Project.Current.Path);
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
+                    Common.WriteHeaderInfoForMap(sw, "Layer and Table Counts");
                     sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
                     sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
                     int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();
