@@ -27,7 +27,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class LayerInfoButton : Button
     {
-        private static string _fileName = string.Empty;
         private const string _defQueriesMesg = "see LayerInfo_DefinitionQueries";
 
         protected async override void OnClick()
@@ -54,11 +53,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_LayerInfo.csv", dateFormatted, Common.GetActiveMapName());
-
                 List<CSVLayout> csvLayoutList = new List<CSVLayout>();
                 List<PopupLayout> popupLayoutList = new List<PopupLayout>();
                 List<DisplayFilterLayout> displayFilterLayoutList = new List<DisplayFilterLayout>();
@@ -68,7 +62,7 @@ namespace UtilityNetworkPropertiesExtractor
 
                 InterrogateLayers(ref csvLayoutList, ref popupLayoutList, ref displayFilterLayoutList, ref sharedTraceConfigurationLayoutList, ref definitionQueryLayoutList, ref labelLayoutList);
 
-                string layerInfoFile = Path.Combine(Common.ExtractFilePath, _fileName);
+                string layerInfoFile = Common.BuildCsvNameContainingMapName("LayerInfo");
                 WriteLayerInfoCSV(csvLayoutList, layerInfoFile);
 
                 if (popupLayoutList.Count >= 1)
@@ -109,20 +103,23 @@ namespace UtilityNetworkPropertiesExtractor
             int layerPos = 1;
             int popupExpressionCount;
             int labelCount;
-            string layerContainer;
+            string layerContainer = string.Empty;
             string prevGroupLayerName = string.Empty;
             string popupName = string.Empty;
             string popupExpression = string.Empty;
             string displayFilterExpression = string.Empty;
             string displayFilterName = string.Empty;
             string additionalDefQueriesText;
+            bool addToCsvLayoutList;
 
-            List<Layer> layerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().ToList();
-            foreach (Layer layer in layerList)
+            IReadOnlyList<MapMember> mapMemberList = MapView.Active.Map.GetMapMembersAsFlattenedList();
+            foreach (MapMember mapMember in mapMemberList)
             {
+                addToCsvLayoutList = true;
                 CSVLayout csvLayout = new CSVLayout();
                 try
                 {
+                    Layer layer;
                     popupExpressionCount = 0;
                     labelCount = 0;
                     popupName = string.Empty;
@@ -131,26 +128,31 @@ namespace UtilityNetworkPropertiesExtractor
                     displayFilterExpression = string.Empty;
                     displayFilterName = string.Empty;
 
-                    layerContainer = layer.Parent.ToString();
-                    if (layerContainer != MapView.Active.Map.Name) // Group layer
+                    if (mapMember is Layer)
                     {
-                        if (layerContainer != prevGroupLayerName)
-                            prevGroupLayerName = layerContainer;
+                        layer = mapMember as Layer;
+                        layerContainer = layer.Parent.ToString();
+                        if (layerContainer != MapView.Active.Map.Name) // Group layer
+                        {
+                            if (layerContainer != prevGroupLayerName)
+                                prevGroupLayerName = layerContainer;
+                        }
+                        else
+                            layerContainer = string.Empty;
+
+                        csvLayout.IsExpanded = layer.IsExpanded.ToString();
+                        csvLayout.IsVisible = layer.IsVisible.ToString();
+                        csvLayout.MaxScale = Common.GetScaleValueText(layer.MaxScale);
+                        csvLayout.MinScale = Common.GetScaleValueText(layer.MinScale);
                     }
-                    else
-                        layerContainer = string.Empty;
 
                     csvLayout.LayerPos = layerPos.ToString();
-                    csvLayout.LayerType = Common.GetLayerTypeDescription(layer);
-                    csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(layer.Name);
+                    csvLayout.LayerType = Common.GetLayerTypeDescription(mapMember);
+                    csvLayout.LayerName = Common.EncloseStringInDoubleQuotes(mapMember.Name);
                     csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(layerContainer);
-                    csvLayout.IsExpanded = layer.IsExpanded.ToString();
-                    csvLayout.IsVisible = layer.IsVisible.ToString();
-                    csvLayout.MaxScale = Common.GetScaleValueText(layer.MaxScale);
-                    csvLayout.MinScale = Common.GetScaleValueText(layer.MinScale);
 
                     //BasicFeatureLayer (Layers that inherit from BasicFeatureLayer are FeatureLayer, AnnotationLayer and DimensionLayer)
-                    if (layer is BasicFeatureLayer basicFeatureLayer)
+                    if (mapMember is BasicFeatureLayer basicFeatureLayer)
                     {
                         csvLayout.ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(basicFeatureLayer.DefinitionQuery);
                         csvLayout.ClassName = basicFeatureLayer.GetTable().GetName();
@@ -160,14 +162,14 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.LayerSource = basicFeatureLayer.GetTable().GetPath().ToString();
 
                         //Display Filters
-                        CIMBasicFeatureLayer cimBasicFeatureLayer = layer.GetDefinition() as CIMBasicFeatureLayer;
+                        CIMBasicFeatureLayer cimBasicFeatureLayer = basicFeatureLayer.GetDefinition() as CIMBasicFeatureLayer;
                         if (cimBasicFeatureLayer.EnableDisplayFilters)
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimBasicFeatureLayer.DisplayFilterChoices;
                             CIMDisplayFilter[] cimDisplayFilter = cimBasicFeatureLayer.DisplayFilters;
                             displayFilterCount = AddDisplayFiltersToList(csvLayout, cimDisplayFilterChoices, cimDisplayFilter, ref displayFilterLayoutList);
                             GetDisplayFilterInfoForCSV(displayFilterLayoutList, displayFilterCount, ref displayFilterExpression, ref displayFilterName);
-                            
+
                             csvLayout.DisplayFilterCount = displayFilterCount.ToString();
                             csvLayout.DisplayFilterExpresssion = displayFilterExpression;
                             csvLayout.DisplayFilterName = displayFilterName;
@@ -176,7 +178,7 @@ namespace UtilityNetworkPropertiesExtractor
                         //FeatureLayer
                         if (basicFeatureLayer is FeatureLayer featureLayer)
                         {
-                            CIMFeatureLayer cimFeatureLayer = layer.GetDefinition() as CIMFeatureLayer;
+                            CIMFeatureLayer cimFeatureLayer = featureLayer.GetDefinition() as CIMFeatureLayer;
                             CIMFeatureTable cimFeatureTable = cimFeatureLayer.FeatureTable;
                             CIMExpressionInfo cimExpressionInfo = cimFeatureTable.DisplayExpressionInfo;
 
@@ -216,19 +218,19 @@ namespace UtilityNetworkPropertiesExtractor
                             GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
 
                             //Definition Queries
-                            if (! featureLayer.IsSubtypeLayer)
+                            if (!featureLayer.IsSubtypeLayer)
                                 additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, featureLayer.DefinitionQueries, featureLayer.DefinitionQuery, ref definitionQueryLayout);
                             else
                             {
                                 //When the featurelayer is part of a subtype group layer, the definition query can only be set at the SGL level
                                 additionalDefQueriesText = string.Empty;
-                                csvLayout.ActiveDefinitionQuery = string.Empty;  
+                                csvLayout.ActiveDefinitionQuery = string.Empty;
                             }
 
                             //Assign Featurelayer values
                             csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
                             csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
-                            csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Count().ToString();
+                            csvLayout.EditTemplateCount = cimFeatureLayer.FeatureTemplates?.Length.ToString();
                             csvLayout.IsSnappable = featureLayer.IsSnappable.ToString();
                             csvLayout.IsSubtypeLayer = featureLayer.IsSubtypeLayer.ToString();
                             csvLayout.IsLabelVisible = featureLayer.IsLabelVisible.ToString();
@@ -269,12 +271,12 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Subtype Group Layer
-                    else if (layer is SubtypeGroupLayer subtypeGroupLayer)
+                    else if (mapMember is SubtypeGroupLayer subtypeGroupLayer)
                     {
                         csvLayout.GroupLayerName = csvLayout.LayerName;
                         csvLayout.LayerName = string.Empty;
-
-                        CIMSubtypeGroupLayer cimSubtypeGroupLayer = layer.GetDefinition() as CIMSubtypeGroupLayer;
+                       
+                        CIMSubtypeGroupLayer cimSubtypeGroupLayer = subtypeGroupLayer.GetDefinition() as CIMSubtypeGroupLayer;
                         if (cimSubtypeGroupLayer.EnableDisplayFilters)
                         {
                             CIMDisplayFilter[] cimDisplayFilterChoices = cimSubtypeGroupLayer.DisplayFilterChoices;
@@ -294,14 +296,14 @@ namespace UtilityNetworkPropertiesExtractor
                     }
 
                     //Group Layer
-                    else if (layer is GroupLayer groupLayer)
+                    else if (mapMember is GroupLayer groupLayer)
                     {
                         csvLayout.GroupLayerName = csvLayout.LayerName;
                         csvLayout.LayerName = string.Empty;
                     }
 
                     //Utiliy Network Layer
-                    else if (layer is UtilityNetworkLayer utilityNetworkLayer)
+                    else if (mapMember is UtilityNetworkLayer utilityNetworkLayer)
                     {
                         csvLayout.GroupLayerName = csvLayout.LayerName;
 
@@ -309,7 +311,7 @@ namespace UtilityNetworkPropertiesExtractor
                         string sharedTraceConfiguation = "";
                         if (utilityNetworkLayer.UNVersion >= 5)
                         {
-                            CIMUtilityNetworkLayer cimUtilityNetworkLayer = layer.GetDefinition() as CIMUtilityNetworkLayer;
+                            CIMUtilityNetworkLayer cimUtilityNetworkLayer = utilityNetworkLayer.GetDefinition() as CIMUtilityNetworkLayer;
                             CIMNetworkTraceConfiguration[] cimNetworkTraceConfigurations = cimUtilityNetworkLayer.ActiveTraceConfigurations;
                             if (cimNetworkTraceConfigurations != null)
                             {
@@ -340,28 +342,53 @@ namespace UtilityNetworkPropertiesExtractor
                         csvLayout.SharedTraceConfiguration = sharedTraceConfiguation;
                     }
 
+                    //Subtype Group Table
+                    else if (mapMember is SubtypeGroupTable subtypeGroupTable)
+                    {
+                        layerContainer = Common.GetGroupLayerNameForStandaloneTable(subtypeGroupTable);
+                        layerPos = InterrogateStandaloneTable(subtypeGroupTable, layerPos, layerContainer, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+                        
+                        //Include "sub tables" in the report 
+                        IReadOnlyList<StandaloneTable> standaloneTablesList = subtypeGroupTable.StandaloneTables;
+                        foreach (StandaloneTable standaloneTable in standaloneTablesList)
+                            layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, mapMember.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+
+                        //Since already added Table info to CsvLayoutList, don't do it again.
+                        addToCsvLayoutList = false;
+                    }
+
+                    //Standalone Table
+                    else if (mapMember is StandaloneTable standaloneTable)
+                    {
+                        layerContainer = Common.GetGroupLayerNameForStandaloneTable(standaloneTable);
+                        layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, layerContainer, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+
+                        //Since already added Table info to CsvLayoutList, don't do it again.
+                        addToCsvLayoutList = false;
+                    }
+
                     //Tile Service Layer
-                    else if (layer is TiledServiceLayer tiledServiceLayer)
+                    else if (mapMember is TiledServiceLayer tiledServiceLayer)
                     {
                         csvLayout.LayerSource = tiledServiceLayer.URL;
                     }
 
                     //Image Service Layer
-                    else if (layer is ImageServiceLayer imageServiceLayer)
+                    else if (mapMember is ImageServiceLayer imageServiceLayer)
                     {
                         CIMAGSServiceConnection cimAGSServiceConnection = imageServiceLayer.GetDataConnection() as CIMAGSServiceConnection;
                         csvLayout.LayerSource = cimAGSServiceConnection.URL;
                     }
 
                     //Vector Tile Layer
-                    else if (layer is VectorTileLayer vectorTileLayer)
+                    else if (mapMember is VectorTileLayer vectorTileLayer)
                     {
                         CIMVectorTileDataConnection cimVectorTileDataConn = vectorTileLayer.GetDataConnection() as CIMVectorTileDataConnection;
                         csvLayout.LayerSource = cimVectorTileDataConn.URI;
                     }
 
                     //Graphics Layer
-                    else if (layer is GraphicsLayer graphicsLayer)
+                    else if (mapMember is GraphicsLayer graphicsLayer)
                     {
                         CIMGraphicsLayer cimGraphicsLayer = graphicsLayer.GetDefinition() as CIMGraphicsLayer;
                         csvLayout.IsSelectable = cimGraphicsLayer.Selectable.ToString();
@@ -375,75 +402,71 @@ namespace UtilityNetworkPropertiesExtractor
                 }
 
                 //Assign record to the list
-                csvLayoutList.Add(csvLayout);
-
-                //increment counter by 1
-                layerPos += 1;
-            }
-
-            //Standalone Tables
-            IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
-            layerPos = InterrogateStandaloneTables(standaloneTableList, layerPos, string.Empty, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
-
-            //Tables in Group Layers
-            //  Will show up at the bottom of the CSV.  This isn't quite right.
-            List<GroupLayer> groupLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<GroupLayer>().ToList();
-            foreach (GroupLayer groupLayer in groupLayerList)
-            {
-                if (groupLayer.StandaloneTables.Count > 0)
-                    layerPos = InterrogateStandaloneTables(groupLayer.StandaloneTables, layerPos, groupLayer.Name, ref csvLayoutList, ref popupLayoutList, ref definitionQueryLayout);
+                if (addToCsvLayoutList)
+                {
+                    //increment counter by 1
+                    csvLayoutList.Add(csvLayout);
+                    layerPos += 1;
+                }
             }
         }
 
-        private static int InterrogateStandaloneTables(IReadOnlyList<StandaloneTable> standaloneTableList, int layerPos, string groupLayerName, ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DefinitionQueryLayout> definitionQueryLayout)
+        private static int InterrogateStandaloneTable(StandaloneTable standaloneTable, int layerPos, string groupLayerName, ref List<CSVLayout> csvLayoutList, ref List<PopupLayout> popupLayoutList, ref List<DefinitionQueryLayout> definitionQueryLayout)
         {
             int popupExpressionCount;
             string popupName = string.Empty;
             string popupExpression = string.Empty;
-            foreach (StandaloneTable standaloneTable in standaloneTableList)
+
+            CSVLayout csvLayout = new CSVLayout()
             {
-                CSVLayout csvLayout = new CSVLayout()
-                {
-                    ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionQuery),
-                    ClassName = standaloneTable.GetTable().GetName(),
-                    GroupLayerName = Common.EncloseStringInDoubleQuotes(groupLayerName),
-                    LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
-                    LayerPos = layerPos.ToString(),
-                    LayerSource = standaloneTable.GetTable().GetPath().ToString(),
-                };
-
-                if (string.IsNullOrEmpty(groupLayerName))
-                    csvLayout.LayerType = "Standalone Table";
-                else
-                    csvLayout.LayerType = "Table in Group Layer";
-
-                //Primary Display Field            
-                CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
-                CIMExpressionInfo cimExpressionInfo = cimStandaloneTable.DisplayExpressionInfo;
-                string displayField = cimStandaloneTable.DisplayField;
-                if (cimExpressionInfo != null)
-                    displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
-
-                //Pop-ups
-                string popupUseLayerFields = GetPopupUseLayerFieldsVal(cimStandaloneTable.PopupInfo);
-                popupExpressionCount = AddPopupInfoToList(csvLayout, cimStandaloneTable.PopupInfo, ref popupLayoutList);
-                GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
-
-                //Definition Queries
-                string additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, standaloneTable.DefinitionQueries, standaloneTable.DefinitionQuery, ref definitionQueryLayout);
-
-                //assign values
-                csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
-                csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
-                csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
-                csvLayout.PopupExpressionName = popupName;
-                csvLayout.PopupExpressionArcade = popupExpression;
-                csvLayout.PopupUseLayerFields = popupUseLayerFields.ToString();
-
-                //Add record to list
-                csvLayoutList.Add(csvLayout);
-                layerPos += 1;
+                ActiveDefinitionQuery = Common.EncloseStringInDoubleQuotes(standaloneTable.DefinitionQuery),
+                ClassName = standaloneTable.GetTable().GetName(),
+                GroupLayerName = Common.EncloseStringInDoubleQuotes(groupLayerName),
+                LayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name),
+                LayerPos = layerPos.ToString(),
+                LayerSource = standaloneTable.GetTable().GetPath().ToString(),
+                LayerType = Common.GetLayerTypeDescription(standaloneTable)
+            };
+            
+            //Subtype Group Table entry
+            if (standaloneTable is SubtypeGroupTable)
+            {
+                csvLayout.GroupLayerName = Common.EncloseStringInDoubleQuotes(standaloneTable.Name);
+                csvLayout.LayerName = string.Empty;
+                csvLayout.LayerSource = string.Empty;
             }
+            else if (standaloneTable.IsSubtypeTable)  // sub table that is part of the Subtype Group Table
+            {
+                csvLayout.IsSubtypeLayer = standaloneTable.IsSubtypeTable.ToString();
+                csvLayout.SubtypeValue = standaloneTable.SubtypeValue.ToString();
+            }
+
+            //Primary Display Field            
+            CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
+            CIMExpressionInfo cimExpressionInfo = cimStandaloneTable.DisplayExpressionInfo;
+            string displayField = cimStandaloneTable.DisplayField;
+            if (cimExpressionInfo != null)
+                displayField = cimExpressionInfo.Expression.Replace("\"", "'");  //double quotes messes up the delimeters in the CSV
+
+            //Pop-ups
+            string popupUseLayerFields = GetPopupUseLayerFieldsVal(cimStandaloneTable.PopupInfo);
+            popupExpressionCount = AddPopupInfoToList(csvLayout, cimStandaloneTable.PopupInfo, ref popupLayoutList);
+            GetPopupInfoInfoForCSV(popupLayoutList, popupExpressionCount, ref popupName, ref popupExpression);
+
+            //Definition Queries
+            string additionalDefQueriesText = AddDefinitionQueriesToList(csvLayout, standaloneTable.DefinitionQueries, standaloneTable.DefinitionQuery, ref definitionQueryLayout);
+
+            //assign values
+            csvLayout.AdditionalDefinitionQueries = additionalDefQueriesText;
+            csvLayout.DisplayField = Common.EncloseStringInDoubleQuotes(displayField);
+            csvLayout.PopupExpressionCount = popupExpressionCount.ToString();
+            csvLayout.PopupExpressionName = popupName;
+            csvLayout.PopupExpressionArcade = popupExpression;
+            csvLayout.PopupUseLayerFields = popupUseLayerFields.ToString();
+
+            //Add record to list
+            csvLayoutList.Add(csvLayout);
+            layerPos += 1;
 
             return layerPos; // need to identify next layer position for "table in group layers"
         }
@@ -480,18 +503,11 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
+                Common.WriteHeaderInfoForMap(sw, "Layer Info");
                 sw.WriteLine("Coordinate System," + MapView.Active.Map.SpatialReference.Name);
                 sw.WriteLine("Map Units," + MapView.Active.Map.SpatialReference.Unit);
                 sw.WriteLine("Layers," + MapView.Active.Map.GetLayersAsFlattenedList().OfType<Layer>().Count());
-                sw.WriteLine("Standalone Tables," + MapView.Active.Map.StandaloneTables.Count);
-                int tablesInGroupLayers = Common.GetCountOfTablesInGroupLayers();
-                if (tablesInGroupLayers > 0)
-                    sw.WriteLine("Tables in Group Layers," + Common.GetCountOfTablesInGroupLayers());
-
+                sw.WriteLine("Standalone Tables," + Common.GetCountOfAllTablesInMap());
                 sw.WriteLine();
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
@@ -515,11 +531,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Labels");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Labels");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 LabelLayout emptyRec = new LabelLayout();
@@ -542,11 +554,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Popup Expressions");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Popup Expressions");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 PopupLayout emptyRec = new PopupLayout();
@@ -569,11 +577,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Shared Trace Configuration");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Shared Trace Configuration");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 SharedTraceConfigurationLayout emptyRec = new SharedTraceConfigurationLayout();
@@ -596,11 +600,7 @@ namespace UtilityNetworkPropertiesExtractor
             using (StreamWriter sw = new StreamWriter(outputFile))
             {
                 //Header information
-                sw.WriteLine(DateTime.Now + "," + "Layer Info - Definition Queries");
-                sw.WriteLine();
-                sw.WriteLine("Project," + Project.Current.Path);
-                sw.WriteLine("Map," + Common.GetActiveMapName());
-                sw.WriteLine();
+                Common.WriteHeaderInfoForMap(sw, "Layer Info - Definition Queries");
 
                 //Get all properties defined in the class.  This will be used to generate the CSV file
                 DefinitionQueryLayout emptyRec = new DefinitionQueryLayout();
@@ -648,7 +648,7 @@ namespace UtilityNetworkPropertiesExtractor
                 popupExpression = "see LayerInfo_PopupExpr.csv";
             }
         }
-                
+
         private static void DetermineSymbology(CIMFeatureLayer cimFeatureLayerDef, out string primarySymbology, out string field1, out string field2, out string field3)
         {
             primarySymbology = string.Empty;
@@ -694,13 +694,13 @@ namespace UtilityNetworkPropertiesExtractor
             else if (cimFeatureLayerDef.Renderer is CIMRepresentationRenderer)
                 primarySymbology = "Representation";
         }
-               
+
         private static string AddDefinitionQueriesToList(CSVLayout csvLayout, IReadOnlyList<DefinitionQuery> definitionQuery, string activeFilterName, ref List<DefinitionQueryLayout> definitionQueryLayoutList)
         {
             string returnMessage = string.Empty;
             int cnt = 0;
 
-            if (definitionQuery.Count() > 0)
+            if (definitionQuery.Count > 0)
             {
                 bool activeDefQuery;
                 foreach (DefinitionQuery filter in definitionQuery)

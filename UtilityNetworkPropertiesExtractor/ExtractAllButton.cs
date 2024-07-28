@@ -27,7 +27,16 @@ namespace UtilityNetworkPropertiesExtractor
                 progDlg.Show();
 
                 DateTime startTime = DateTime.Now;
+                Common.CreateOutputDirectory();
 
+                //Start with reports that are written to the root output directory
+                await LayerInfoButton.ExtractLayerInfoAsync();
+                await LayerScalesButton.ExtractLayerScalesAsync();
+                await SymbolScalesButton.ExtractSymbolScalesAsync();
+                await PopupFieldsButton.ExtractPopupFieldsAsync();
+                await FieldSettingsInMapButton.ExtractFieldSettingsInMapAsync();
+
+                //Utility Network specific reports
                 await UNFeatureServiceInfoButton.ExtractUNFeatureServiceInfo(false);
                 await AssetGroupsButton.ExtractAssetGroupsAsync(false);
                 await NetworkAttributesButton.ExtractNetworkAttributesAsync(false);
@@ -37,22 +46,23 @@ namespace UtilityNetworkPropertiesExtractor
                 await DomainNetworksButton.ExtractDomainNetworksAsync(false);
                 await TerminalConfigurationButton.ExtractTerminalConfigurationAsync(false);
                 await TraceConfigurationButton.ExtractTraceConfigurationAsync(false);
+                await NetworkDiagramsButton.ExtractNetworkDiagramsAsync(false);
+
+                //Database specific reports
+                await FieldsExtractButton.ExtractFieldsAsync();
                 await DomainValuesButton.ExtractDomainValuesAsync();
                 await DomainAssignmentsButton.ExtractDomainAssignmentsAsync();
                 await DomainOrphansButton.ExtractOrphanDomainsAsync();
-                await FieldsExtractButton.ExtractFieldsAsync();
-                await LayerInfoButton.ExtractLayerInfoAsync();
-                await LayerScalesButton.ExtractLayerScalesAsync();
-                await SymbolScalesButton.ExtractSymbolScalesAsync();
-                await PopupFieldsButton.ExtractPopupFieldsAsync();
-                await FieldSettingsInMapButton.ExtractFieldSettingsInMapAsync();
-                await NetworkDiagramsButton.ExtractNetworkDiagramsAsync(false);
                 await GdbObjectNamesButton.ExtractGdbObjectNamesAsync();
                 await RelationshipClassButton.ExtractRelationshipClassesAsync();
                 await AttributeRulesButton.ExtractAttributeRulesAsync();
                 await ContingentValuesButton.ExtractContingentValuesAsync();
+                
+                //Longer duration reports (if dataset is large)
                 await LayerCountsButton.ExtractLayerCountAsync();
-                await VersionInfoButton.ExtractVersionInfoAsync(false);
+                await VersionInfoButton.ExtractVersionInfoAsync();
+
+                //Some report had to go last
                 ProjectItemsButton.ExtractProjectItem();
 
                 DateTime endTime = DateTime.Now;

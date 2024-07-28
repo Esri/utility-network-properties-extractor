@@ -10,11 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,8 +26,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class FieldsExtractButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -52,102 +49,97 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-
-                using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
+                List<DataSourceInMap> dataSourceInMapList = DataSourcesInMapHelper.GetDataSourcesInMap();
+                foreach (DataSourceInMap dataSourceInMap in dataSourceInMapList)
                 {
-                    Common.CreateOutputDirectory();
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_Fields.csv", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    if (dataSourceInMap.WorkspaceFactory != WorkspaceFactory.Shapefile.ToString())
                     {
-                        //Header information
-                        UtilityNetworkDefinition utilityNetworkDefinition = null;
-                        if (utilityNetwork != null)
-                            utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                        Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Fields");
-
-                        //Get all properties defined in the class.  This will be used to generate the CSV file
-                        CSVLayout emptyRec = new CSVLayout();
-                        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                        //Write column headers based on properties in the class
-                        string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                        sw.WriteLine(columnHeader);
-
-                        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                        //Featureclasses
-                        IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
-                        foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
+                        using (Geodatabase geodatabase = dataSourceInMap.Geodatabase)
                         {
-                            try
+                            string outputFile = Common.BuildCsvName("Fields", dataSourceInMap.Name);
+                            using (StreamWriter sw = new StreamWriter(outputFile))
                             {
-                                IReadOnlyList<Field> fieldsList = fcDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypesList = fcDefinition.GetSubtypes();
+                                //Header information
+                                Common.WriteHeaderInfoForGeodatabase(sw, dataSourceInMap, "Fields");
 
-                                if (subtypesList.Count != 0)
+                                //Get all properties defined in the class.  This will be used to generate the CSV file
+                                CSVLayout emptyRec = new CSVLayout();
+                                PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                                //Write column headers based on properties in the class
+                                string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                                sw.WriteLine(columnHeader);
+
+                                List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                                //Featureclasses
+                                IReadOnlyList<FeatureClassDefinition> featureClassDefinitions = geodatabase.GetDefinitions<FeatureClassDefinition>();
+                                foreach (FeatureClassDefinition fcDefinition in featureClassDefinitions)
                                 {
-                                    //process each subtype in the featureclasss
-                                    foreach (Subtype subtype in subtypesList)
-                                        BuildFieldInfo(fcDefinition, subtype, fieldsList, ref csvLayoutList);
-                                }
-                                else
-                                    BuildFieldInfo(fcDefinition, null, fieldsList, ref csvLayoutList);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
-                            }
-                        }
+                                    try
+                                    {
+                                        IReadOnlyList<Field> fieldsList = fcDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypesList = fcDefinition.GetSubtypes();
 
-                        //Tables
-                        IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
-                        foreach (TableDefinition tableDefinition in tableDefinitions)
-                        {
-                            try
-                            {
-                                IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
-                                IReadOnlyList<Subtype> subtypesList = tableDefinition.GetSubtypes();
-                                
-                                if (subtypesList.Count != 0)
+                                        if (subtypesList.Count != 0)
+                                        {
+                                            //process each subtype in the featureclasss
+                                            foreach (Subtype subtype in subtypesList)
+                                                BuildFieldInfo(fcDefinition, subtype, fieldsList, ref csvLayoutList);
+                                        }
+                                        else
+                                            BuildFieldInfo(fcDefinition, null, fieldsList, ref csvLayoutList);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
+                                }
+
+                                //Tables
+                                IReadOnlyList<TableDefinition> tableDefinitions = geodatabase.GetDefinitions<TableDefinition>();
+                                foreach (TableDefinition tableDefinition in tableDefinitions)
                                 {
-                                    //process each subtype in the table
-                                    foreach (Subtype subtype in subtypesList)
-                                        BuildFieldInfo(tableDefinition, subtype, fieldsList, ref csvLayoutList);
+                                    try
+                                    {
+                                        IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
+                                        IReadOnlyList<Subtype> subtypesList = tableDefinition.GetSubtypes();
+
+                                        if (subtypesList.Count != 0)
+                                        {
+                                            //process each subtype in the table
+                                            foreach (Subtype subtype in subtypesList)
+                                                BuildFieldInfo(tableDefinition, subtype, fieldsList, ref csvLayoutList);
+                                        }
+                                        else
+                                            BuildFieldInfo(tableDefinition, null, fieldsList, ref csvLayoutList);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        if (ex.HResult != -2146233088) // No database permissions to perform the operation.
+                                            MessageBox.Show(ex.Message);
+                                    }
                                 }
-                                else
-                                    BuildFieldInfo(tableDefinition, null, fieldsList, ref csvLayoutList);
-                            }
-                            catch (Exception ex)
-                            {
-                                if (ex.HResult != -2146233088) // No database permissions to perform the operation.
-                                    MessageBox.Show(ex.Message);
+
+                                //Write body of report
+                                foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ClassName))
+                                {
+                                    string output = Common.ExtractClassValuesToString(row, properties);
+                                    sw.WriteLine(output);
+                                }
+
+                                sw.Flush();
+                                sw.Close();
                             }
                         }
-
-                        //Write body of report
-                        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ClassName))
-                        {
-                            string output = Common.ExtractClassValuesToString(row, properties);
-                            sw.WriteLine(output);
-                        }
-
-                        sw.Flush();
-                        sw.Close();
                     }
+                    //else // Shapefile
+                    //    BuildCsvForShapefile(dataSourceInMap);
                 }
             });
         }
-
+                
         private static void BuildFieldInfo(TableDefinition tableDefinition, Subtype subtype, IReadOnlyList<Field> fieldsList, ref List<CSVLayout> csvLayoutList)
         {
             string defaultCode;
@@ -218,6 +210,72 @@ namespace UtilityNetworkPropertiesExtractor
                 rangeValue = string.Empty;
             }
         }
+
+        private static void BuildCsvForShapefile(DataSourceInMap dataSourceInMap)
+        {
+            //////////////////////////////////////////////////////
+            ////May 14,2024:  Click the Fields multiple multiple times in the same Pro session may cause ArcGIS Pro to crash.  
+            ////  Sometimes it's the 2nd or 9th click.  Other instances it doesn't occur.
+            ////Tested on ArcGIS Pro 3.1.4
+            ////BUG-000167818:  The FeatureClassDefinition class throws a NullReferenceException for a shapefile in ArcGIS Pro SDK for .NET v3.3
+            //////////////////////////////////////////////////////
+
+            try
+            {
+                string outputFile = Common.BuildCsvName("Fields", dataSourceInMap.Name);
+                using (StreamWriter sw = new StreamWriter(outputFile))
+                {
+                    //Header information
+                    Common.WriteHeaderInfoForMap(sw, "Fields");
+
+                    //Get all properties defined in the class.  This will be used to generate the CSV file
+                    CSVLayout emptyRec = new CSVLayout();
+                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                    //Write column headers based on properties in the class
+                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                    sw.WriteLine(columnHeader);
+
+                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                    FileSystemConnectionPath fileConnection = new FileSystemConnectionPath(new Uri(dataSourceInMap.URI), FileSystemDatastoreType.Shapefile);
+                    using (FileSystemDatastore shapefile = new FileSystemDatastore(fileConnection))
+                    {
+                        try
+                        {
+                            foreach (string shapefileName in Directory.GetFiles(dataSourceInMap.URI, "*.shp"))
+                            {
+                                using (FeatureClass featureClass = shapefile.OpenDataset<FeatureClass>(shapefileName))
+                                {
+                                    FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition();
+                                    IReadOnlyList<Field> fieldsList = featureClassDefinition.GetFields();
+                                    BuildFieldInfo(featureClassDefinition, null, fieldsList, ref csvLayoutList);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Shapefile Fields - Inner Exception");
+                        }
+                    }
+
+                    //Write body of report
+                    foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.ClassName))
+                    {
+                        string output = Common.ExtractClassValuesToString(row, properties);
+                        sw.WriteLine(output);
+                    }
+
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Shapefile Fields - Outer Exception");
+            }
+        }
+        
         private class CSVLayout
         {
             public string ClassName { get; set; }

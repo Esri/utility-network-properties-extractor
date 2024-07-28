@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,96 +27,96 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class TerminalConfigurationButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Terminal Configuration to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractTerminalConfigurationAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Terminal Configuration");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
         public static Task ExtractTerminalConfigurationAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Terminal Configuration", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Terminal Configuration", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_TerminalConfiguration.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Terminal Configuration");
-
-                    List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayout emptyRec = new CSVLayout();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    IEnumerable<TerminalConfiguration> terminalConfigList = utilityNetworkDefinition.GetTerminalConfigurations().OrderBy(x => x.Name);
-                    foreach (TerminalConfiguration terminalConfig in terminalConfigList)
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        CSVLayout rec = new CSVLayout()
+                        string outputFile = Common.BuildCsvName("TerminalConfig", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            Name = terminalConfig.Name,
-                            DirectionalityModel = terminalConfig.Directionality.ToString()
-                        };
-                        csvLayoutList.Add(rec);
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Terminal Configuration");
 
-                        IReadOnlyList<Terminal> terminals = terminalConfig.Terminals;
-                        foreach (Terminal terminal in terminals)
-                        {
-                            rec = new CSVLayout()
+                            List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayout emptyRec = new CSVLayout();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            IEnumerable<TerminalConfiguration> terminalConfigList = utilityNetworkDefinition.GetTerminalConfigurations().OrderBy(x => x.Name);
+                            foreach (TerminalConfiguration terminalConfig in terminalConfigList)
                             {
-                                ID = terminal.ID.ToString(),
-                                TerminalName = terminal.Name,
-                                UpstreamTerminal = terminal.IsUpstreamTerminal.ToString()
-                            };
-                            csvLayoutList.Add(rec);
+                                CSVLayout rec = new CSVLayout()
+                                {
+                                    Name = terminalConfig.Name,
+                                    DirectionalityModel = terminalConfig.Directionality.ToString()
+                                };
+                                csvLayoutList.Add(rec);
+
+                                IReadOnlyList<Terminal> terminals = terminalConfig.Terminals;
+                                foreach (Terminal terminal in terminals)
+                                {
+                                    rec = new CSVLayout()
+                                    {
+                                        ID = terminal.ID.ToString(),
+                                        TerminalName = terminal.Name,
+                                        UpstreamTerminal = terminal.IsUpstreamTerminal.ToString()
+                                    };
+                                    csvLayoutList.Add(rec);
+                                }
+
+                                // add blank line
+                                csvLayoutList.Add(emptyRec);
+                            }
+
+                            //Write body
+                            foreach (CSVLayout row in csvLayoutList)
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
                         }
-
-                        // add blank line
-                        csvLayoutList.Add(emptyRec);
                     }
-
-                    //Write body
-                    foreach (CSVLayout row in csvLayoutList)
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                    _fileGenerated = true;
                 }
             });
         }

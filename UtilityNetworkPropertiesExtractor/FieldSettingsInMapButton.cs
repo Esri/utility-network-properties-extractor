@@ -11,12 +11,11 @@
    limitations under the License.
 */
 using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-using System; 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,8 +25,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class FieldSettingsInMapButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -52,32 +49,17 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_FieldSettingsInMap.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+                string outputFile = Common.BuildCsvNameContainingMapName("FieldSettingsInMap");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = null;
-                    if (utilityNetwork != null)
-                        utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Field Settings in Map");
+                    Common.WriteHeaderInfoForMap(sw, "Field Settings in Map");
                     
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
 
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
-                    sw.WriteLine("Layers," + basicFeatureLayerList.Count());
-                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
+                    sw.WriteLine("Layers," + basicFeatureLayerList.Count);
+                    sw.WriteLine("Standalone Tables," + standaloneTableList.Count);
                     sw.WriteLine("");
                     sw.WriteLine("Note,Column headers with an * are the editable field settings");
                     sw.WriteLine();
@@ -106,13 +88,19 @@ namespace UtilityNetworkPropertiesExtractor
                     //Standalone Tables in the map
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        using (Table table = standaloneTable.GetTable())
+                        if (standaloneTable is not SubtypeGroupTable) // exclude the SubtypeGroupTable from the report
                         {
-                            if (table == null) // broken datasource.  Don't add to the csv
-                                continue;
+                            using (Table table = standaloneTable.GetTable())
+                            {
+                                if (table == null) // broken datasource.  Don't add to the csv
+                                    continue;
 
-                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            WriteFieldSettings(sw, standaloneTable.Name, table.GetName(), string.Empty, fieldDescList);
+                                if (standaloneTable.IsSubtypeTable)
+                                    subtypeValue = standaloneTable.SubtypeValue.ToString();
+
+                                List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                                WriteFieldSettings(sw, standaloneTable.Name, table.GetName(), subtypeValue, fieldDescList);
+                            }
                         }
                     }
 

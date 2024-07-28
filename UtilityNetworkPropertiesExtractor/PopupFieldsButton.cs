@@ -28,8 +28,6 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class PopupFieldsButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
@@ -37,7 +35,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             try
             {
-                progDlg.Show(); 
+                progDlg.Show();
                 await ExtractPopupFieldsAsync();
             }
             catch (Exception ex)
@@ -54,30 +52,15 @@ namespace UtilityNetworkPropertiesExtractor
         {
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
-                    featureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().First();
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_PopupFields.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
+                string outputFile = Common.BuildCsvNameContainingMapName("PopupFields");
                 using (StreamWriter sw = new StreamWriter(outputFile))
                 {
                     //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = null;
-                    if (utilityNetwork != null)
-                        utilityNetworkDefinition = utilityNetwork.GetDefinition();
-
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Popup Fields");
+                    Common.WriteHeaderInfoForMap(sw, "Popup Fields");
 
                     IReadOnlyList<BasicFeatureLayer> basicFeatureLayerList = MapView.Active.Map.GetLayersAsFlattenedList().OfType<BasicFeatureLayer>().ToList();
-                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.StandaloneTables;
+                    IReadOnlyList<StandaloneTable> standaloneTableList = MapView.Active.Map.GetStandaloneTablesAsFlattenedList();
 
-                    sw.WriteLine("Map," + Common.GetActiveMapName());
                     sw.WriteLine("Layers," + basicFeatureLayerList.Count());
                     sw.WriteLine("Standalone Tables," + standaloneTableList.Count());
                     sw.WriteLine("");
@@ -122,30 +105,37 @@ namespace UtilityNetworkPropertiesExtractor
                                 fieldsInPopup = GetFieldsInPopup(cimFeatureLayer.PopupInfo, ref useLayerFields);
 
                             //Build the CSV file
-                            BuildPopupFieldsList(table.GetName(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList );
+                            BuildPopupFieldsList(table.GetName(), basicFeatureLayer.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
                         }
                     }
 
                     //Standalone Tables in the map
                     foreach (StandaloneTable standaloneTable in standaloneTableList)
                     {
-                        using (Table table = standaloneTable.GetTable())
+                        if (standaloneTable is not SubtypeGroupTable) // exclude the SubtypeGroupTable from the report
                         {
-                            if (table == null) // broken datasource.  Don't add to the csv
-                                continue;
+                            using (Table table = standaloneTable.GetTable())
+                            {
+                                if (table == null) // broken datasource.  Don't add to the csv
+                                    continue;
 
-                            bool useLayerFields = false;
-                            string[] fieldsInPopup = null;
+                                subtypeValue = string.Empty;
+                                if (standaloneTable.IsSubtypeTable)
+                                    subtypeValue = standaloneTable.SubtypeValue.ToString();
+                                
+                                bool useLayerFields = false;
+                                string[] fieldsInPopup = null;
 
-                            //Get all fields on the table
-                            List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
-                            CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
-                            
-                            //Get Fields defined in the Popup
-                            fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
+                                //Get all fields on the table
+                                List<FieldDescription> fieldDescList = standaloneTable.GetFieldDescriptions();
+                                CIMStandaloneTable cimStandaloneTable = standaloneTable.GetDefinition();
 
-                            //Build the CSV file
-                            BuildPopupFieldsList(table.GetName(), standaloneTable.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
+                                //Get Fields defined in the Popup
+                                fieldsInPopup = GetFieldsInPopup(cimStandaloneTable.PopupInfo, ref useLayerFields);
+
+                                //Build the CSV file
+                                BuildPopupFieldsList(table.GetName(), standaloneTable.Name, subtypeValue, useLayerFields, fieldDescList, fieldsInPopup, ref csvLayoutList);
+                            }
                         }
                     }
 
@@ -169,7 +159,7 @@ namespace UtilityNetworkPropertiesExtractor
 
             //useLayerFields:  In Pro, this option is checked:  Use visible fields and Arcade Expressions
             //In either case, use the setting defined at the fields level
-            if (useLayerFields || fieldsInPopup == null)  
+            if (useLayerFields || fieldsInPopup == null)
             {
                 foreach (FieldDescription fieldDescription in fieldsList)
                 {
@@ -195,7 +185,7 @@ namespace UtilityNetworkPropertiesExtractor
                             //  I've noticed LRS (Linear Referencing) fields included in the Popup list when the layer is part of a Domain Network or was a Tracing Start/Barrier table.
                             FieldDescription fieldDescription = fieldsList.Where(x => x.Name == fieldInPopup).FirstOrDefault();
                             if (fieldDescription != null || fieldInPopup.Contains("expression/"))  // not in Popup Fields List.   Add it to CSV
-                            {                               
+                            {
                                 fieldVisibility = true;
 
                                 string fieldAlias;
@@ -256,12 +246,15 @@ namespace UtilityNetworkPropertiesExtractor
             {
                 //determine if expression is visible in popup
                 CIMMediaInfo[] cimMediaInfos = cimPopupInfo.MediaInfos;
-                for (int j = 0; j < cimMediaInfos.Length; j++)
+                if (cimMediaInfos != null)
                 {
-                    if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                    for (int j = 0; j < cimMediaInfos.Length; j++)
                     {
-                        fields = cimTableMediaInfo.Fields;
-                        useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
+                        if (cimMediaInfos[j] is CIMTableMediaInfo cimTableMediaInfo)
+                        {
+                            fields = cimTableMediaInfo.Fields;
+                            useLayerFieldsVal = cimTableMediaInfo.UseLayerFields;
+                        }
                     }
                 }
             }

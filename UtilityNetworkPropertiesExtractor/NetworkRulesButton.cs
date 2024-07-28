@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,152 +27,151 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class NetworkRulesButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Network Rules to: \n" + Common.ExtractFilePath);
+
             try
             {
+                progDlg.Show();
                 await ExtractNetworkRulesAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Network Rules");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static Task ExtractNetworkRulesAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Network Rules", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Network Rules", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_NetworkRules.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Network Rules");
-
-                    IOrderedEnumerable<Rule> rulesList = utilityNetworkDefinition.GetRules().OrderBy(x => x.Type).ThenBy(x => x.ID);
-
-                    //1.  List out the Rule types with their count
-                    CSVLayoutCounts emptyCountRec = new CSVLayoutCounts();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyCountRec);
-
-                    //Write column headers based on properties in the class
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    //build section consisting of Rule Types and counts
-                    int ruleTypeCount = 0;
-                    List<CSVLayoutCounts> countsList = new List<CSVLayoutCounts>();
-                    foreach (int rt in Enum.GetValues(typeof(RuleType)))
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        ruleTypeCount = rulesList.Where(x => x.Type == (RuleType)rt).Count();
-
-                        CSVLayoutCounts ruleRec = new CSVLayoutCounts()
+                        string outputFile = Common.BuildCsvName("NetworkRules", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            RuleCode = rt.ToString(), //The rule code can be used in sql queries against table un_#_rules
-                            RuleType = ((RuleType)rt).ToString(),
-                            Count = ruleTypeCount.ToString()
-                        };
-                        countsList.Add(ruleRec);
-                    }
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Network Rules");
 
-                    //Include total number of rules
-                    CSVLayoutCounts totalCountRec = new CSVLayoutCounts()
-                    {
-                        Count = rulesList.Count().ToString()
-                    };
-                    countsList.Add(totalCountRec);
+                            IOrderedEnumerable<Rule> rulesList = utilityNetworkDefinition.GetRules().OrderBy(x => x.Type).ThenBy(x => x.ID);
 
-                    //Write section to CSV file
-                    countsList.Add(emptyCountRec);
-                    foreach (CSVLayoutCounts row in countsList)
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
+                            //1.  List out the Rule types with their count
+                            CSVLayoutCounts emptyCountRec = new CSVLayoutCounts();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyCountRec);
 
-                    //2.  Body of the report. 
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayoutRules emptyRec = new CSVLayoutRules();
-                    properties = Common.GetPropertiesOfClass(emptyRec);
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
 
-                    //Write column headers based on properties in the class
-                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
+                            //build section consisting of Rule Types and counts
+                            int ruleTypeCount = 0;
+                            List<CSVLayoutCounts> countsList = new List<CSVLayoutCounts>();
+                            foreach (int rt in Enum.GetValues(typeof(RuleType)))
+                            {
+                                ruleTypeCount = rulesList.Where(x => x.Type == (RuleType)rt).Count();
 
-                    //Build list of all Rules
-                    List<CSVLayoutRules> csvLayoutList = new List<CSVLayoutRules>();
-                    foreach (Rule rule in rulesList)
-                    {
-                        IReadOnlyList<RuleElement> ruleElementList = rule.RuleElements;
+                                CSVLayoutCounts ruleRec = new CSVLayoutCounts()
+                                {
+                                    RuleCode = rt.ToString(), //The rule code can be used in sql queries against table un_#_rules
+                                    RuleType = ((RuleType)rt).ToString(),
+                                    Count = ruleTypeCount.ToString()
+                                };
+                                countsList.Add(ruleRec);
+                            }
 
-                        CSVLayoutRules rec = new CSVLayoutRules()
-                        {
-                            RuleID = rule.ID.ToString(),
-                            RuleType = rule.Type.ToString(),
-                            FromClassName = ruleElementList[0].NetworkSource.Name,
-                            FromAssetGroupCode = ruleElementList[0].AssetGroup.Code.ToString(),
-                            FromAssetGroup = ruleElementList[0].AssetGroup.Name,
-                            FromAssetTypeCode = ruleElementList[0].AssetType.Code.ToString(),
-                            FromAssetType = ruleElementList[0].AssetType.Name,
-                            FromTerminal = ruleElementList[0].Terminal?.Name,
+                            //Include total number of rules
+                            CSVLayoutCounts totalCountRec = new CSVLayoutCounts()
+                            {
+                                Count = rulesList.Count().ToString()
+                            };
+                            countsList.Add(totalCountRec);
 
-                            ToClassName = ruleElementList[1].NetworkSource.Name,
-                            ToAssetGroupCode = ruleElementList[1].AssetGroup.Code.ToString(),
-                            ToAssetGroup = ruleElementList[1].AssetGroup.Name,
-                            ToAssetTypeCode = ruleElementList[1].AssetType.Code.ToString(),
-                            ToAssetType = ruleElementList[1].AssetType.Name,
-                            ToTerminal = ruleElementList[1].Terminal?.Name,
-                        };
+                            //Write section to CSV file
+                            countsList.Add(emptyCountRec);
+                            foreach (CSVLayoutCounts row in countsList)
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
 
-                        if (ruleElementList.Count == 3)
-                        {
-                            rec.ViaClassName = ruleElementList[2].NetworkSource.Name;
-                            rec.ViaAssetGroupCode = ruleElementList[2].AssetGroup.Code.ToString();
-                            rec.ViaAssetGroup = ruleElementList[2].AssetGroup.Name;
-                            rec.ViaAssetTypeCode = ruleElementList[2].AssetType.Code.ToString();
-                            rec.ViaAssetType = ruleElementList[2].AssetType.Name;
-                            rec.ViaTerminal = ruleElementList[2].Terminal?.Name;
+                            //2.  Body of the report. 
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayoutRules emptyRec = new CSVLayoutRules();
+                            properties = Common.GetPropertiesOfClass(emptyRec);
+
+                            //Write column headers based on properties in the class
+                            columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            //Build list of all Rules
+                            List<CSVLayoutRules> csvLayoutList = new List<CSVLayoutRules>();
+                            foreach (Rule rule in rulesList)
+                            {
+                                IReadOnlyList<RuleElement> ruleElementList = rule.RuleElements;
+
+                                CSVLayoutRules rec = new CSVLayoutRules()
+                                {
+                                    RuleID = rule.ID.ToString(),
+                                    RuleType = rule.Type.ToString(),
+                                    FromClassName = ruleElementList[0].NetworkSource.Name,
+                                    FromAssetGroupCode = ruleElementList[0].AssetGroup.Code.ToString(),
+                                    FromAssetGroup = ruleElementList[0].AssetGroup.Name,
+                                    FromAssetTypeCode = ruleElementList[0].AssetType.Code.ToString(),
+                                    FromAssetType = ruleElementList[0].AssetType.Name,
+                                    FromTerminal = ruleElementList[0].Terminal?.Name,
+
+                                    ToClassName = ruleElementList[1].NetworkSource.Name,
+                                    ToAssetGroupCode = ruleElementList[1].AssetGroup.Code.ToString(),
+                                    ToAssetGroup = ruleElementList[1].AssetGroup.Name,
+                                    ToAssetTypeCode = ruleElementList[1].AssetType.Code.ToString(),
+                                    ToAssetType = ruleElementList[1].AssetType.Name,
+                                    ToTerminal = ruleElementList[1].Terminal?.Name,
+                                };
+
+                                if (ruleElementList.Count == 3)
+                                {
+                                    rec.ViaClassName = ruleElementList[2].NetworkSource.Name;
+                                    rec.ViaAssetGroupCode = ruleElementList[2].AssetGroup.Code.ToString();
+                                    rec.ViaAssetGroup = ruleElementList[2].AssetGroup.Name;
+                                    rec.ViaAssetTypeCode = ruleElementList[2].AssetType.Code.ToString();
+                                    rec.ViaAssetType = ruleElementList[2].AssetType.Name;
+                                    rec.ViaTerminal = ruleElementList[2].Terminal?.Name;
+                                }
+                                csvLayoutList.Add(rec);
+                            }
+
+                            //write body of report.  Order by Rule Type, From AssetGroup, From AssetType, To AssetGroup, ToAssetType
+                            foreach (CSVLayoutRules row in csvLayoutList.OrderBy(x => x.RuleType).ThenBy(x => Convert.ToInt32(x.FromAssetGroupCode)).ThenBy(x => Convert.ToInt32(x.FromAssetTypeCode)).ThenBy(x => Convert.ToInt32(x.ToAssetGroupCode)).ThenBy(x => Convert.ToInt32(x.ToAssetTypeCode)))
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
                         }
-                        csvLayoutList.Add(rec);
                     }
-
-                    //write body of report.  Order by Rule Type, From AssetGroup, From AssetType, To AssetGroup, ToAssetType
-                    foreach (CSVLayoutRules row in csvLayoutList.OrderBy(x => x.RuleType).ThenBy(x => Convert.ToInt32(x.FromAssetGroupCode)).ThenBy(x => Convert.ToInt32(x.FromAssetTypeCode)).ThenBy(x => Convert.ToInt32(x.ToAssetGroupCode)).ThenBy(x => Convert.ToInt32(x.ToAssetTypeCode)))
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                    _fileGenerated = true;
                 }
             });
         }
-
 
         private class CSVLayoutCounts
         {

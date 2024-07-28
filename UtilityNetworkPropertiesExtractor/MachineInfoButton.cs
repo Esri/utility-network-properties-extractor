@@ -25,9 +25,6 @@ namespace UtilityNetworkPropertiesExtractor
         {
             string machineName = "Machine: " + Environment.MachineName;
 
-            //var plugin = FrameworkApplication.GetPlugInWrapper("UtilityNetworkPropertiesExtractor_MachineNameButton");
-            //plugin.Caption = machineName;
-
             Assembly assembly = Assembly.GetEntryAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
             string proVersion = $"ArcGIS Pro {fvi.ProductMajorPart}.{fvi.ProductMinorPart}.{fvi.ProductBuildPart}";

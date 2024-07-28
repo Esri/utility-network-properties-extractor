@@ -10,6 +10,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Core;
@@ -31,17 +32,14 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class TraceConfigurationButton : Button
     {
-        private static string _fileName = string.Empty;
-
         protected async override void OnClick()
         {
             Common.CreateOutputDirectory();
-            ProgressDialog progDlg = new ProgressDialog("Extracting trace configuration files to: \n" + Common.ExtractFilePath);
+            ProgressDialog progDlg = new ProgressDialog("Extracting Trace Configuration files to: \n" + Common.ExtractFilePath);
 
             try
             {
                 progDlg.Show();
-
                 await ExtractTraceConfigurationAsync(true);
             }
             catch (Exception ex)
@@ -59,160 +57,134 @@ namespace UtilityNetworkPropertiesExtractor
             //Extracts a CSV file of all trace names along with a JSON file of the actual configuration
             await QueuedTask.Run(async () =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayer);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Trace Configuration", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Asset Groups", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                UtilityNetworkLayer unLayer = Common.FindTheUtilityNetworkLayer();
-                if (unLayer == null)
-                    return;
-
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayer);
-                using (Geodatabase geodatabase = featureLayer.GetTable().GetDatastore() as Geodatabase)
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    Common.CreateOutputDirectory();
-                    string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    _fileName = string.Format("{0}_{1}_TraceConfiguration.csv", dateFormatted, reportHeaderInfo.MapName);
-                    string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                    using (StreamWriter sw = new StreamWriter(outputFile))
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        //Header information
-                        UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                        Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Trace Configuration");
-
-                        if (Convert.ToInt32(reportHeaderInfo.UtiltyNetworkSchemaVersion) < 5)
+                        string outputFile = Common.BuildCsvName("TraceConfig", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            sw.WriteLine("Trace Configuration was introduced at Utility Network Version 5");
-                            return;
-                        }
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Trace Configuration");
 
-                        //Get all properties defined in the class.  This will be used to generate the CSV file
-                        CSVLayout emptyRec = new CSVLayout();
-                        PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                        //Write column headers based on properties in the class
-                        string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                        sw.WriteLine(columnHeader);
-
-                        List<CSVLayout> csvLayoutList = new List<CSVLayout>();
-
-                        if (reportHeaderInfo.SourceType == Common.DatastoreTypeDescriptions.FeatureService)
-                        {
-                            ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
-                            if (portal == null)
-                                throw new Exception("You must be logged into portal to extract the trace configuration's JSON.");
-
-                            string traceConfigUrl = GetTraceConfigurationQueryUrl(unLayer, portal.GetToken());
-                            EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(traceConfigUrl);
-
-                            string json = response?.Content?.ReadAsStringAsync()?.Result;
-                            if (json == null)
-                                throw new Exception("Failed to get data from trace configuration endpoint");
-
-                            JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
-                            if (arcRestError?.error != null)
-                                throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
-
-                            string globalids = string.Empty;
-                            JSONMappings.TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.TraceConfigurationJSONMapping>(json);
-                            for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
+                            if (Convert.ToInt32(utilityNetworkDataSourceInMap.SchemaVersion) < 5)
                             {
-                                //globalids needed for GP Tool
-                                globalids += parsedJson.traceConfigurations[i].globalId + ";";
-
-                                CSVLayout rec = new CSVLayout()
-                                {
-                                    Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].name)),
-                                    Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].description)),
-                                    Creator = Convert.ToString(parsedJson.traceConfigurations[i].creator),
-                                    CreationDate = Convert.ToString(Common.ConvertEpochTimeToReadableDate(parsedJson.traceConfigurations[i].creationDate))
-                                };
-                                csvLayoutList.Add(rec);
+                                sw.WriteLine("Trace Configuration was introduced at Utility Network Version 5");
+                                return;
                             }
 
-                            await CallGpToolAsync(unLayer, globalids, outputFile);
-                        }
-                        else  // File Geodatabase or Database connection
-                        {
-                            //Get table definition for Trace Configuration table:  UN_<datasetid>_TraceConfigurations 
-                            //  Example in file GDB:  UN_5_TraceConfigurations
-                            TableDefinition traceConfigDefinition = geodatabase.GetDefinitions<TableDefinition>().FirstOrDefault(x => x.GetName().Contains("TraceConfigurations"));
-                            using (Table table = geodatabase.OpenDataset<Table>(traceConfigDefinition.GetName()))
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayout emptyRec = new CSVLayout();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
+
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            List<CSVLayout> csvLayoutList = new List<CSVLayout>();
+
+                            if (utilityNetworkDataSourceInMap.WorkspaceFactory == WorkspaceFactory.FeatureService.ToString())
                             {
-                                QueryFilter queryFilter = new QueryFilter
-                                {
-                                    SubFields = "GLOBALID, NAME, DESCRIPTION, CREATOR, CREATIONDATE",
-                                    PostfixClause = "ORDER BY NAME"
-                                };
+                                ArcGISPortal portal = ArcGISPortalManager.Current.GetActivePortal();
+                                if (portal == null)
+                                    throw new Exception("You must be logged into portal to extract the trace configuration's JSON.");
+
+                                string unFeatureServiceURL = Common.AppendTokenToUrl(utilityNetworkDataSourceInMap.URI, portal.GetToken());
+                                string traceConfigUrl = unFeatureServiceURL.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
+                                EsriHttpResponseMessage response = Common.QueryRestPointUsingGet(traceConfigUrl);
+
+                                string json = response?.Content?.ReadAsStringAsync()?.Result;
+                                if (json == null)
+                                    throw new Exception("Failed to get data from trace configuration endpoint");
+
+                                JSONMappings.ArcRestError arcRestError = JsonConvert.DeserializeObject<JSONMappings.ArcRestError>(json);
+                                if (arcRestError?.error != null)
+                                    throw new Exception(arcRestError?.error.code + " - " + arcRestError?.error.message + "\n" + traceConfigUrl);
 
                                 string globalids = string.Empty;
-
-                                using (RowCursor rowCursor = table.Search(queryFilter, false))
+                                JSONMappings.TraceConfigurationJSONMapping parsedJson = JsonConvert.DeserializeObject<JSONMappings.TraceConfigurationJSONMapping>(json);
+                                for (int i = 0; i < parsedJson.traceConfigurations.Length; i++)
                                 {
-                                    while (rowCursor.MoveNext())
-                                    {
-                                        using (Row row = rowCursor.Current)
-                                        {
-                                            //globalids needed for GP Tool
-                                            globalids += row["GLOBALID"] + ";";
+                                    //globalids needed for GP Tool
+                                    globalids += parsedJson.traceConfigurations[i].globalId + ";";
 
-                                            CSVLayout rec = new CSVLayout()
+                                    CSVLayout rec = new CSVLayout()
+                                    {
+                                        Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].name)),
+                                        Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(parsedJson.traceConfigurations[i].description)),
+                                        Creator = Convert.ToString(parsedJson.traceConfigurations[i].creator),
+                                        CreationDate = Convert.ToString(Common.ConvertEpochTimeToReadableDate(parsedJson.traceConfigurations[i].creationDate))
+                                    };
+                                    csvLayoutList.Add(rec);
+                                }
+
+                                await CallGpToolAsync(utilityNetworkDataSourceInMap.UtilityNetworkLayer, globalids, outputFile);
+                            }
+                            else  // File Geodatabase or Database connection
+                            {
+                                //Get table definition for Trace Configuration table:  UN_<datasetid>_TraceConfigurations 
+                                //  Example in file GDB:  UN_5_TraceConfigurations
+                                TableDefinition traceConfigDefinition = geodatabase.GetDefinitions<TableDefinition>().FirstOrDefault(x => x.GetName().Contains("TraceConfigurations"));
+                                if (traceConfigDefinition != null)
+                                {
+                                    using (Table table = geodatabase.OpenDataset<Table>(traceConfigDefinition.GetName()))
+                                    {
+                                        QueryFilter queryFilter = new QueryFilter
+                                        {
+                                            SubFields = "GLOBALID, NAME, DESCRIPTION, CREATOR, CREATIONDATE",
+                                            PostfixClause = "ORDER BY NAME"
+                                        };
+
+                                        string globalids = string.Empty;
+
+                                        using (RowCursor rowCursor = table.Search(queryFilter, false))
+                                        {
+                                            while (rowCursor.MoveNext())
                                             {
-                                                Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["NAME"])),
-                                                Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["DESCRIPTION"])),
-                                                Creator = Convert.ToString(row["CREATOR"]),
-                                                CreationDate = Convert.ToString(row["CREATIONDATE"])
-                                            };
-                                            csvLayoutList.Add(rec);
+                                                using (Row row = rowCursor.Current)
+                                                {
+                                                    //globalids needed for GP Tool
+                                                    globalids += row["GLOBALID"] + ";";
+
+                                                    CSVLayout rec = new CSVLayout()
+                                                    {
+                                                        Name = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["NAME"])),
+                                                        Description = Common.EncloseStringInDoubleQuotes(Convert.ToString(row["DESCRIPTION"])),
+                                                        Creator = Convert.ToString(row["CREATOR"]),
+                                                        CreationDate = Convert.ToString(row["CREATIONDATE"])
+                                                    };
+                                                    csvLayoutList.Add(rec);
+                                                }
+                                            }
                                         }
+                                        await CallGpToolAsync(utilityNetworkDataSourceInMap.UtilityNetworkLayer, globalids, outputFile);
                                     }
                                 }
-                                await CallGpToolAsync(unLayer, globalids, outputFile);
                             }
-                        }
 
-                        //Write body of CSV
-                        foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Name))
-                        {
-                            string output = Common.ExtractClassValuesToString(row, properties);
-                            sw.WriteLine(output);
-                        }
+                            //Write body of CSV
+                            foreach (CSVLayout row in csvLayoutList.OrderBy(x => x.Name))
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
 
-                        sw.Flush();
-                        sw.Close();
+                            sw.Flush();
+                            sw.Close();
+                        }
                     }
                 }
             });
-        }
-
-
-        private static string GetTraceConfigurationQueryUrl(UtilityNetworkLayer unLayer, string token)
-        {
-            string url = Common.GetURLOfUtilityNetworkLayer(unLayer, token);
-
-            //Tweak the UN Layer URL to point to the TraceConfigurations Query endpoint
-            return url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
-
-            //CIMDataConnection dataConn = unLayer.GetDataConnection();
-            //if (dataConn is CIMStandardDataConnection stDataConn)
-            //{
-            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer</WorkspaceConnectionString>
-            //    //<WorkspaceConnectionString>URL=https://webAdaptor/server/rest/services/ElectricUN/FeatureServer;VERSION=sde.default;...</WorkspaceConnectionString>
-            //    url = stDataConn.WorkspaceConnectionString.Split('=')[1];
-            //    int pos = url.IndexOf(";");
-            //    if (pos > 0)  // if the URL contains VERSION details, strip that off.
-            //        url = url.Substring(0, pos);
-
-            //    url = url.Replace("FeatureServer", "UtilityNetworkServer/traceConfigurations/query");
-            //    url = $"{url}?f=json&token={token}";
-            //}
-            //return url;
         }
 
         private static async Task CallGpToolAsync(UtilityNetworkLayer unLayer, string globalids, string outputFile)
