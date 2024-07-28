@@ -10,10 +10,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,116 +27,115 @@ namespace UtilityNetworkPropertiesExtractor
 {
     internal class NetworkAttributesButton : Button
     {
-        private static string _fileName = string.Empty;
-        private static bool _fileGenerated = false;
-
         protected async override void OnClick()
         {
+            Common.CreateOutputDirectory();
+            ProgressDialog progDlg = new ProgressDialog("Extracting Network Attributes to: \n" + Common.ExtractFilePath);
+
             try
             {
-                _fileGenerated = false;
+                progDlg.Show();
                 await ExtractNetworkAttributesAsync(true);
-                if (_fileGenerated)
-                    MessageBox.Show("Directory: " + Common.ExtractFilePath + Environment.NewLine + "File Name: " + _fileName, "CSV file has been generated");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Extract Network Attributes");
             }
+            finally
+            {
+                progDlg.Dispose();
+            }
         }
 
         public static Task ExtractNetworkAttributesAsync(bool showNoUtilityNetworkPrompt)
         {
-            _fileGenerated = false;
-
             return QueuedTask.Run(() =>
             {
-                UtilityNetwork utilityNetwork = Common.GetUtilityNetwork(out FeatureLayer featureLayerInUn);
-                if (utilityNetwork == null)
+                List<UtilityNetworkDataSourceInMap> utilityNetworkDataSourceInMapList = DataSourcesInMapHelper.GetUtilityNetworkDataSourcesInMap();
+                if (utilityNetworkDataSourceInMapList.Count == 0)
                 {
                     if (showNoUtilityNetworkPrompt)
-                        MessageBox.Show("Utility Network not found in the active map", "Extract Network Attributes", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("A Utility Network was not found in the active map", "Extract Network Attributes", MessageBoxButton.OK, MessageBoxImage.Error);
 
                     return;
                 }
 
-                Common.ReportHeaderInfo reportHeaderInfo = Common.DetermineReportHeaderProperties(utilityNetwork, featureLayerInUn);
-                Common.CreateOutputDirectory();
-
-                string dateFormatted = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                _fileName = string.Format("{0}_{1}_NetworkAttributes.csv", dateFormatted, reportHeaderInfo.MapName);
-                string outputFile = Path.Combine(Common.ExtractFilePath, _fileName);
-
-                using (StreamWriter sw = new StreamWriter(outputFile))
+                foreach (UtilityNetworkDataSourceInMap utilityNetworkDataSourceInMap in utilityNetworkDataSourceInMapList)
                 {
-                    //Header information
-                    UtilityNetworkDefinition utilityNetworkDefinition = utilityNetwork.GetDefinition();
-                    Common.WriteHeaderInfo(sw, reportHeaderInfo, utilityNetworkDefinition, "Network Attributes");
-
-                    //Network Attributes
-                    List<CSVLayoutNetworkAttributes> CSVLayoutNetworkAttributesList = new List<CSVLayoutNetworkAttributes>();
-
-                    //Get all properties defined in the class.  This will be used to generate the CSV file
-                    CSVLayoutNetworkAttributes emptyRec = new CSVLayoutNetworkAttributes();
-                    PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
-
-                    //Write column headers based on properties in the class
-                    string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    IEnumerable<NetworkAttribute> networkAttributes = utilityNetworkDefinition.GetNetworkAttributes().OrderBy(x => x.Name);
-                    foreach (NetworkAttribute networkAttribute in networkAttributes)
+                    using (Geodatabase geodatabase = utilityNetworkDataSourceInMap.Geodatabase)
                     {
-                        CSVLayoutNetworkAttributes rec = new CSVLayoutNetworkAttributes()
+                        string outputFile = Common.BuildCsvName("NetworkAttributes", utilityNetworkDataSourceInMap.Name);
+                        using (StreamWriter sw = new StreamWriter(outputFile))
                         {
-                            Name = networkAttribute.Name,
-                            DataType = networkAttribute.Type.ToString(),
-                            Domain = networkAttribute.Domain?.GetName()
-                        };
-                        CSVLayoutNetworkAttributesList.Add(rec);
-                    }
-                    CSVLayoutNetworkAttributesList.Add(emptyRec);
+                            //Header information
+                            UtilityNetworkDefinition utilityNetworkDefinition = utilityNetworkDataSourceInMap.UtilityNetwork.GetDefinition();
+                            Common.WriteHeaderInfoForUtilityNetwork(sw, utilityNetworkDataSourceInMap, "Network Attributes");
 
-                    foreach (CSVLayoutNetworkAttributes row in CSVLayoutNetworkAttributesList)
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
+                            //Network Attributes
+                            List<CSVLayoutNetworkAttributes> CSVLayoutNetworkAttributesList = new List<CSVLayoutNetworkAttributes>();
 
-                    //Network Attribute Assignments
-                    List<CSVLayoutNetworksAttributesAssignments> CSVLayoutNetworksAttributesAssignmentsList = new List<CSVLayoutNetworksAttributesAssignments>();
+                            //Get all properties defined in the class.  This will be used to generate the CSV file
+                            CSVLayoutNetworkAttributes emptyRec = new CSVLayoutNetworkAttributes();
+                            PropertyInfo[] properties = Common.GetPropertiesOfClass(emptyRec);
 
-                    CSVLayoutNetworksAttributesAssignments emptyAssignmentRec = new CSVLayoutNetworksAttributesAssignments();
-                    properties = Common.GetPropertiesOfClass(emptyAssignmentRec);
+                            //Write column headers based on properties in the class
+                            string columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
 
-                    //Write column headers based on properties in the class
-                    columnHeader = Common.ExtractClassPropertyNamesToString(properties);
-                    sw.WriteLine(columnHeader);
-
-                    foreach (NetworkAttribute networkAttribute in networkAttributes)
-                    {
-                        IReadOnlyList<NetworkAttributeAssignment> assignments = networkAttribute.Assignments;
-                        foreach (NetworkAttributeAssignment assignment in assignments)
-                        {
-                            CSVLayoutNetworksAttributesAssignments assignRec = new CSVLayoutNetworksAttributesAssignments()
+                            IEnumerable<NetworkAttribute> networkAttributes = utilityNetworkDefinition.GetNetworkAttributes().OrderBy(x => x.Name);
+                            foreach (NetworkAttribute networkAttribute in networkAttributes)
                             {
-                                NetworkAttribute = networkAttribute.Name,
-                                ClassName = assignment.NetworkSource.Name,
-                                FieldName = assignment.Field?.Name
-                            };
-                            CSVLayoutNetworksAttributesAssignmentsList.Add(assignRec);
+                                CSVLayoutNetworkAttributes rec = new CSVLayoutNetworkAttributes()
+                                {
+                                    Name = networkAttribute.Name,
+                                    DataType = networkAttribute.Type.ToString(),
+                                    Domain = networkAttribute.Domain?.GetName()
+                                };
+                                CSVLayoutNetworkAttributesList.Add(rec);
+                            }
+                            CSVLayoutNetworkAttributesList.Add(emptyRec);
+
+                            foreach (CSVLayoutNetworkAttributes row in CSVLayoutNetworkAttributesList)
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            //Network Attribute Assignments
+                            List<CSVLayoutNetworksAttributesAssignments> CSVLayoutNetworksAttributesAssignmentsList = new List<CSVLayoutNetworksAttributesAssignments>();
+
+                            CSVLayoutNetworksAttributesAssignments emptyAssignmentRec = new CSVLayoutNetworksAttributesAssignments();
+                            properties = Common.GetPropertiesOfClass(emptyAssignmentRec);
+
+                            //Write column headers based on properties in the class
+                            columnHeader = Common.ExtractClassPropertyNamesToString(properties);
+                            sw.WriteLine(columnHeader);
+
+                            foreach (NetworkAttribute networkAttribute in networkAttributes)
+                            {
+                                IReadOnlyList<NetworkAttributeAssignment> assignments = networkAttribute.Assignments;
+                                foreach (NetworkAttributeAssignment assignment in assignments)
+                                {
+                                    CSVLayoutNetworksAttributesAssignments assignRec = new CSVLayoutNetworksAttributesAssignments()
+                                    {
+                                        NetworkAttribute = networkAttribute.Name,
+                                        ClassName = assignment.NetworkSource.Name,
+                                        FieldName = assignment.Field?.Name
+                                    };
+                                    CSVLayoutNetworksAttributesAssignmentsList.Add(assignRec);
+                                }
+                            }
+
+                            foreach (CSVLayoutNetworksAttributesAssignments row in CSVLayoutNetworksAttributesAssignmentsList)
+                            {
+                                string output = Common.ExtractClassValuesToString(row, properties);
+                                sw.WriteLine(output);
+                            }
+
+                            sw.Flush();
+                            sw.Close();
                         }
                     }
-
-                    foreach (CSVLayoutNetworksAttributesAssignments row in CSVLayoutNetworksAttributesAssignmentsList)
-                    {
-                        string output = Common.ExtractClassValuesToString(row, properties);
-                        sw.WriteLine(output);
-                    }
-
-                    sw.Flush();
-                    sw.Close();
-                    _fileGenerated = true;
                 }
             });
         }
