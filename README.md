@@ -1,6 +1,6 @@
 # utility-network-properties-extractor 
 
-For use with ArcGIS Pro 3.5
+For use with ArcGIS Pro 3.7
 
 This repository contains the source code for the 'Utility Network Property Extractor' ArcGIS Pro Add-in.  Single click buttons will create CSV files for the ArcGIS Utility Network, Geodatabase and Map properties.  There are also 6 efficiency tools to help set up your map and get your machine info.  
 
@@ -14,10 +14,10 @@ Language:              C#
 Subject:               Utility Network
 Author:                Mike Hirschheimer <mhirschheimer@esri.com>
 Organization:          Esri, http://www.esri.com
-Date:                  5/20/2025
-ArcGIS Pro:            3.5
-Visual Studio:         2022
-.NET Target Framework: .NET 8
+Date:                  9/15/2026
+ArcGIS Pro:            3.7
+Visual Studio:         2026
+.NET Target Framework: .NET 10
 ```
 
 
@@ -72,8 +72,8 @@ _Directions_
  8.  You MUST save the Pro project for settings to persist
 
 ## Third party assemblies
-1.  Newtonsoft.JSON v13.0.3
-2.  Microsoft.Windows.Compatibility v9.0.5
+1.  Newtonsoft.JSON v13.0.4
+2.  Microsoft.Windows.Compatibility v10.0.9
 
 ## Compilation Directions
 1.  Download the source code
