@@ -163,12 +163,15 @@ namespace UtilityNetworkPropertiesExtractor
 
                             //Include "sub tables" in the report 
                             IReadOnlyList<StandaloneTable> standaloneTablesList = subtypeGroupTable.StandaloneTables;
-                            TableDefinition tableDefinition = getTableDefinitionOfMapMember(DataSourceInMapList, standaloneTablesList.FirstOrDefault());
-                            IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
-                            IReadOnlyList<Subtype> subtypesList = tableDefinition.GetSubtypes();
+                            if (standaloneTablesList.Count != 0)
+                            {
+                                TableDefinition tableDefinition = getTableDefinitionOfMapMember(DataSourceInMapList, standaloneTablesList.FirstOrDefault());
+                                IReadOnlyList<Field> fieldsList = tableDefinition.GetFields();
+                                IReadOnlyList<Subtype> subtypesList = tableDefinition.GetSubtypes();
 
-                            foreach (StandaloneTable standaloneTable in standaloneTablesList)
-                                layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, mapMember.Name, tableDefinition, fieldsList, subtypesList, ref csvLayoutList);
+                                foreach (StandaloneTable standaloneTable in standaloneTablesList)
+                                    layerPos = InterrogateStandaloneTable(standaloneTable, layerPos, mapMember.Name, tableDefinition, fieldsList, subtypesList, ref csvLayoutList);
+                            }
                         }
 
                         //Standalone Table
